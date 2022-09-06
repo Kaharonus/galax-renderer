@@ -109,6 +109,22 @@ std::shared_ptr<Scene> SceneGenerator::generateScene(float w, float h) {
 
     for(int i = 0; i < 1; i++){
         auto planet = generatePlanet(planetMeshes, 1 + (i*0.5), 10 * (i+1));
+
+        auto texture = std::make_shared<Texture>("tex");
+        auto size = 16;
+        texture->setDimensions(size,size);
+
+        auto data = std::vector<unsigned char>(size*size*4);
+        for(int x = 0; x < size; x++){
+            for(int y = 0; y < size; y++){
+                auto index = x*size + y;
+                data[index*4] = 255;
+                data[(index*4) + 3] = 255;
+            }
+        }
+        texture->setData(data);
+        planet->addTexture(texture);
+
         planet->setCamera(camera);
         planet->setProgram(program);
         root->addChild(planet);

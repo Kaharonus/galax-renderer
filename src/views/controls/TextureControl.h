@@ -3,6 +3,7 @@
 //
 #include <QWidget>
 #include <QTimer>
+#include <QGraphicsScene>
 
 #include "../../renderer/scene_objects/Texture.h"
 
@@ -28,6 +29,9 @@ private:
     std::shared_ptr<Texture> texture;
 
     QTimer* timer;
+    QGraphicsScene* imageScene;
+
+    std::vector<unsigned char> data;
 
     Ui::TextureControl *ui;
 

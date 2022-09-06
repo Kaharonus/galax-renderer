@@ -5,9 +5,10 @@ flat in vec3 vNormal;
 in float vNoise;
 out vec4 fragColor;
 
+uniform sampler2D tex;
 
 vec3 getColor(){
-
+    vec3 t = texture(tex, vec2(1)).xyz;
     if(vNoise < 0.02){
         return vec3(0,0,1);
     }
@@ -25,7 +26,7 @@ vec3 getColor(){
         return vec3(0.4,0.2,0.1);
     }
 
-    return vec3(0.5);
+    return vec3(0.5)  + (t * 0.00001);
     /*if(vNoise < 0.02){
         return vec3(0,0,1);
     }

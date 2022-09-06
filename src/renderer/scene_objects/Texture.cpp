@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include <cassert>
 #include <stdexcept>
+#include <iostream>
 
 using namespace Galax::Renderer::SceneObjects;
 using namespace gl;
@@ -285,6 +286,7 @@ void Texture::upload() {
     value = (value > max_anisotropy) ? max_anisotropy : value;
     glTexParameterf(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, value);
 
+
     glBindTexture(glTarget, 0);
 
 }
@@ -294,21 +296,31 @@ void Texture::bind(uint unit) {
         upload();
     }
     glActiveTexture(GL_TEXTURE0 + unit);
+    readDataFromGPU();
     glBindTexture((GLenum) target, id);
 
 }
 
-std::vector<unsigned char> Texture::readDataFromGPU() {
+void Texture::requestData(const std::function<void(const std::vector<unsigned char>&)>& callback) {
     if (this->target != TYPE_2D) {
         throw std::runtime_error("Can only read data from 2D textures");
     }
+    readRequested = true;
+    readCallback = callback;
+}
+
+void Texture::readDataFromGPU(){
+    if(!readRequested){
+        return;
+    }
+    readRequested = false;
     auto [w, h, _] = dimensions;
     auto dataVector = std::vector<unsigned char>(w * h * getFormatSize() * getDataSize());
     glBindTexture(GL_TEXTURE_2D, id);
-    glGetTexImage(GL_TEXTURE_2D, 0, (GLenum) format, (GLenum) dataType, dataVector.data());
+    glGetTexImage(GL_TEXTURE_2D, 0, (GLenum) GL_RGBA, (GLenum) GL_UNSIGNED_BYTE, dataVector.data());
     glBindTexture(GL_TEXTURE_2D, 0);
+    readCallback(dataVector);
 
-    return dataVector;
 }
 
 int Texture::getDataSize() {
@@ -343,4 +355,25 @@ int Texture::getFormatSize() {
     }
     return 0;
 }
+
+Texture::DataType Texture::getDataType() const {
+    return dataType;
+}
+
+
+
+std::tuple<int, int, int> Texture::getDimensions() const {
+    return dimensions;
+}
+
+
+Texture::Format Texture::getFormat() const{
+    return format;
+}
+
+Texture::Type Texture::getType() const {
+    return target;
+}
+
+
 

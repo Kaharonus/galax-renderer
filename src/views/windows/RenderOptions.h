@@ -46,9 +46,17 @@ private:
 
     void editShader(std::shared_ptr<Shader> shader);
     void editCamera(std::shared_ptr<Camera> camera);
+    void editTexture(std::shared_ptr<Texture> camera);
 
     void prepareCodeEditor();
     void addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent);
+
+    std::string demangle(const char* name);
+    template <class T> std::string type(const T& t) {
+        return demangle(typeid(t).name());
+    }
+
+
 
     std::string styleString = R"(<?xml version="1.0" encoding="UTF-8"?>
 <style-scheme version="1.0" name="Dracula">

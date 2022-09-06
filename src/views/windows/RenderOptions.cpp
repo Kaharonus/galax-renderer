@@ -18,6 +18,7 @@
 #include <QLabel>
 #include <QStyleFactory>
 #include <memory>
+#include <cxxabi.h>
 
 #include "ui_RenderOptions.h"
 #include "RenderOptions.h"
@@ -25,6 +26,7 @@
 #include "../controls/QDataTreeItem.h"
 #include "../controls/CameraControl.h"
 #include "../controls/NodeControl.h"
+#include "../controls/TextureControl.h"
 
 
 RenderOptions::RenderOptions(QWidget* parent) : QMainWindow(parent), ui(new Ui::RenderOptions) {
@@ -102,6 +104,11 @@ void RenderOptions::editCamera(std::shared_ptr<Camera> camera){
     dataWidget->layout()->addWidget(cam);
 }
 
+void RenderOptions::editTexture(std::shared_ptr<Texture> texture){
+    auto tex = new TextureControl(texture, this);
+    dataWidget->layout()->addWidget(tex);
+}
+
 
 void RenderOptions::editNode(std::shared_ptr<Node> node){
     auto nodeControl = new NodeControl(node, this);
@@ -127,6 +134,12 @@ void RenderOptions::onItemClicked() {
         editNode(node->getData());
         return;
     }
+
+    auto texture = dynamic_cast<QDataTreeItem<Texture>*>(nodeView->currentItem());
+    if (texture) {
+        editTexture(texture->getData());
+        return;
+    }
 }
 
 void RenderOptions::codeChanged() {
@@ -143,14 +156,14 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
 
     // Builds the base of the node
     auto root = parent ? new QDataTreeItem<Node>(parent) : new QDataTreeItem<Node>(nodeView);
-    root->setText(0, "Node");
+    root->setText(0, type(*node).c_str());
     root->setText(1, node->getName().data());
     root->setData(node);
     // Adds program information
     auto program = node->getProgram();
     if(program){
         auto programNode = new QTreeWidgetItem(root);
-        programNode->setText(0, "Program");
+        programNode->setText(0, type(*program).c_str());
         programNode->setText(1, program->getName().data());
         for (auto shader : program->getShaders()) {
             auto shaderNode = new QDataTreeItem<Shader>(programNode);
@@ -165,7 +178,7 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
     auto mesh = node->getMesh();
     if(mesh){
         auto meshNode = new QTreeWidgetItem(root);
-        meshNode->setText(0, "Mesh");
+        meshNode->setText(0, type(*mesh).c_str());
         meshNode->setText(1, mesh->getName().data());
     }
 
@@ -175,7 +188,7 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
     if(camera){
         auto cameraNode = new QDataTreeItem<Camera>(root);
         cameraNode->setData(camera);
-        cameraNode->setText(0, "Camera");
+        cameraNode->setText(0, type(*camera).c_str());
         cameraNode->setText(1, camera->getName().data());
     }
 
@@ -185,7 +198,7 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
     for(const auto& texture : textures){
         auto textureItem = new QDataTreeItem<Texture>(textureNode);
         textureItem->setData(texture);
-        textureItem->setText(0, "Texture");
+        textureItem->setText(0, type(*texture).c_str());
         textureItem->setText(1, texture->getName().data());
     }
 
@@ -203,4 +216,15 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
 void RenderOptions::setScene(std::shared_ptr<Galax::Renderer::Scene> scene) {
     this->scene = scene;
     addNode(scene->getRoot(), nullptr);
+}
+
+std::string RenderOptions::demangle(const char *name) {
+    int status = -4; // some arbitrary value to eliminate the compiler warning
+    std::unique_ptr<char, void (*)(void*)> res{abi::__cxa_demangle(name, NULL, NULL, &status),std::free};
+    std::string result = (status == 0) ? res.get() : name;
+    std::size_t found = result.find_last_of("::");
+    if(found != std::string::npos){
+        result = result.substr(found + 1);
+    }
+    return result;
 };

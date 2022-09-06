@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <functional>
 
 namespace Galax::Renderer::SceneObjects {
 
@@ -45,11 +46,22 @@ namespace Galax::Renderer::SceneObjects {
 
         uint getId() override;
 
+        std::tuple<int, int, int> getDimensions() const;
+        Type getType() const;
+        Format getFormat() const;
+        DataType getDataType() const;
+
         void setDimensions(int width, int height);
         void setDimensions(int width, int height, int depth);
         void addArrayLayer();
 
-        std::vector<unsigned char> readDataFromGPU();
+        /**
+         * @brief Requests the texture to read the texture data from the GPU back to the CPU.
+          The callback will be called automatically by the engine.
+          Only one callback can be registered at a time.
+         * @param callback a method that will be called when the texture data is ready to be read.
+         */
+        void requestData(const std::function<void(const std::vector<unsigned char> &)> &callback);
 
         void setData(const std::vector<unsigned char>& data, size_t layer);
         void setData(const std::vector<char>& data, size_t layer);
@@ -91,8 +103,13 @@ namespace Galax::Renderer::SceneObjects {
         Format format;
         DataType dataType;
 
+        std::function<void(const std::vector<unsigned char>&)> readCallback;
+        bool readRequested = false;
+        void readDataFromGPU();
+
         uint toInternal();
 
         int getFormatSize();
+
     };
 } // namespace MapGenerator::Renderer::SceneObjects
