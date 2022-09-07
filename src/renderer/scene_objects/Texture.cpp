@@ -11,13 +11,13 @@
 using namespace Galax::Renderer::SceneObjects;
 using namespace gl;
 
-Texture::Texture(Type type, Format format, DataType dataType)
-        : SceneObject(), target(type), format(format), dataType(dataType) {
+Texture::Texture(Type type, Format format, DataType dataType, Wrap wrap)
+        : SceneObject(), target(type), format(format), dataType(dataType), wrap(wrap) {
     init();
 }
 
-Texture::Texture(const std::string &name, Type type, Format format, DataType dataType)
-        : SceneObject(name), target(type), format(format), dataType(dataType) {
+Texture::Texture(const std::string &name, Type type, Format format, DataType dataType, Wrap wrap)
+        : SceneObject(name), target(type), format(format), dataType(dataType), wrap(wrap) {
     init();
 }
 
@@ -317,7 +317,7 @@ void Texture::readDataFromGPU(){
     auto [w, h, _] = dimensions;
     auto dataVector = std::vector<unsigned char>(w * h * getFormatSize() * getDataSize());
     glBindTexture(GL_TEXTURE_2D, id);
-    glGetTexImage(GL_TEXTURE_2D, 0, (GLenum) GL_RGBA, (GLenum) GL_UNSIGNED_BYTE, dataVector.data());
+    glGetTexImage(GL_TEXTURE_2D, 0, (GLenum)format, (GLenum) dataType, dataVector.data());
     glBindTexture(GL_TEXTURE_2D, 0);
     readCallback(dataVector);
 
@@ -374,6 +374,27 @@ Texture::Format Texture::getFormat() const{
 Texture::Type Texture::getType() const {
     return target;
 }
+
+void Texture::setType(Texture::Type type) {
+    this->target = type;
+}
+
+void Texture::setFormat(Texture::Format format) {
+    this->format = format;
+}
+
+void Texture::setDataType(Texture::DataType dataType) {
+    this->dataType = dataType;
+}
+
+void Texture::setWrap(Texture::Wrap wrap) {
+    this->wrap = wrap;
+}
+
+Texture::Wrap Texture::getWrap() const {
+    return wrap;
+}
+
 
 
 

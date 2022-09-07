@@ -4,8 +4,9 @@
 
 
 #pragma once
+#include "../orbital/Planet.h"
+#include "../orbital/SolarSystem.h"
 
-#include "../renderer/Scene.h"
 #include "../assets/AssetLoader.h"
 
 #include <memory>
@@ -14,16 +15,18 @@ namespace Galax::Generators{
 
     using namespace Galax::Renderer;
     using namespace Galax::Assets;
+    using namespace Galax::Orbital;
 
-    class SceneGenerator {
+    class SolarSystemLoader {
     public:
-        SceneGenerator() = default;
-        ~SceneGenerator() = default;
-        std::shared_ptr<Scene> generateScene(float w, float h);
+        SolarSystemLoader() = default;
+        ~SolarSystemLoader() = default;
+        std::shared_ptr<SolarSystem> generateSystem();
 
 
     private:
-        std::shared_ptr<Node> generateNode(std::shared_ptr<AssetLoader> loader);
+
+        int planetCount = 0;
 
         std::shared_ptr<Camera> generateCamera(std::shared_ptr<AssetLoader> loader, float w, float h);
 
@@ -32,11 +35,6 @@ namespace Galax::Generators{
         std::shared_ptr<Program> generateProgram(std::shared_ptr<AssetLoader> loader);
 
         std::vector<std::shared_ptr<Animation>> generateAnimations(std::shared_ptr<AssetLoader> loader);
-
-        std::shared_ptr<Node> generatePlanet(std::map<float, std::shared_ptr<Mesh>> meshes, float size, float distance,
-                                             std::shared_ptr<Program> program);
-
-        std::shared_ptr<Node> generatePlanet(std::map<float, std::shared_ptr<Mesh>> meshes, float size, float distance);
 
         std::shared_ptr<Animation> generateRotation(float distance);
     };

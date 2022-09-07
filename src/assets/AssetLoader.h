@@ -7,20 +7,32 @@
 #include "../renderer/scene_objects/Shader.h"
 #include "../renderer/scene_objects/Mesh.h"
 
+
+#include <nlohmann/json.hpp>
+
+
 #include <string>
 namespace Galax::Assets {
     using namespace Renderer::SceneObjects;
+    using namespace nlohmann;
 
     class AssetLoader {
     public:
-        AssetLoader(std::string assetFile);
-        bool load();
+        AssetLoader();
+        bool load(const std::string& assetFile);
 
         std::shared_ptr<Shader> getShader(std::string path, Shader::Type type, std::string name = "");
         std::shared_ptr<Mesh> getMesh(const std::string &asset, std::string name = "");
-        std::vector<std::shared_ptr<Mesh>> getMesh(const std::string &directory, int levels, std::string name = "");
 
         std::string readTextFile(std::string asset);
+
+        template <typename T> std::shared_ptr<T> getJson(const std::string& asset){
+            auto text = readTextFile(asset);
+            auto ptr = std::make_shared<T>();
+            auto jsonObj = nlohmann::json::parse(text);
+            nlohmann::from_json(jsonObj, *ptr);
+            return ptr;
+        };
 
     private:
         void exists(const std::string& file);

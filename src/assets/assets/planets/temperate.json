@@ -1,0 +1,17 @@
+{
+  "name": "temperate",
+  "colorPalette": [
+    {
+      "name": "beach",
+      "colors": ["#FFE62B", "#FFFFFF"],
+      "limit": 0.025,
+      "transition": 0.0
+    },
+    {
+        "name": "ocean",
+      "colors": ["#0000FF", "#5555FF"],
+      "limit": 0.02,
+      "transition": 0.9
+    }
+  ]
+}

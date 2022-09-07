@@ -43,7 +43,8 @@ void TextureControl::update() {
     auto dataType = texture->getDataType();
     auto format = texture->getFormat();
     auto textureType = texture->getType();
-    if(textureType != Texture::TYPE_2D || format != Texture::RGBA || (dataType != Texture::BYTE && dataType != Texture::UNSIGNED_BYTE)){
+
+    if(textureType != Texture::TYPE_2D || (format != Texture::RGBA && format != Texture::RGB) || (dataType != Texture::BYTE && dataType != Texture::UNSIGNED_BYTE)){
         return;
     }
 
@@ -52,9 +53,11 @@ void TextureControl::update() {
         this->data = data;
     });
 
+    auto qFormat = format == Texture::RGBA ? QImage::Format_RGBA8888 : QImage::Format_RGB888;
+
     imageScene->clear();
     auto [w, h, d] = texture->getDimensions();
-    auto image = QImage(data.data(), w, h, QImage::Format_RGBA8888);
+    auto image = QImage(data.data(), w, h, qFormat);
     if(image.isNull()){
         return;
     }

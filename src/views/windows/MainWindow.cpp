@@ -4,8 +4,7 @@
 
 // You may need to build the project (run Qt uic code generator) to get "ui_MainWindow.h" resolved
 #include "../../assets/AssetLoader.h"
-#include "../../generators/PlanetMeshGenerator.h"
-#include "../../generators/SceneGenerator.h"
+#include "../../generators/SolarSystemLoader.h"
 #include "ui_MainWindow.h"
 #include "MainWindow.h"
 
@@ -37,10 +36,12 @@ void MainWindow::setupRenderer(const QSurfaceFormat &format){
 }
 
 void MainWindow::loadScene() {
-    SceneGenerator sceneGenerator;
-    auto scene = sceneGenerator.generateScene(this->width(), this->height());
-    renderer->setScene(scene);
-    renderOptionsWindow->setScene(scene);
+    SolarSystemLoader systemLoader;
+
+    auto system = systemLoader.generateSystem();
+
+    renderer->setScene(system);
+    renderOptionsWindow->setScene(system);
 }
 
 MainWindow::~MainWindow() {

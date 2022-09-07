@@ -2,15 +2,15 @@
 // Created by tomas on 3.9.22.
 //
 
-#include "SceneGenerator.h"
-#include "PlanetMeshGenerator.h"
+#include "SolarSystemLoader.h"
+#include "PlanetLoader.h"
 
 using namespace Galax::Generators;
 using namespace Galax::Assets;
 using namespace Galax::Renderer;
 
 
-std::shared_ptr<Camera> SceneGenerator::generateCamera(std::shared_ptr<AssetLoader> loader, float w, float h){
+std::shared_ptr<Camera> SolarSystemLoader::generateCamera(std::shared_ptr<AssetLoader> loader, float w, float h){
     auto camera = std::make_shared<Camera>("camera");
     camera->setDimensions(w, h);
     camera->acceptInput(true);
@@ -18,18 +18,18 @@ std::shared_ptr<Camera> SceneGenerator::generateCamera(std::shared_ptr<AssetLoad
     return camera;
 }
 
-std::map<float ,std::shared_ptr<Mesh>> SceneGenerator::generateMesh(std::shared_ptr<AssetLoader> loader){
-    PlanetMeshGenerator planetGen(loader);
+std::map<float ,std::shared_ptr<Mesh>> SolarSystemLoader::generateMesh(std::shared_ptr<AssetLoader> loader){
+    /*PlanetMeshGenerator planetGen(loader);
     std::map<float ,std::shared_ptr<Mesh>> result;
     auto meshes = planetGen.getPlanetMesh("EarthLike ugliness that will look nice one day", "models/planet", 1);
     for(int i = 0; i < meshes.size(); i++){
         result[(float)i * 10] = meshes[i];
     }
-    return result;
+    return result;*/
 }
 
 
-std::shared_ptr<Program> SceneGenerator::generateProgram(std::shared_ptr<AssetLoader> loader){
+std::shared_ptr<Program> SolarSystemLoader::generateProgram(std::shared_ptr<AssetLoader> loader){
     auto vs = loader->getShader("/shaders/basic.vs.shader", Shader::Type::VERTEX);
     auto fs = loader->getShader("/shaders/basic.fs.shader", Shader::Type::FRAGMENT);
     auto program = std::make_shared<Program>("PlanetProgram",vs, fs);
@@ -37,7 +37,7 @@ std::shared_ptr<Program> SceneGenerator::generateProgram(std::shared_ptr<AssetLo
 }
 
 
-std::vector<std::shared_ptr<Animation>> SceneGenerator::generateAnimations(std::shared_ptr<AssetLoader> loader){
+std::vector<std::shared_ptr<Animation>> SolarSystemLoader::generateAnimations(std::shared_ptr<AssetLoader> loader){
     auto result = std::vector<std::shared_ptr<Animation>>();
 
     auto spinner = std::make_shared<Animation>("FidgetSpinner");
@@ -53,7 +53,7 @@ std::vector<std::shared_ptr<Animation>> SceneGenerator::generateAnimations(std::
 }
 
 
-std::shared_ptr<Animation> SceneGenerator::generateRotation(float distance){
+std::shared_ptr<Animation> SolarSystemLoader::generateRotation(float distance){
     auto animation = std::make_shared<Animation>("Orbit (" + std::to_string(distance) + ")");
     auto length = 1000 * distance;
     animation->setLength(length);
@@ -73,57 +73,44 @@ std::shared_ptr<Animation> SceneGenerator::generateRotation(float distance){
 }
 
 
-std::shared_ptr<Node> SceneGenerator::generatePlanet(std::map<float,std::shared_ptr<Mesh>> meshes, float size, float distance){
-    static int planetCount = 0;
-    auto planet = std::make_shared<Node>("Planet" + std::to_string(planetCount++));
-    planet->setMeshWithLOD(meshes);
-    planet->setScale(glm::vec3(size, size, size));
-
-    auto animations = generateAnimations(nullptr);
-    for(auto animation : animations){
-        //planet->addAnimation(animation);
-    }
-    //planet->addAnimation(generateRotation(distance));
-
-    auto seed = std::make_shared<Uniform>("seed", Uniform::FLOAT, size * 20);
-    planet->addUniform(seed);
-
-    return planet;
-}
 
 
-std::shared_ptr<Scene> SceneGenerator::generateScene(float w, float h) {
+std::shared_ptr<SolarSystem> SolarSystemLoader::generateSystem() {
 
-    auto assets = std::make_shared<AssetLoader>("assets.data");
-    assets->load();
+    auto assets = std::make_shared<AssetLoader>();
+    bool created = assets->load("assets.data");
 
-    auto planetMeshes = generateMesh(assets);
+    auto system = std::make_shared<SolarSystem>();
 
-    auto scene = std::make_shared<Scene>();
+    auto camera = std::make_shared<Camera>("freeCam");
+    camera->acceptInput(true);
+    camera->setPosition(glm::vec3(0, 0, -3));
+
+    //TODO generate sun
+
+
+    //generate planets
+
+    PlanetLoader::init(assets);
+    auto planet = PlanetLoader::fromType("EarthLike", Planet::Type::TEMPERATE);
+    planet->setCamera(camera);
+
+    system->setRoot(planet);
+
+    return system;
+
+
+
+    /*auto planetMeshes = (assets);
+
+    auto scene = std::make_shared<SolarSystem>();
 
     auto root = std::make_shared<Node>("empty root node");
 
-    auto program = generateProgram(assets);
-    auto camera = generateCamera(assets, w, h);
 
 
     for(int i = 0; i < 1; i++){
         auto planet = generatePlanet(planetMeshes, 1 + (i*0.5), 10 * (i+1));
-
-        auto texture = std::make_shared<Texture>("tex");
-        auto size = 16;
-        texture->setDimensions(size,size);
-
-        auto data = std::vector<unsigned char>(size*size*4);
-        for(int x = 0; x < size; x++){
-            for(int y = 0; y < size; y++){
-                auto index = x*size + y;
-                data[index*4] = 255;
-                data[(index*4) + 3] = 255;
-            }
-        }
-        texture->setData(data);
-        planet->addTexture(texture);
 
         planet->setCamera(camera);
         planet->setProgram(program);
@@ -132,5 +119,5 @@ std::shared_ptr<Scene> SceneGenerator::generateScene(float w, float h) {
 
     scene->setRoot(root);
     scene->build();
-    return scene;
+    return scene;*/
 }

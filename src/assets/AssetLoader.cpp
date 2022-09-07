@@ -4,6 +4,8 @@
 
 #include "AssetLoader.h"
 #include "ObjReader.h"
+
+
 #include <physfs.h>
 #include <QCoreApplication>
 #include <iostream>
@@ -11,13 +13,12 @@
 #include <memory>
 
 using namespace Galax::Assets;
-AssetLoader::AssetLoader(std::string assetFile) {
-    this->assetFile = assetFile;
+AssetLoader::AssetLoader() {
     PHYSFS_init(QCoreApplication::arguments().at(0).toStdString().c_str());
-
 }
 
-bool AssetLoader::load() {
+bool AssetLoader::load(const std::string& assetFile) {
+    this->assetFile = assetFile;
     //check if file exists using stdlib
     std::filesystem::path assetPath(assetFile);
     auto absolutePath = std::filesystem::absolute(assetPath).string();
@@ -54,22 +55,6 @@ std::string AssetLoader::readTextFile(std::string asset) {
 
 }
 
-
-std::vector<std::shared_ptr<Mesh>> AssetLoader::getMesh(const std::string& directory, int levels, std::string name){
-    if(name.empty()) {
-        name = directory;
-    }
-    exists(path+directory);
-    std::vector<std::shared_ptr<Mesh>> result;
-
-    for(int i = 0; i < levels; i++) {
-        auto file = directory + "/lod" + std::to_string(i) + ".obj";
-        auto mesh = getMesh(file, name + " (lod" + std::to_string(i)+")");
-        result.push_back(mesh);
-    }
-    return result;
-
-}
 
 std::shared_ptr<Mesh> AssetLoader::getMesh(const std::string& asset, std::string name){
 
@@ -109,3 +94,4 @@ void AssetLoader::exists(const std::string &file) {
     auto exists = PHYSFS_exists(file.c_str());
     assert(exists);
 }
+

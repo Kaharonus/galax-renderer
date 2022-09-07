@@ -41,8 +41,15 @@ namespace Galax::Renderer::SceneObjects {
             FLOAT = 0x1406,
         };
 
-        Texture(Type type = TYPE_2D, Format format = RGBA, DataType dataType = UNSIGNED_BYTE);
-        Texture(const std::string& name, Type type = TYPE_2D, Format format = RGBA, DataType dataType = UNSIGNED_BYTE);
+        enum Wrap {
+            REPEAT = 0x2901,
+            MIRRORED_REPEAT = 0x8370,
+            CLAMP_TO_EDGE = 0x812F,
+            CLAMP_TO_BORDER = 0x812D
+        };
+
+        Texture(Type type = TYPE_2D, Format format = RGBA, DataType dataType = UNSIGNED_BYTE, Wrap wrap = REPEAT);
+        Texture(const std::string& name, Type type = TYPE_2D, Format format = RGBA, DataType dataType = UNSIGNED_BYTE, Wrap wrap = REPEAT);
 
         uint getId() override;
 
@@ -50,10 +57,16 @@ namespace Galax::Renderer::SceneObjects {
         Type getType() const;
         Format getFormat() const;
         DataType getDataType() const;
+        Wrap getWrap() const;
 
         void setDimensions(int width, int height);
         void setDimensions(int width, int height, int depth);
         void addArrayLayer();
+        void setWrap(Wrap wrap);
+        void setFormat(Format format);
+        void setDataType(DataType dataType);
+        void setType(Type type);
+
 
         /**
          * @brief Requests the texture to read the texture data from the GPU back to the CPU.
@@ -102,6 +115,7 @@ namespace Galax::Renderer::SceneObjects {
         Type target;
         Format format;
         DataType dataType;
+        Wrap wrap = REPEAT;
 
         std::function<void(const std::vector<unsigned char>&)> readCallback;
         bool readRequested = false;

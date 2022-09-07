@@ -4,7 +4,7 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 # Source files
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS *.h *.cpp *.ui)
-set(SOURCES ${SOURCES} generators/SceneGenerator.cpp generators/SceneGenerator.h)
+set(SOURCES ${SOURCES} generators/SolarSystemLoader.cpp generators/SolarSystemLoader.h)
 
 # --------------------------------------------------------------------------------
 # QT
