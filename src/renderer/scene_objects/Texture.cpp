@@ -277,9 +277,9 @@ void Texture::upload() {
 
     glTexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(glTarget, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(glTarget, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(glTarget, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    glTexParameteri(glTarget, GL_TEXTURE_WRAP_S, wrap);
+    glTexParameteri(glTarget, GL_TEXTURE_WRAP_T, wrap);
+    glTexParameteri(glTarget, GL_TEXTURE_WRAP_R, wrap);
 
     GLfloat value, max_anisotropy = 8.0f;
     glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);

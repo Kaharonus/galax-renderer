@@ -72,7 +72,7 @@ void PlanetLoader::init(const std::shared_ptr<AssetLoader>& loader) {
 
 
 void PlanetLoader::generatePalette(Planet::Type type) {
-    int resolution = 32;
+    int resolution = 16;
 
     auto config = configs[type];
 
@@ -87,6 +87,8 @@ void PlanetLoader::generatePalette(Planet::Type type) {
               });
     auto max = config->color_palette.back().limit;
     auto min = config->color_palette.front().limit;
+    //TODO find bug here, since this is highly fucked
+
     std::map<float, std::pair<double, std::vector<glm::vec3>>> paletteMap;
     for (auto &color: config->color_palette) {
         auto normalised = (float) ((color.limit - min) / (max - min));
@@ -106,21 +108,23 @@ void PlanetLoader::generatePalette(Planet::Type type) {
     }
     auto data = std::vector<unsigned char>(resolution * resolution * 3);
 
-    //TODO find bug here, since this is highly fucked
     for (int y = 0; y < resolution; y++) {
         //Interpolate the column
         float value = (float) y / (float) resolution;
         auto color = paletteMap.lower_bound(value);
+        if(color != paletteMap.begin()) color--;
         auto next = paletteMap.upper_bound(value);
         for (int x = 0; x < resolution; x++) {
             auto index = (y * resolution + x) * 3;
-            auto current = color->second.second[x];
-            auto nextColor = next->second.second[x];
+            auto current = color->second.second[y];
+            auto nextColor = next->second.second[y];
             //Interpolate only if the transition is not 0 and the progress is greater than the transition
-            auto interpolator = (x - color->first) / (next->first - color->first);
+            auto progress = (float) x / (float) resolution;
+            auto interpolator = (progress - color->first) / (next->first - color->first);
             auto mixPercentage = color->second.first;
             glm::vec3 result = current;
             if(interpolator > mixPercentage){
+                interpolator = (interpolator - mixPercentage) / (1 - mixPercentage);
                 result = glm::mix(current, nextColor, interpolator);
             }
             data[index] = (unsigned char) (result.r * 255);

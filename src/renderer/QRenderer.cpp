@@ -107,6 +107,7 @@ namespace Galax::Renderer {
     }
 
     void QRenderer::setScene(std::shared_ptr<Scene> scene) {
+        scene->build();
         this->scene = scene;
         scene->setInputHandler(this->input);
         scene->setDimensions(width(), height());

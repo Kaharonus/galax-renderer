@@ -86,6 +86,7 @@ std::shared_ptr<SolarSystem> SolarSystemLoader::generateSystem() {
     camera->acceptInput(true);
     camera->setPosition(glm::vec3(0, 0, -3));
 
+
     //TODO generate sun
 
 
