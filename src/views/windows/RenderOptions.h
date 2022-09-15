@@ -52,6 +52,8 @@ private:
     void addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent);
 
     std::string demangle(const char* name);
+
+
     template <class T> std::string type(const T& t) {
         return demangle(typeid(t).name());
     }

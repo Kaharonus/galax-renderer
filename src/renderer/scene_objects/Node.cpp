@@ -239,8 +239,14 @@ void Node::draw() {
     auto distance = getDistance();
     selectLOD(distance);
     mesh->bind();
+    auto drawMode = GL_TRIANGLES;
 
-    glDrawElements(GL_TRIANGLES, (int)mesh->size(), GL_UNSIGNED_INT, 0);
+    if(program->hasTesslation()){
+        glPatchParameteri(GL_PATCH_VERTICES, 3);
+        drawMode = GL_PATCHES;
+    }
+    glDrawElements(drawMode, (int)mesh->size(), GL_UNSIGNED_INT, 0);
+
 
 }
 

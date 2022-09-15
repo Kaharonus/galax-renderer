@@ -11,13 +11,13 @@
 using namespace Galax::Renderer::SceneObjects;
 using namespace gl;
 
-Texture::Texture(Type type, Format format, DataType dataType, Wrap wrap)
-        : SceneObject(), target(type), format(format), dataType(dataType), wrap(wrap) {
+Texture::Texture(Type type, Format format, DataType dataType, Wrap wrap, Filtering filtering)
+        : SceneObject(), target(type), format(format), dataType(dataType), wrap(wrap), filtering(filtering) {
     init();
 }
 
-Texture::Texture(const std::string &name, Type type, Format format, DataType dataType, Wrap wrap)
-        : SceneObject(name), target(type), format(format), dataType(dataType), wrap(wrap) {
+Texture::Texture(const std::string &name, Type type, Format format, DataType dataType, Wrap wrap, Filtering filtering)
+        : SceneObject(name), target(type), format(format), dataType(dataType), wrap(wrap), filtering(filtering) {
     init();
 }
 
@@ -137,6 +137,7 @@ void Texture::setData(const std::vector<float> &data) {
 
 
 Texture::~Texture() {
+    glDeleteTextures(1, &id);
 }
 
 
@@ -275,16 +276,20 @@ void Texture::upload() {
     }
     checkError(true);
 
-    glTexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    auto filter = filtering == Filtering::ANISOTROPIC ? Filtering::LINEAR : filtering;
+    glTexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, filter);
+    glTexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, filter);
     glTexParameteri(glTarget, GL_TEXTURE_WRAP_S, wrap);
     glTexParameteri(glTarget, GL_TEXTURE_WRAP_T, wrap);
     glTexParameteri(glTarget, GL_TEXTURE_WRAP_R, wrap);
 
-    GLfloat value, max_anisotropy = 8.0f;
-    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
-    value = (value > max_anisotropy) ? max_anisotropy : value;
-    glTexParameterf(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, value);
+    if(filtering == Filtering::ANISOTROPIC) {
+        GLfloat value, max_anisotropy = 8.0f;
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
+        value = (value > max_anisotropy) ? max_anisotropy : value;
+        glTexParameterf(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, value);
+    }
+
 
 
     glBindTexture(glTarget, 0);
@@ -391,10 +396,17 @@ void Texture::setWrap(Texture::Wrap wrap) {
     this->wrap = wrap;
 }
 
+void Texture::setFiltering(Texture::Filtering filtering) {
+    this->filtering = filtering;
+}
+
 Texture::Wrap Texture::getWrap() const {
     return wrap;
 }
 
+Texture::Filtering Texture::getFiltering() const {
+    return filtering;
+}
 
 
 

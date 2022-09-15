@@ -48,8 +48,14 @@ namespace Galax::Renderer::SceneObjects {
             CLAMP_TO_BORDER = 0x812D
         };
 
-        Texture(Type type = TYPE_2D, Format format = RGBA, DataType dataType = UNSIGNED_BYTE, Wrap wrap = REPEAT);
-        Texture(const std::string& name, Type type = TYPE_2D, Format format = RGBA, DataType dataType = UNSIGNED_BYTE, Wrap wrap = REPEAT);
+        enum Filtering{
+            NEAREST = 0x2600,
+            LINEAR = 0x2601,
+            ANISOTROPIC = 0
+        };
+
+        Texture(Type type = TYPE_2D, Format format = RGBA, DataType dataType = UNSIGNED_BYTE, Wrap wrap = REPEAT, Filtering filtering = ANISOTROPIC);
+        Texture(const std::string& name, Type type = TYPE_2D, Format format = RGBA, DataType dataType = UNSIGNED_BYTE, Wrap wrap = REPEAT, Filtering filtering = ANISOTROPIC);
 
         uint getId() override;
 
@@ -58,6 +64,7 @@ namespace Galax::Renderer::SceneObjects {
         Format getFormat() const;
         DataType getDataType() const;
         Wrap getWrap() const;
+        Filtering getFiltering() const;
 
         void setDimensions(int width, int height);
         void setDimensions(int width, int height, int depth);
@@ -66,6 +73,7 @@ namespace Galax::Renderer::SceneObjects {
         void setFormat(Format format);
         void setDataType(DataType dataType);
         void setType(Type type);
+        void setFiltering(Filtering filtering);
 
 
         /**
@@ -116,6 +124,7 @@ namespace Galax::Renderer::SceneObjects {
         Format format;
         DataType dataType;
         Wrap wrap = REPEAT;
+        Filtering filtering = ANISOTROPIC;
 
         std::function<void(const std::vector<unsigned char>&)> readCallback;
         bool readRequested = false;

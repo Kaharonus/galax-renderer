@@ -1,6 +1,7 @@
 
 #include <glbinding/gl/gl.h>
 #include "Program.h"
+#include "../../Extensions.h"
 #include <functional>
 #include <glm/fwd.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -238,14 +239,8 @@ std::vector<std::shared_ptr<Shader>> Program::getShaders() {
 }
 
 void Program::addTexture(std::shared_ptr<Texture> texture) {
-    this->additionalTextures.push_back(texture);
-}
-
-
-
-
-std::vector<std::shared_ptr<Texture>>& Program::getTextures() {
-    return this->additionalTextures;
+    auto hash = texture->getNameHash();
+    this->additionalTextures[hash] = texture;
 }
 
 bool Program::shadersUpdated(){
@@ -265,6 +260,10 @@ void Program::use() {
     //Use the program
 
     glUseProgram(this->id);
+
+    for(auto [i, texture] : enumerate(this->additionalTextures)){
+        setTexture(texture.second, i);
+    }
 }
 
 uint Program::getTextureCount() {
@@ -273,5 +272,9 @@ uint Program::getTextureCount() {
 
 uint Program::getId() {
     return id;
+}
+
+bool Program::hasTesslation() {
+    return this->tessalationControlShader && this->tessalationEvaluationShader;
 }
 

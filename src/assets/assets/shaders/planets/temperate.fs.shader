@@ -1,58 +1,28 @@
 #version 430
 
-flat in vec3 vPos;
-flat in vec3 vNormal;
+in vec3 tePosition;
+in vec3 teNormal;
 in float vNoise;
-out vec4 fragColor;
-
 uniform sampler2D palette;
 
+layout (location = 0) out vec3 gPosition;
+layout (location = 1) out vec3 gNormal;
+layout (location = 2) out vec4 gAlbedo;
+
 vec3 getColor(){
-    float y = abs(vPos.y);
-    float x = vNoise / 0.045;
+    float x = abs(tePosition.y);
+    float y = vNoise / 0.045;
     vec3 t = texture(palette, vec2(x, y)).xyz;
     return t;
-
-    /*if(vNoise < 0.02){
-        return vec3(0,0,1);
-    }
-
-    if(vNoise < 0.03){
-        return vec3(1,.9,.17);
-
-    }
-
-    if(vNoise < 0.073){
-        return vec3(0,0.5,0);
-    }
-
-    if(vNoise < 0.09){
-        return vec3(0.4,0.2,0.1);
-    }
-
-    return vec3(0.9);*/
-
-
-
 }
 
 
 void main(){
-    vec3 lightPos = vec3(0, 0, 0);
-    vec3 ambientColor = vec3(0.4, 0.4, 0.4);
-    vec3 diffuseColor = vec3(0.9, 0.9, 0.9);
-    float ambientIntensity = 0.1;
-    float diffuseIntensity = 3.0;
 
-    vec3 ambient = ambientColor * ambientIntensity;
 
-    vec3 norm = vNormal;
-    //    vec3 norm = normalize(vNormal);
-    vec3 lightDir =normalize(lightPos - vPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * diffuseColor * diffuseIntensity;
-
-    fragColor = vec4((ambient + diffuse) * getColor(), 1.0);
+    gAlbedo = vec4(1.0);
+    gPosition = tePosition;
+    gNormal = teNormal;
 
     //fragColor = vec4(vNormal,1.0);
     //fragColor = vec4(1.0) * vNoise;

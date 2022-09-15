@@ -26,8 +26,9 @@ namespace Galax::Renderer::SceneObjects {
 
         void addTexture(std::shared_ptr<Texture> texture);
 
+        bool hasTesslation();
+
         void setTexture(const std::shared_ptr<Texture>& texture, int unit);
-        std::vector<std::shared_ptr<Texture>>& getTextures();
         uint getTextureCount();
         std::shared_ptr<Shader> getShader(Shader::Type type);
 
@@ -52,7 +53,7 @@ namespace Galax::Renderer::SceneObjects {
         bool compiled;
         uint id = 0;
 
-        std::vector<std::shared_ptr<Texture>> additionalTextures;
+        std::unordered_map<unsigned int ,std::shared_ptr<Texture>> additionalTextures;
         std::shared_ptr<Shader> vertexShader;
         std::shared_ptr<Shader> fragmentShader;
         std::shared_ptr<Shader> geometryShader;

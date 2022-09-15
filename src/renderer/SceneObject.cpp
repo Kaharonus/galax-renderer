@@ -55,7 +55,7 @@ void SceneObject::checkError(bool shouldThrow) {
         error = true;
     }
     if (shouldThrow && error) {
-        //throw std::runtime_error("OpenGL Error");
+        throw std::runtime_error("OpenGL Error");
     }
 }
 

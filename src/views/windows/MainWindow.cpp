@@ -38,9 +38,10 @@ void MainWindow::setupRenderer(const QSurfaceFormat &format){
 void MainWindow::loadScene() {
     SolarSystemLoader systemLoader;
 
-    auto system = systemLoader.generateSystem();
+    auto [system, lighting] = systemLoader.generateSystem();
 
     renderer->setScene(system);
+    renderer->setLightingModel(lighting);
     renderOptionsWindow->setScene(system);
 }
 

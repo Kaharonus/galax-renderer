@@ -7,6 +7,7 @@
 #include "scene_objects/Texture.h"
 #include "scene_objects/Camera.h"
 #include "input/InputHandler.h"
+#include "GBuffer.h"
 
 #include <iostream>
 #include <set>
@@ -26,7 +27,10 @@ namespace Galax::Renderer {
         void setRoot(std::shared_ptr<Node> parent);
         void setInputHandler(std::shared_ptr<InputHandler> inputHandler);
         std::shared_ptr<Node> getRoot();
-        void setDimensions(int width, int height);
+        void setDimensions(int w, int h);
+
+        void setGBuffer(std::shared_ptr<GBuffer> buffer);
+
         void build();
 
         void draw();
@@ -43,6 +47,9 @@ namespace Galax::Renderer {
 
         void drawNode(Node& node);
 
+        int width;
+        int height;
+
         std::shared_ptr<InputHandler> inputHandler;
 
         std::shared_ptr<Camera> currentCamera;
@@ -56,6 +63,8 @@ namespace Galax::Renderer {
         std::set<std::shared_ptr<Shader>> shaders;
         std::set<std::shared_ptr<Material>> materials;
         std::set<std::shared_ptr<Camera>> cameras;
+
+        std::shared_ptr<GBuffer> gBuffer;
     };
 
 } // namespace MapGenerator::Renderer

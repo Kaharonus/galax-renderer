@@ -7,6 +7,7 @@
 #include <map>
 #include <unordered_map>
 #include <glm/gtx/hash.hpp>
+#include "../Extensions.h"
 
 using namespace Galax::Orbital;
 
@@ -44,7 +45,7 @@ Planet::Type PlanetLoader::fromStr(const std::string &str) {
 }
 
 
-void PlanetLoader::init(const std::shared_ptr<AssetLoader>& loader) {
+void PlanetLoader::init(const std::shared_ptr<AssetLoader> &loader) {
     if (initialized) return;
     initialized = true;
 
@@ -55,7 +56,13 @@ void PlanetLoader::init(const std::shared_ptr<AssetLoader>& loader) {
         auto type = fromStr(typeName);
         auto frag = loader->getShader("shaders/planets/" + typeName + ".fs.shader", Shader::Type::FRAGMENT);
         auto vert = loader->getShader("shaders/planets/" + typeName + ".vs.shader", Shader::Type::VERTEX);
-        auto program = std::make_shared<Program>(typeName + " prog", vert, frag);
+        auto tc = loader->getShader("shaders/planets/planet.tc.shader", Shader::Type::TESSALATION_CTRL);
+        auto te = loader->getShader("shaders/planets/planet.te.shader", Shader::Type::TESSALATION_EVAL);
+        auto program = std::make_shared<Program>(typeName + " prog");
+        program->addShader(frag);
+        program->addShader(vert);
+        program->addShader(tc);
+        program->addShader(te);
         programs[type] = program;
 
         //Load planet configs
@@ -72,8 +79,8 @@ void PlanetLoader::init(const std::shared_ptr<AssetLoader>& loader) {
 
 
 void PlanetLoader::generatePalette(Planet::Type type) {
-    int resolution = 16;
-
+    int resolution = 1024;
+    float fResolution = resolution;
     auto config = configs[type];
 
     auto palette = std::make_shared<Texture>("palette");
@@ -81,28 +88,44 @@ void PlanetLoader::generatePalette(Planet::Type type) {
     palette->setFormat(Texture::RGB);
     palette->setDimensions(resolution, resolution);
 
-    std::sort(config->color_palette.begin(), config->color_palette.end(),
+    std::sort(config->colorPalette.begin(), config->colorPalette.end(),
               [](const ColorPalette &a, const ColorPalette &b) {
-                  return a.limit < b.limit;
+                  return a.heightStart < b.heightStart;
               });
-    auto max = config->color_palette.back().limit;
-    auto min = config->color_palette.front().limit;
-    //TODO find bug here, since this is highly fucked
+    auto max = config->colorPalette.back().heightStart;
+    auto min = config->colorPalette.front().heightStart;
+
+    //Create the gradients for each color in the palette
+    std::vector<std::map<double, glm::vec3>> biomeSteps;
+
+    for (auto& biome: config->colorPalette) {
+        std::map<double, glm::vec3> steps;
+        std::sort(biome.colors.begin(), biome.colors.end(), [](auto &a, auto &b) {
+            return a.endPoint < b.endPoint;
+        });
+        steps[0] = fromHex(biome.colors.front().color);
+        for (auto& color: biome.colors) {
+            steps[color.endPoint] = fromHex(color.color);
+        }
+        biomeSteps.push_back(steps);
+    }
 
     std::map<float, std::pair<double, std::vector<glm::vec3>>> paletteMap;
-    for (auto &color: config->color_palette) {
-        auto normalised = (float) ((color.limit - min) / (max - min));
+    for (auto [i, color]: enumerate(config->colorPalette)) {
+        auto normalised = (float) ((color.heightStart - min) / (max - min));
+        auto biome = biomeSteps[i];
         std::vector<glm::vec3> columnColors;
-        auto count = (int) color.colors.size();
-        for (int i = 0; i < resolution; i++) {
-            auto progress = (float) i / (float) resolution;
-            auto current = (int) (progress * count);
-            auto next = current + 1;
-            if (next >= count) next = count - 1;
-            auto currentColor = fromHex(color.colors[current]);
-            auto nextColor = fromHex(color.colors[next]);
-            auto resultColor = glm::mix(currentColor, nextColor, progress * count - current);
-            columnColors.push_back(resultColor);
+        auto currentColor = biome.begin();
+        auto nextColor = std::next(currentColor);
+        for (int x = 0; x < resolution; x++) {
+            auto progress = (float)x / fResolution;
+            auto interpolationProgress = (progress - currentColor->first) / (nextColor->first - currentColor->first);
+            auto result = glm::mix(currentColor->second, nextColor->second, interpolationProgress);
+            columnColors.push_back(result);
+            if (progress >= nextColor->first) {
+                currentColor = nextColor;
+                nextColor = std::next(currentColor);
+            }
         }
         paletteMap[normalised] = {color.transition, columnColors};
     }
@@ -110,22 +133,27 @@ void PlanetLoader::generatePalette(Planet::Type type) {
 
     for (int y = 0; y < resolution; y++) {
         //Interpolate the column
-        float value = (float) y / (float) resolution;
-        auto color = paletteMap.lower_bound(value);
-        if(color != paletteMap.begin()) color--;
-        auto next = paletteMap.upper_bound(value);
+        float rowProgress = (float) y / (float) resolution;
+        auto color = paletteMap.upper_bound(rowProgress);
+        if (color != paletteMap.begin()) {
+            color--;
+        }
+        auto next = std::next(color);
+        if (color == paletteMap.end()) {
+            next = color;
+        }
         for (int x = 0; x < resolution; x++) {
             auto index = (y * resolution + x) * 3;
-            auto current = color->second.second[y];
-            auto nextColor = next->second.second[y];
+            auto currentColor = color->second.second[x];
+            auto nextColor = next->second.second[x];
             //Interpolate only if the transition is not 0 and the progress is greater than the transition
-            auto progress = (float) x / (float) resolution;
-            auto interpolator = (progress - color->first) / (next->first - color->first);
+            auto progress = (double) x / (double) resolution;
+            auto interpolator = (rowProgress - color->first) / (next->first - color->first);
             auto mixPercentage = color->second.first;
-            glm::vec3 result = current;
-            if(interpolator > mixPercentage){
+            glm::vec3 result = currentColor;
+            if (interpolator > mixPercentage) {
                 interpolator = (interpolator - mixPercentage) / (1 - mixPercentage);
-                result = glm::mix(current, nextColor, interpolator);
+                result = glm::mix(currentColor, nextColor, interpolator);
             }
             data[index] = (unsigned char) (result.r * 255);
             data[index + 1] = (unsigned char) (result.g * 255);
@@ -147,11 +175,11 @@ glm::vec3 PlanetLoader::fromHex(const std::string &hex) {
     return {0, 0, 0};
 }
 
-void PlanetLoader::generateMesh(const std::shared_ptr<AssetLoader>& loader){
+void PlanetLoader::generateMesh(const std::shared_ptr<AssetLoader> &loader) {
     auto result = std::vector<std::shared_ptr<Mesh>>();
     std::string basePath = "models/planet/";
     auto levels = 1;
-    for(int i = 0; i < levels; i++) {
+    for (int i = 0; i < levels; i++) {
         auto path = basePath + "lod" + std::to_string(i) + ".obj";
         auto mesh = loader->getMesh(path);
         auto planetMesh = calculatePlanetMesh(mesh);
@@ -160,7 +188,7 @@ void PlanetLoader::generateMesh(const std::shared_ptr<AssetLoader>& loader){
     }
 }
 
-std::shared_ptr<Mesh> PlanetLoader::calculatePlanetMesh(const std::shared_ptr<Mesh>& orig){
+std::shared_ptr<Mesh> PlanetLoader::calculatePlanetMesh(const std::shared_ptr<Mesh> &orig) {
     auto vertices = orig->getVertices();
     auto indices = orig->getIndices();
     auto stride = orig->getStride();
@@ -171,9 +199,9 @@ std::shared_ptr<Mesh> PlanetLoader::calculatePlanetMesh(const std::shared_ptr<Me
         glm::vec3 normal = glm::vec3(vertices[i + 3], vertices[i + 4], vertices[i + 5]);
         normals[pos].push_back(normal);
     }
-    for (auto &normal : normals) {
+    for (auto &normal: normals) {
         auto sum = glm::vec3(0);
-        for (auto &n : normal.second) {
+        for (auto &n: normal.second) {
             sum += n;
         }
         normalsResult[normal.first] = glm::normalize(sum);
@@ -186,7 +214,7 @@ std::shared_ptr<Mesh> PlanetLoader::calculatePlanetMesh(const std::shared_ptr<Me
         glm::vec3 tangent = normalsResult[pos];
         result->addVertex(pos, normal, texCoord, tangent);
     }
-    for(unsigned int index : indices) {
+    for (unsigned int index: indices) {
         result->addIndex(index);
     }
     return result;

@@ -5,6 +5,8 @@
 #pragma once
 #include "Scene.h"
 #include "input/InputHandler.h"
+#include "GBuffer.h"
+#include "LightingModel.h"
 
 #include <chrono>
 #include <iostream>
@@ -40,6 +42,7 @@ namespace Galax::Renderer {
         void setVerticalSync(VerticalSync sync);
 
         void setScene(std::shared_ptr<Scene> scene);
+        void setLightingModel(std::shared_ptr<LightingModel> lightingModel);
 
         double getFrameTime() const;
 
@@ -48,7 +51,6 @@ namespace Galax::Renderer {
     protected:
         virtual void initializeGL(const QSurfaceFormat &format);
         virtual void paintGL();
-        void resizeEvent(QResizeEvent *event) override;
         void timerEvent(QTimerEvent *event);
 
     signals:
@@ -67,15 +69,23 @@ namespace Galax::Renderer {
 
         bool update;
 
-
     private:
+        int viewportWidth;
+        int viewportHeight;
+
         std::shared_ptr<Scene> scene;
+        std::shared_ptr<LightingModel> lightingModel;
+
+        std::shared_ptr<GBuffer> gBuffer;
+
         double frameTime = 0.0;
         static QRenderer *getProcAddressHelper;
         static ProcAddress getProcAddress(const char *name);
         std::shared_ptr<InputHandler> input;
 
         void initializeInput();
+
+        void resize();
     };
 
 } // namespace MapGenerator::Renderer

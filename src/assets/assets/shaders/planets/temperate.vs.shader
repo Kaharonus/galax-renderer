@@ -4,15 +4,12 @@ layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec3 aNormal;
 layout(location = 3) in vec3 aNormalSmooth;
 
-flat out vec3 vNormal;
-flat out vec3 vPos;
-out float vNoise;
+out vec3 vNormal;
+out vec3 vPosition;
 
 
 uniform float seed;
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 
 //Simplex noise implementation by Ian McEwan, Ashima Arts
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -116,9 +113,8 @@ void main() {
     float noise = evaluateNoise();
     vec3 offset = aNormalSmooth * noise;
 
-    vNormal = -mat3(transpose(inverse(model)))* aNormal * noise * 10;
-    vPos = vec3(model * vec4(aPos, 1.0));
-    vNoise = noise;
-
-    gl_Position = projection * view * model * vec4(aPos + offset, 1.0);
+    vNormal = -mat3(transpose(inverse(model)))* aNormal;
+    //vPosition = aPos;
+    vPosition = vec3(model * vec4(aPos, 1.0));
+    //vNoise = noise;
 }

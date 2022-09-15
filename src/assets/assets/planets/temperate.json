@@ -2,23 +2,99 @@
   "name": "temperate",
   "colorPalette": [
     {
-      "name": "beach",
-      "colors": ["#FFE62B", "#FFFFFF"],
-      "limit": 0.025,
-      "transition": 0.0
+      "name": "ocean",
+      "heightStart": 0.0,
+      "transition": 1.0,
+      "colors": [
+        {
+          "color": "#005EB8",
+          "endPoint": 0.75
+        },
+        {
+          "color": "#75AEDC",
+          "endPoint": 1.0
+        }
+      ]
     },
     {
-        "name": "ocean",
-      "colors": ["#0000FF", "#5555FF"],
-      "limit": 0.02,
-      "transition": 0.1
+      "name": "beach",
+      "heightStart": 0.3,
+      "transition": 1.0,
+      "colors": [
+        {
+          "color": "#FFE62B",
+          "endPoint": 1.0
+        }
+      ]
     },
     {
       "name": "grass",
-      "colors": ["#00FF00"],
-      "limit": 0.7,
-      "transition": 1
-    }
+      "heightStart": 0.33,
+      "transition": 1.0,
+      "colors": [
+        {
+            "color": "#708322",
+            "endPoint": 0.0
+        },
 
+        {
+          "color": "#428047",
+          "endPoint": 0.55
+        },
+        {
+          "color": "#428047",
+          "endPoint": 0.75
+        },
+        {
+          "color": "#AAAAAA",
+          "endPoint": 1.0
+        }
+      ]
+    },
+    {
+      "name": "mountain",
+      "colors": [
+        {
+          "color": "#5A3F1D",
+          "endPoint": 0.7
+        },
+        {
+          "color": "#AAAAAA",
+          "endPoint": 1.0
+        }
+      ],
+      "heightStart": 0.8,
+      "transition": 1.0
+    },
+    {
+      "name": "snow",
+      "heightStart": 0.99,
+      "transition": 1.0,
+      "colors": [
+        {
+          "color": "#5A3F1D",
+          "endPoint": 0.35
+        },
+        {
+          "color": "#aaaaaa",
+          "endPoint": 0.5
+        },
+        {
+          "color": "#aaaaaa",
+          "endPoint": 1.0
+        }
+      ]
+    },
+    {
+      "name": "snow",
+      "heightStart": 1.0,
+      "transition": 1.0,
+      "colors": [
+        {
+          "color": "#aaaaaa",
+          "endPoint": 1.0
+        }
+      ]
+    }
   ]
 }

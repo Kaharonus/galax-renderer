@@ -1,5 +1,8 @@
+#include <glbinding/gl/gl.h>
+
 #include "Scene.h"
 
+using namespace gl;
 using namespace Galax::Renderer;
 
 Scene::Scene() {
@@ -10,7 +13,7 @@ Scene::~Scene() {
 
 void Scene::setInputHandler(std::shared_ptr<InputHandler> inputHandler) {
     this->inputHandler = inputHandler;
-    for(auto c : this->cameras) {
+    for (auto c: this->cameras) {
         c->setInputHandler(inputHandler);
     }
 }
@@ -47,17 +50,14 @@ std::shared_ptr<Node> Scene::getRoot() {
     return root;
 }
 
-void Scene::buildNode(const Node& node) {
+void Scene::buildNode(const Node &node) {
     if (node.getMesh() != nullptr) {
         addMesh(node.getMesh());
     }
     if (node.getProgram() != nullptr) {
         auto program = node.getProgram();
-        for (auto shader : program->getShaders()) {
+        for (auto& shader: program->getShaders()) {
             addShader(shader);
-        }
-        for (auto texture : program->getTextures()) {
-            addTexture(texture);
         }
         addProgram(program);
         addProgram(node.getProgram());
@@ -71,7 +71,7 @@ void Scene::buildNode(const Node& node) {
         camera->setInputHandler(inputHandler);
         addCamera(camera);
     }
-    for (auto child : node.getChildren()) {
+    for (auto& child: node.getChildren()) {
         buildNode(*child);
     }
 }
@@ -80,24 +80,35 @@ void Scene::build() {
     buildNode(*root);
 }
 
-void Scene::drawNode(Node& node) {
+void Scene::drawNode(Node &node) {
     node.draw();
-    for (auto child : node.getChildren()) {
+    for (auto& child: node.getChildren()) {
         drawNode(*child);
     }
 }
 
 void Scene::draw() {
-    for(auto camera: this->cameras){
+    assert(gBuffer != nullptr);
+
+    for (auto& camera: this->cameras) {
         camera->update();
     }
 
+    gBuffer->bind();
     drawNode(*root);
+    gBuffer->unbind();
+
 }
 
-void Scene::setDimensions(int width, int height){
-    for(const auto& camera: this->cameras){
+void Scene::setDimensions(int w, int h) {
+    this->width = w;
+    this->height = h;
+    for (const auto &camera: this->cameras) {
         camera->setDimensions(width, height);
     }
+}
+
+void Scene::setGBuffer(std::shared_ptr<GBuffer> buffer) {
+    this->gBuffer = buffer;
 }
 

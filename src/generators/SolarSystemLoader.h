@@ -6,6 +6,7 @@
 #pragma once
 #include "../orbital/Planet.h"
 #include "../orbital/SolarSystem.h"
+#include "../renderer/LightingModel.h"
 
 #include "../assets/AssetLoader.h"
 
@@ -21,20 +22,13 @@ namespace Galax::Generators{
     public:
         SolarSystemLoader() = default;
         ~SolarSystemLoader() = default;
-        std::shared_ptr<SolarSystem> generateSystem();
-
+        std::tuple<std::shared_ptr<SolarSystem>, std::shared_ptr<LightingModel>> generateSystem();
 
     private:
 
         int planetCount = 0;
 
-        std::shared_ptr<Camera> generateCamera(std::shared_ptr<AssetLoader> loader, float w, float h);
-
-        std::map<float, std::shared_ptr<Mesh>> generateMesh(std::shared_ptr<AssetLoader> loader);
-
-        std::shared_ptr<Program> generateProgram(std::shared_ptr<AssetLoader> loader);
-
-        std::vector<std::shared_ptr<Animation>> generateAnimations(std::shared_ptr<AssetLoader> loader);
+        std::shared_ptr<Animation> generatePlanetSpin(int spinLength);
 
         std::shared_ptr<Animation> generateRotation(float distance);
     };
