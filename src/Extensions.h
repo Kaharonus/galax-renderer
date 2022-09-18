@@ -73,3 +73,12 @@ template<typename T>
 enumerate_impl<T> enumerate(T &t) {
     return enumerate_impl<T>(t);
 }
+
+// ----------------- 2 -----------------
+// Used to check if a collection contains a value
+
+template<typename T>
+bool contains(const T &container, const typename T::value_type &value) {
+    return std::find(container.begin(), container.end(), value) != container.end();
+}
+

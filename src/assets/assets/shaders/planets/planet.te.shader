@@ -4,9 +4,12 @@ layout(triangles, equal_spacing, ccw) in;
 
 out vec3 tePosition;
 out vec3 teNormal;
+out vec3 teNormalSmooth;
+out float teNoise;
 
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 model;
 
 struct OutputPatch{
     vec3 WorldPos030;
@@ -20,31 +23,123 @@ struct OutputPatch{
     vec3 WorldPos120;
     vec3 WorldPos111;
 
+    vec3 NormalSmooth200;
+    vec3 NormalSmooth020;
+    vec3 NormalSmooth002;
+    vec3 NormalSmooth110;
+    vec3 NormalSmooth011;
+    vec3 NormalSmooth101;
+
+    vec3 Normal;
     vec3 WorldPos[3];
-    vec3 Normal[3];
-    vec2 TexCoord[3];
 };
+
+
+struct Noise{
+    float roughness;
+    float strength;
+};
+
 
 in patch OutputPatch tcData;
 
-vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
-{
-    return vec2(gl_TessCoord.x) * v0 + vec2(gl_TessCoord.y) * v1 + vec2(gl_TessCoord.z) * v2;
-}
-
-vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
+vec3 interpolate2D(vec3 v0, vec3 v1, vec3 v2)
 {
     return vec3(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
 }
 
 
+//Simplex noise implementation by Ian McEwan, Ashima Arts
+vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
+vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
 
-vec3 getH(int i, int j){
-    vec3 A = tcData.Normal[i] + tcData.Normal[j];
-    vec3 B = tcData.WorldPos[j] - tcData.WorldPos[i];
-    float v = 2.0 * (dot(B, A) / dot(B, B));
-    return (A/2) - ((v/2.0) * B);
+float snoise(vec3 v){
+    const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+    const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+
+    // First corner
+    vec3 i  = floor(v + dot(v, C.yyy) );
+    vec3 x0 =   v - i + dot(i, C.xxx) ;
+
+    // Other corners
+    vec3 g = step(x0.yzx, x0.xyz);
+    vec3 l = 1.0 - g;
+    vec3 i1 = min( g.xyz, l.zxy );
+    vec3 i2 = max( g.xyz, l.zxy );
+
+    //  x0 = x0 - 0. + 0.0 * C
+    vec3 x1 = x0 - i1 + 1.0 * C.xxx;
+    vec3 x2 = x0 - i2 + 2.0 * C.xxx;
+    vec3 x3 = x0 - 1. + 3.0 * C.xxx;
+
+    // Permutations
+    i = mod(i, 289.0 );
+    vec4 p = permute( permute( permute(
+    i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
+    + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
+    + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+
+    // Gradients
+    // ( N*N points uniformly over a square, mapped onto an octahedron.)
+    float n_ = 1.0/7.0; // N=7
+    vec3  ns = n_ * D.wyz - D.xzx;
+
+    vec4 j = p - 49.0 * floor(p * ns.z *ns.z);  //  mod(p,N*N)
+
+    vec4 x_ = floor(j * ns.z);
+    vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)
+
+    vec4 x = x_ *ns.x + ns.yyyy;
+    vec4 y = y_ *ns.x + ns.yyyy;
+    vec4 h = 1.0 - abs(x) - abs(y);
+
+    vec4 b0 = vec4( x.xy, y.xy );
+    vec4 b1 = vec4( x.zw, y.zw );
+
+    vec4 s0 = floor(b0)*2.0 + 1.0;
+    vec4 s1 = floor(b1)*2.0 + 1.0;
+    vec4 sh = -step(h, vec4(0.0));
+
+    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+
+    vec3 p0 = vec3(a0.xy,h.x);
+    vec3 p1 = vec3(a0.zw,h.y);
+    vec3 p2 = vec3(a1.xy,h.z);
+    vec3 p3 = vec3(a1.zw,h.w);
+
+    //Normalise gradients
+    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+    p0 *= norm.x;
+    p1 *= norm.y;
+    p2 *= norm.z;
+    p3 *= norm.w;
+
+    // Mix final noise value
+    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+    m = m * m;
+    return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
+    dot(p2,x2), dot(p3,x3)));
 }
+
+float noise(vec3 position, float roughness, float strength){
+    float seed = 5;
+    float noise = (strength * snoise((position + seed) * roughness));
+    return (noise);
+}
+
+float evaluateNoise(vec3 position){
+    Noise settings[] = {{0.1, .06} , {1, 0.04}, {3, 0.025}, {10, 0.01}, {20, 0.005}, {50, 0.005},  {100, 0.001}, {200, 0.001}};
+    //Noise settings[] = {{1, .1} , {5, 0.01}, {10, 0.01}, {20, 0.01}, {60, 0.009}, {1000, 0.001}};
+    float noiseValue = 0;
+    for(int i = 0; i < 6; i++){
+        Noise n = settings[i];
+        noiseValue += noise(position + (noiseValue * 3),n.roughness, n.strength);
+    }
+    return max(0.009, noiseValue);
+    //return noiseValue;
+}
+
 
 void main(){
     // Interpolate the attributes of the output vertex using the barycentric coordinates
@@ -72,21 +167,22 @@ void main(){
     tcData.WorldPos012 * 3.0 * u * vPow2 +
     tcData.WorldPos111 * 6.0 * w * u * v;
 
-    vec3 Normal200 =  tcData.Normal[0];
-    vec3 Normal020 =  tcData.Normal[1];
-    vec3 Normal002 =  tcData.Normal[2];
-    vec3 Normal110 = normalize(getH(0, 1));
-    vec3 Normal011 = normalize(getH(1, 2));
-    vec3 Normal101 = normalize(getH(2, 0));
+    teNormalSmooth =
+    uPow2 * tcData.NormalSmooth200 +
+    vPow2 * tcData.NormalSmooth020 +
+    wPow2 * tcData.NormalSmooth002 +
+    u * v * tcData.NormalSmooth110 +
+    u * w * tcData.NormalSmooth101 +
+    v * w * tcData.NormalSmooth011;
 
-    teNormal =
-    uPow2 * Normal200 +
-    vPow2 * Normal020 +
-    wPow2 * Normal002 +
-    u * v * Normal110 +
-    u * w * Normal101 +
-    v * w * Normal011;
-    teNormal = normalize(teNormal);
-    gl_Position = projection * view * vec4(tePosition, 1.0);
-    tePosition = (view * vec4(tePosition, 1.0)).xyz;
+    teNormal = tcData.Normal;
+
+    float noise = evaluateNoise(tePosition);
+    vec3 offset = teNormalSmooth * noise;
+    teNoise = noise * 10;
+    teNormal = mat3(transpose(inverse(model))) * teNormal * noise;
+    teNormal = teNormal * 40;
+
+    gl_Position = projection * view * model * vec4(tePosition + offset, 1.0);
+    tePosition = (vec4(tePosition + offset, 1.0)).xyz;
 }

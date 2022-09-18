@@ -40,6 +40,13 @@ namespace Galax::Renderer {
 
         void addUniform(std::shared_ptr<Uniform> uniform);
 
+        std::vector<std::shared_ptr<Uniform>> getUniforms();
+        std::vector<std::shared_ptr<Texture>> getTextures();
+
+        std::shared_ptr<Shader> getLightingShader();
+
+
+
     private:
         unsigned int quadVAO = 0;
         unsigned int quadVBO = 0;

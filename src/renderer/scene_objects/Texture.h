@@ -59,12 +59,15 @@ namespace Galax::Renderer::SceneObjects {
 
         uint getId() override;
 
-        std::tuple<int, int, int> getDimensions() const;
-        Type getType() const;
-        Format getFormat() const;
-        DataType getDataType() const;
-        Wrap getWrap() const;
-        Filtering getFiltering() const;
+        [[nodiscard]] std::tuple<int, int, int> getDimensions() const;
+        [[nodiscard]] Type getType() const;
+        [[nodiscard]] Format getFormat() const;
+        [[nodiscard]] DataType getDataType() const;
+        [[nodiscard]] Wrap getWrap() const;
+        [[nodiscard]] Filtering getFiltering() const;
+        int getFormatSize() const;
+        int getDataSize() const;
+
 
         void setDimensions(int width, int height);
         void setDimensions(int width, int height, int depth);
@@ -113,7 +116,6 @@ namespace Galax::Renderer::SceneObjects {
         ~Texture();
 
     private:
-        int getDataSize();
 
         void init();
 
@@ -131,8 +133,5 @@ namespace Galax::Renderer::SceneObjects {
         void readDataFromGPU();
 
         uint toInternal();
-
-        int getFormatSize();
-
     };
 } // namespace MapGenerator::Renderer::SceneObjects

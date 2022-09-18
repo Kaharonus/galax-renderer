@@ -6,6 +6,7 @@
 
 #include "TextureControl.h"
 #include "ui_TextureControl.h"
+#include "../../Extensions.h"
 #include <QImage>
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
@@ -16,15 +17,16 @@ TextureControl::TextureControl(QWidget *parent) : QWidget(parent), ui(new Ui::Te
     init();
 }
 
-TextureControl::TextureControl(std::shared_ptr<Texture> texture, QWidget *parent) : QWidget(parent), ui(new Ui::TextureControl) {
+TextureControl::TextureControl(std::shared_ptr<Texture> texture, QWidget *parent) : QWidget(parent),
+                                                                                    ui(new Ui::TextureControl) {
     ui->setupUi(this);
     this->texture = texture;
     init();
 }
 
-void TextureControl::init(){
+void TextureControl::init() {
     this->timer = new QTimer(this);
-    timer->setInterval(1000/15);
+    timer->setInterval(1000 / 15);
     connect(timer, &QTimer::timeout, this, &TextureControl::update);
     timer->start();
 
@@ -44,24 +46,53 @@ void TextureControl::update() {
     auto format = texture->getFormat();
     auto textureType = texture->getType();
 
-    if(textureType != Texture::TYPE_2D || (format != Texture::RGBA && format != Texture::RGB) || (dataType != Texture::BYTE && dataType != Texture::UNSIGNED_BYTE)){
+    auto supportedTypes = {Texture::TYPE_2D};
+    auto supportedFormats = {Texture::RGB, Texture::RGBA};
+    auto supportedDataTypes = {Texture::UNSIGNED_BYTE, Texture::FLOAT, Texture::BYTE};
+
+    if (!contains(supportedTypes, textureType) || !contains(supportedFormats, format) ||
+        !contains(supportedDataTypes, dataType)) {
         return;
     }
 
 
-    texture->requestData([&](const std::vector<unsigned char>& data){
+    texture->requestData([&](const std::vector<unsigned char> &data) {
         this->data = data;
     });
 
     auto qFormat = format == Texture::RGBA ? QImage::Format_RGBA8888 : QImage::Format_RGB888;
-
     imageScene->clear();
     auto [w, h, d] = texture->getDimensions();
-    auto image = QImage(data.data(), w, h, qFormat);
-    if(image.isNull()){
+    if (data.empty()) {
+        return;
+    }
+
+
+    auto converted = convertData(data, dataType, format);
+    auto image = QImage(converted.data(), w, h, qFormat);
+    if (image.isNull()) {
         return;
     }
     image = image.scaled(ui->imageView->width(), ui->imageView->height(), Qt::KeepAspectRatio);
     auto item = new QGraphicsPixmapItem(QPixmap::fromImage(image));
     imageScene->addItem(item);
+}
+
+
+std::vector<unsigned char>
+TextureControl::convertData(std::vector<unsigned char> data, Texture::DataType type, Texture::Format format) {
+    if (type == Texture::UNSIGNED_BYTE || type == Texture::BYTE) {
+        return data;
+    }
+    auto [w, h, d] = texture->getDimensions();
+    auto size = w * h * texture->getDataSize() * texture->getFormatSize();
+    auto result = std::vector<unsigned char>(size);
+    if(type == Texture::FLOAT){
+        auto fResult = reinterpret_cast<float*>(data.data());
+        for(int i = 0; i < size; i++){
+            auto tmp = (unsigned char)(fResult[i/texture->getDataSize()] * 255);
+            result[i] = tmp;
+        }
+    }
+    return result;
 }

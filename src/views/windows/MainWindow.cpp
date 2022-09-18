@@ -42,7 +42,7 @@ void MainWindow::loadScene() {
 
     renderer->setScene(system);
     renderer->setLightingModel(lighting);
-    renderOptionsWindow->setScene(system);
+    renderOptionsWindow->setScene(system, lighting);
 }
 
 MainWindow::~MainWindow() {

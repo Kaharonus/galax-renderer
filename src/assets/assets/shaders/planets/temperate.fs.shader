@@ -2,7 +2,7 @@
 
 in vec3 tePosition;
 in vec3 teNormal;
-in float vNoise;
+in float teNoise;
 uniform sampler2D palette;
 
 layout (location = 0) out vec3 gPosition;
@@ -11,7 +11,7 @@ layout (location = 2) out vec4 gAlbedo;
 
 vec3 getColor(){
     float x = abs(tePosition.y);
-    float y = vNoise / 0.045;
+    float y = teNoise / 0.5;
     vec3 t = texture(palette, vec2(x, y)).xyz;
     return t;
 }
@@ -20,7 +20,7 @@ vec3 getColor(){
 void main(){
 
 
-    gAlbedo = vec4(1.0);
+    gAlbedo = vec4(getColor(), 1);
     gPosition = tePosition;
     gNormal = teNormal;
 

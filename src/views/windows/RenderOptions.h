@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../../renderer/Scene.h"
+#include "../../renderer/LightingModel.h"
 #include <QCodeEditor>
 #include <QMainWindow>
 #include <QOpenGLContext>
@@ -22,7 +23,7 @@ class RenderOptions : public QMainWindow {
 public:
     explicit RenderOptions(QWidget* parent = nullptr);
 
-    void setScene(std::shared_ptr<Galax::Renderer::Scene> scene);
+    void setScene(std::shared_ptr<Galax::Renderer::Scene> scene, std::shared_ptr<Galax::Renderer::LightingModel> lighting);
 
     ~RenderOptions() override;
 
@@ -35,6 +36,8 @@ private:
     Ui::RenderOptions* ui;
 
     std::shared_ptr<Galax::Renderer::Scene> scene;
+    std::shared_ptr<Galax::Renderer::LightingModel> lighting;
+
     QCodeEditor* codeEditor;
     QLabel* errorLabel;
     QTimer* timer;
@@ -130,4 +133,6 @@ private:
     void clearLayout(QLayout *layout);
 
     void editNode(std::shared_ptr<Node> node);
+
+    void addLighting(std::shared_ptr<Galax::Renderer::LightingModel> sharedPtr);
 };

@@ -80,3 +80,15 @@ void LightingModel::unbind() {
 uint LightingModel::getId() {
     return 0;
 }
+
+std::vector<std::shared_ptr<Texture>> LightingModel::getTextures() {
+    return textures;
+}
+
+std::vector<std::shared_ptr<Uniform>> LightingModel::getUniforms() {
+    return uniforms;
+}
+
+std::shared_ptr<Shader> LightingModel::getLightingShader() {
+    return lightingShader;
+}

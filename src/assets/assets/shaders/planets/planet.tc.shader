@@ -7,6 +7,7 @@ layout (vertices = 1) out;
 // attributes of the input CPs
 in vec3 vPosition[];
 in vec3 vNormal[];
+in vec3 vNormalSmooth[];
 
 struct OutputPatch{
     vec3 WorldPos030;
@@ -20,10 +21,18 @@ struct OutputPatch{
     vec3 WorldPos120;
     vec3 WorldPos111;
 
+
+    vec3 NormalSmooth200;
+    vec3 NormalSmooth020;
+    vec3 NormalSmooth002;
+    vec3 NormalSmooth110;
+    vec3 NormalSmooth011;
+    vec3 NormalSmooth101;
+
+    vec3 Normal;
     vec3 WorldPos[3];
-    vec3 Normal[3];
-    vec2 TexCoord[3];
 };
+
 
 
 out patch OutputPatch tcData;
@@ -37,10 +46,24 @@ vec3 ProjectToPlane(vec3 Point, vec3 PlanePoint, vec3 PlaneNormal){
     return (Point - d);
 }
 
+vec3 getH(int i, int j){
+    vec3 A = vNormal[i] + vNormal[j];
+    vec3 B = tcData.WorldPos[j] - tcData.WorldPos[i];
+    float v = 2.0 * (dot(B, A) / dot(B, B));
+    return (A/2) - ((v/2.0) * B);
+}
+
+vec3 getHSmooth(int i, int j){
+    vec3 A = vNormalSmooth[i] + vNormalSmooth[j];
+    vec3 B = tcData.WorldPos[j] - tcData.WorldPos[i];
+    float v = 2.0 * (dot(B, A) / dot(B, B));
+    return (A/2) - ((v/2.0) * B);
+}
 
 
 
 void CalcPositions(){
+
     // The original vertices stay the same
     tcData.WorldPos030 = vPosition[0];
     tcData.WorldPos003 = vPosition[1];
@@ -75,16 +98,27 @@ void CalcPositions(){
 
 }
 
+void CalcNormals(){
+    tcData.NormalSmooth200 =  vNormalSmooth[0];
+    tcData.NormalSmooth020 =  vNormalSmooth[1];
+    tcData.NormalSmooth002 =  vNormalSmooth[2];
+    tcData.NormalSmooth110 = normalize(getHSmooth(0, 1));
+    tcData.NormalSmooth011 = normalize(getHSmooth(1, 2));
+    tcData.NormalSmooth101 = normalize(getHSmooth(2, 0));
+}
+
 
 void main(){
-    float tessLevel = 4.0;
+    float tessLevel = 2.0;
     // Set the control points of the output patch
     for (int i = 0; i < 3; i++) {
-        tcData.Normal[i] = vNormal[i];
+        tcData.WorldPos[i] = vPosition[i];
     }
+    tcData.Normal = vNormal[0];
+
 
     CalcPositions();
-    //CalcNormals();
+    CalcNormals();
     // Calculate the tessellation levels
     gl_TessLevelOuter[0] = tessLevel;
     gl_TessLevelOuter[1] = tessLevel;

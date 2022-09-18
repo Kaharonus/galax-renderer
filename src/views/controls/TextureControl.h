@@ -36,4 +36,9 @@ private:
     Ui::TextureControl *ui;
 
     void init();
+
+
+    std::vector<unsigned char>
+    convertData(std::vector<unsigned char> data, Texture::DataType type, Texture::Format format);
+
 };

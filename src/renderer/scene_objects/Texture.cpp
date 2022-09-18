@@ -328,7 +328,7 @@ void Texture::readDataFromGPU(){
 
 }
 
-int Texture::getDataSize() {
+int Texture::getDataSize() const {
     switch (dataType) {
         case BYTE:
         case UNSIGNED_BYTE:
@@ -345,7 +345,7 @@ int Texture::getDataSize() {
     return 0;
 }
 
-int Texture::getFormatSize() {
+int Texture::getFormatSize() const {
     switch (format) {
         case Format::RED:
             return 1;
@@ -360,6 +360,8 @@ int Texture::getFormatSize() {
     }
     return 0;
 }
+
+
 
 Texture::DataType Texture::getDataType() const {
     return dataType;

@@ -202,8 +202,6 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
         textureItem->setText(1, texture->getName().data());
     }
 
-
-
     // Adds the children of the node
     auto childrenNode = new QTreeWidgetItem(root);
     childrenNode->setText(0, "Children");
@@ -213,10 +211,37 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
     }
 }
 
-void RenderOptions::setScene(std::shared_ptr<Galax::Renderer::Scene> scene) {
+void RenderOptions::setScene(std::shared_ptr<Galax::Renderer::Scene> scene, std::shared_ptr<Galax::Renderer::LightingModel> lighting) {
     this->scene = scene;
+    this->lighting = lighting;
     addNode(scene->getRoot(), nullptr);
+
+    addLighting(lighting);
 }
+
+void RenderOptions::addLighting(std::shared_ptr<Galax::Renderer::LightingModel> model) {
+    auto root = new QTreeWidgetItem(nodeView);
+    root->setText(0, "Lighting");
+    root->setText(1, model->getName().data());
+
+
+    auto textures = model->getTextures();
+    auto textureNode = new QTreeWidgetItem(root);
+    textureNode->setText(0, "Textures");
+    for(const auto& texture : textures){
+        auto textureItem = new QDataTreeItem<Texture>(textureNode);
+        textureItem->setData(texture);
+        textureItem->setText(0, type(*texture).c_str());
+        textureItem->setText(1, texture->getName().data());
+    }
+
+    auto shader = model->getLightingShader();
+    auto shaderNode = new QDataTreeItem<Shader>(root);
+    shaderNode->setData(shader);
+    shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
+    shaderNode->setText(1, shader->getName().data());
+};
+
 
 std::string RenderOptions::demangle(const char *name) {
     int status = -4; // some arbitrary value to eliminate the compiler warning
@@ -227,4 +252,5 @@ std::string RenderOptions::demangle(const char *name) {
         result = result.substr(found + 1);
     }
     return result;
-};
+}
+
