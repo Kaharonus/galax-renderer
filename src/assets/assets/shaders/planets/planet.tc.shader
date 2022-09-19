@@ -6,7 +6,6 @@ layout (vertices = 1) out;
 
 // attributes of the input CPs
 in vec3 vPosition[];
-in vec3 vNormal[];
 in vec3 vNormalSmooth[];
 
 struct OutputPatch{
@@ -29,7 +28,6 @@ struct OutputPatch{
     vec3 NormalSmooth011;
     vec3 NormalSmooth101;
 
-    vec3 Normal;
     vec3 WorldPos[3];
 };
 
@@ -44,13 +42,6 @@ vec3 ProjectToPlane(vec3 Point, vec3 PlanePoint, vec3 PlaneNormal){
     float Len = dot(v, PlaneNormal);
     vec3 d = Len * PlaneNormal;
     return (Point - d);
-}
-
-vec3 getH(int i, int j){
-    vec3 A = vNormal[i] + vNormal[j];
-    vec3 B = tcData.WorldPos[j] - tcData.WorldPos[i];
-    float v = 2.0 * (dot(B, A) / dot(B, B));
-    return (A/2) - ((v/2.0) * B);
 }
 
 vec3 getHSmooth(int i, int j){
@@ -83,12 +74,12 @@ void CalcPositions(){
     tcData.WorldPos120 = tcData.WorldPos300 + Edge003 * 2.0 / 3.0;
 
     // Project each midpoint on the plane defined by the nearest vertex and its normal
-    tcData.WorldPos021 = ProjectToPlane(tcData.WorldPos021, tcData.WorldPos030, vNormal[0]);
-    tcData.WorldPos012 = ProjectToPlane(tcData.WorldPos012, tcData.WorldPos003, vNormal[1]);
-    tcData.WorldPos102 = ProjectToPlane(tcData.WorldPos102, tcData.WorldPos003, vNormal[1]);
-    tcData.WorldPos201 = ProjectToPlane(tcData.WorldPos201, tcData.WorldPos300, vNormal[2]);
-    tcData.WorldPos210 = ProjectToPlane(tcData.WorldPos210, tcData.WorldPos300, vNormal[2]);
-    tcData.WorldPos120 = ProjectToPlane(tcData.WorldPos120, tcData.WorldPos030, vNormal[0]);
+    tcData.WorldPos021 = ProjectToPlane(tcData.WorldPos021, tcData.WorldPos030, vNormalSmooth[0]);
+    tcData.WorldPos012 = ProjectToPlane(tcData.WorldPos012, tcData.WorldPos003, vNormalSmooth[1]);
+    tcData.WorldPos102 = ProjectToPlane(tcData.WorldPos102, tcData.WorldPos003, vNormalSmooth[1]);
+    tcData.WorldPos201 = ProjectToPlane(tcData.WorldPos201, tcData.WorldPos300, vNormalSmooth[2]);
+    tcData.WorldPos210 = ProjectToPlane(tcData.WorldPos210, tcData.WorldPos300, vNormalSmooth[2]);
+    tcData.WorldPos120 = ProjectToPlane(tcData.WorldPos120, tcData.WorldPos030, vNormalSmooth[0]);
 
     // Handle the center
     vec3 Center = (tcData.WorldPos003 + tcData.WorldPos030 + tcData.WorldPos300) / 3.0;
@@ -109,13 +100,11 @@ void CalcNormals(){
 
 
 void main(){
-    float tessLevel = 2.0;
+    float tessLevel = 1.0;
     // Set the control points of the output patch
     for (int i = 0; i < 3; i++) {
         tcData.WorldPos[i] = vPosition[i];
     }
-    tcData.Normal = vNormal[0];
-
 
     CalcPositions();
     CalcNormals();

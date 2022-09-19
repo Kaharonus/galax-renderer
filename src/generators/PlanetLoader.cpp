@@ -58,11 +58,13 @@ void PlanetLoader::init(const std::shared_ptr<AssetLoader> &loader) {
         auto vert = loader->getShader("shaders/planets/" + typeName + ".vs.shader", Shader::Type::VERTEX);
         auto tc = loader->getShader("shaders/planets/planet.tc.shader", Shader::Type::TESSALATION_CTRL);
         auto te = loader->getShader("shaders/planets/planet.te.shader", Shader::Type::TESSALATION_EVAL);
+        auto gs = loader->getShader("shaders/planets/planet.gs.shader", Shader::Type::GEOMETRY);
         auto program = std::make_shared<Program>(typeName + " prog");
         program->addShader(frag);
         program->addShader(vert);
         program->addShader(tc);
         program->addShader(te);
+        program->addShader(gs);
         programs[type] = program;
 
         //Load planet configs

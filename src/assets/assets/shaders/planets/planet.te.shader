@@ -2,14 +2,13 @@
 
 layout(triangles, equal_spacing, ccw) in;
 
-out vec3 tePosition;
-out vec3 teNormal;
-out vec3 teNormalSmooth;
-out float teNoise;
 
-uniform mat4 view;
-uniform mat4 projection;
-uniform mat4 model;
+out TE_OUT {
+    vec4 position;
+    float noise;
+} te_out;
+
+
 
 struct OutputPatch{
     vec3 WorldPos030;
@@ -30,7 +29,6 @@ struct OutputPatch{
     vec3 NormalSmooth011;
     vec3 NormalSmooth101;
 
-    vec3 Normal;
     vec3 WorldPos[3];
 };
 
@@ -42,11 +40,6 @@ struct Noise{
 
 
 in patch OutputPatch tcData;
-
-vec3 interpolate2D(vec3 v0, vec3 v1, vec3 v2)
-{
-    return vec3(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
-}
 
 
 //Simplex noise implementation by Ian McEwan, Ashima Arts
@@ -156,7 +149,7 @@ void main(){
     float vPow2 = pow(v, 2);
     float wPow2 = pow(w, 2);
 
-    tePosition = tcData.WorldPos300 * wPow3 +
+    vec3 tePosition = tcData.WorldPos300 * wPow3 +
     tcData.WorldPos030 * uPow3 +
     tcData.WorldPos003 * vPow3 +
     tcData.WorldPos210 * 3.0 * wPow2 * u +
@@ -167,7 +160,7 @@ void main(){
     tcData.WorldPos012 * 3.0 * u * vPow2 +
     tcData.WorldPos111 * 6.0 * w * u * v;
 
-    teNormalSmooth =
+    vec3 teNormalSmooth =
     uPow2 * tcData.NormalSmooth200 +
     vPow2 * tcData.NormalSmooth020 +
     wPow2 * tcData.NormalSmooth002 +
@@ -175,14 +168,12 @@ void main(){
     u * w * tcData.NormalSmooth101 +
     v * w * tcData.NormalSmooth011;
 
-    teNormal = tcData.Normal;
 
     float noise = evaluateNoise(tePosition);
     vec3 offset = teNormalSmooth * noise;
-    teNoise = noise * 10;
-    teNormal = mat3(transpose(inverse(model))) * teNormal * noise;
-    teNormal = teNormal * 40;
+    float teNoise = noise * 10;
 
-    gl_Position = projection * view * model * vec4(tePosition + offset, 1.0);
-    tePosition = (vec4(tePosition + offset, 1.0)).xyz;
+    gl_Position = vec4(tePosition + offset, 1.0);
+    te_out.position = gl_Position;
+    te_out.noise = teNoise;
 }

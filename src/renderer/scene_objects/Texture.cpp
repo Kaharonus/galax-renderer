@@ -306,6 +306,7 @@ void Texture::bind(uint unit) {
 
 }
 
+
 void Texture::requestData(const std::function<void(const std::vector<unsigned char>&)>& callback) {
     if (this->target != TYPE_2D) {
         throw std::runtime_error("Can only read data from 2D textures");
@@ -324,7 +325,9 @@ void Texture::readDataFromGPU(){
     glBindTexture(GL_TEXTURE_2D, id);
     glGetTexImage(GL_TEXTURE_2D, 0, (GLenum)format, (GLenum) dataType, dataVector.data());
     glBindTexture(GL_TEXTURE_2D, 0);
-    readCallback(dataVector);
+    if(readCallback){
+        readCallback(dataVector);
+    }
 
 }
 
@@ -408,6 +411,11 @@ Texture::Wrap Texture::getWrap() const {
 
 Texture::Filtering Texture::getFiltering() const {
     return filtering;
+}
+
+void Texture::cancelDataRequest() {
+    readRequested = false;
+    this->readCallback = nullptr;
 }
 
 

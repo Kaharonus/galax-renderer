@@ -85,8 +85,8 @@ namespace Galax::Renderer::SceneObjects {
           Only one callback can be registered at a time.
          * @param callback a method that will be called when the texture data is ready to be read.
          */
-        void requestData(const std::function<void(const std::vector<unsigned char> &)> &callback);
-
+        void requestData(const std::function<void(const std::vector<unsigned char>&)>& callback);
+        void cancelDataRequest();
         void setData(const std::vector<unsigned char>& data, size_t layer);
         void setData(const std::vector<char>& data, size_t layer);
         void setData(const std::vector<unsigned short>& data, size_t layer);

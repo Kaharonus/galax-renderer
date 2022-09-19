@@ -10,6 +10,7 @@
 #include <QImage>
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
+#include <thread>
 
 
 TextureControl::TextureControl(QWidget *parent) : QWidget(parent), ui(new Ui::TextureControl) {
@@ -38,6 +39,7 @@ void TextureControl::init() {
 }
 
 TextureControl::~TextureControl() {
+    texture->cancelDataRequest();
     delete ui;
 }
 
@@ -54,10 +56,10 @@ void TextureControl::update() {
         !contains(supportedDataTypes, dataType)) {
         return;
     }
-
-
+    gotData = false;
     texture->requestData([&](const std::vector<unsigned char> &data) {
-        this->data = data;
+            gotData = true;
+            this->data = data;
     });
 
     auto qFormat = format == Texture::RGBA ? QImage::Format_RGBA8888 : QImage::Format_RGB888;
@@ -89,9 +91,16 @@ TextureControl::convertData(std::vector<unsigned char> data, Texture::DataType t
     auto result = std::vector<unsigned char>(size);
     if(type == Texture::FLOAT){
         auto fResult = reinterpret_cast<float*>(data.data());
-        for(int i = 0; i < size; i++){
-            auto tmp = (unsigned char)(fResult[i/texture->getDataSize()] * 255);
-            result[i] = tmp;
+        auto fVector = std::vector<float>(fResult, fResult + size / sizeof(float));
+        for (int i = 0; i < fVector.size(); i+=4) {
+            auto r = static_cast<unsigned char>(fVector[i] * 255);
+            auto g = static_cast<unsigned char>(fVector[i + 1] * 255);
+            auto b = static_cast<unsigned char>(fVector[i + 2] * 255);
+            unsigned char a = 255;
+            result[i] = r;
+            result[i + 1] = g;
+            result[i + 2] = b;
+            result[i+3] = a;
         }
     }
     return result;
