@@ -4,6 +4,8 @@
 
 #include "AssetLoader.h"
 #include "ObjReader.h"
+#include "PngReader.h"
+#include "../Extensions.h"
 
 
 #include <physfs.h>
@@ -11,6 +13,8 @@
 #include <iostream>
 #include <filesystem>
 #include <memory>
+#include <thread>
+#include <future>
 
 using namespace Galax::Assets;
 AssetLoader::AssetLoader() {
@@ -52,7 +56,6 @@ std::string AssetLoader::readTextFile(std::string asset) {
     std::string source(buffer, size);
     PHYSFS_close(file);
     return source;
-
 }
 
 
@@ -93,5 +96,41 @@ std::shared_ptr<Mesh> AssetLoader::getMesh(const std::string& asset, std::string
 void AssetLoader::exists(const std::string &file) {
     auto exists = PHYSFS_exists(file.c_str());
     assert(exists);
+}
+
+std::shared_ptr<Texture> AssetLoader::getCubemap(const std::string& asset, std::string name) {
+    auto fullPath = path + asset;
+    if(name.empty()){
+        name = asset;
+    }
+    auto skybox = std::make_shared<Texture>(name, Texture::TYPE_CUBE);
+    skybox->setFiltering(Texture::Filtering::LINEAR);
+
+    std::vector<std::string> names = {"PositiveX.png", "NegativeX.png", "PositiveY.png", "NegativeY.png", "PositiveZ.png", "NegativeZ.png"};
+
+    auto threads = std::vector<std::future<std::vector<unsigned char>>>();
+    for(auto [i, fileName] : enumerate(names)) {
+        //spawn a thread for each file
+        auto future = std::async([&](){
+            auto sidePath = fullPath + "/" + fileName;
+            exists(sidePath);
+            PHYSFS_File* file = PHYSFS_openRead(sidePath.c_str());
+            PHYSFS_sint64 size = PHYSFS_fileLength(file);
+            char* buffer = new char[size];
+            PHYSFS_readBytes(file, buffer, size);
+            PHYSFS_close(file);
+            PngReader reader;
+            auto texture = reader.read(buffer, size);
+            delete[] buffer;
+            return texture;
+        });
+        threads.push_back(std::move(future));
+    }
+    //wait for all threads to finish
+    for(auto [i, thread] : enumerate(threads)) {
+       skybox->setData(thread.get(), i);
+    }
+
+    return skybox;
 }
 

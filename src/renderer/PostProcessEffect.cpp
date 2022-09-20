@@ -24,6 +24,10 @@ void PostProcessEffect::init() {
     quad = std::make_shared<Quad>("PostProcessQuad (" + this->name + ")");
     quad->setFragShader(shader);
 
+    if(outputTextures.empty()){
+        return;
+    }
+
     frameBuffer = std::make_shared<FrameBuffer>("PostProcessFrameBuffer (" + this->name + ")");
     for (auto &texture: outputTextures) {
         frameBuffer->addOutputTexture(texture);
@@ -41,7 +45,6 @@ void PostProcessEffect::draw() {
     }
     if (frameBuffer) {
         frameBuffer->bind();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
     auto program = quad->getProgram();
     program->use();
@@ -90,4 +93,8 @@ std::vector<std::shared_ptr<Texture>> PostProcessEffect::getInputTextures() cons
 
 std::shared_ptr<Shader> PostProcessEffect::getShader() const {
     return shader;
+}
+
+std::shared_ptr<FrameBuffer> PostProcessEffect::getFrameBuffer() const {
+    return frameBuffer;
 }

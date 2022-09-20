@@ -21,6 +21,9 @@ namespace Galax::Renderer::SceneObjects {
         void unbind();
         void addOutputTexture(std::shared_ptr<Texture> texture);
 
+        int getWidth() const;
+        int getHeight() const;
+
         void copyTo(unsigned int target);
         void copyFrom(unsigned int target);
         void resize(int width, int height);

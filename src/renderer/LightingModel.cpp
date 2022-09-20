@@ -39,8 +39,7 @@ void LightingModel::init() {
     for(auto& texture : outputTextures){
         this->outputFrameBuffer->addOutputTexture(texture);
     }
-
-
+    this->outputFrameBuffer->resize(width, height);
 }
 
 void LightingModel::addUniform(std::shared_ptr<Uniform> uniform) {
@@ -52,6 +51,7 @@ void LightingModel::draw() {
         init();
     }
 
+    outputFrameBuffer->bind();
     auto lightingProgram = quad->getProgram();
     if(!lightingProgram){
         return;
@@ -64,6 +64,7 @@ void LightingModel::draw() {
         lightingProgram->setTexture(texture, i);
     }
     quad->draw();
+    outputFrameBuffer->unbind();
 }
 
 
@@ -90,6 +91,7 @@ void LightingModel::addOutputTexture(std::shared_ptr<Texture> texture) {
 void LightingModel::resize(int width, int height) {
     this->width = width;
     this->height = height;
-    this->outputFrameBuffer->resize(width, height);
-
+    if(outputFrameBuffer){
+        outputFrameBuffer->resize(width, height);
+    }
 }

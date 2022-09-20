@@ -36,6 +36,7 @@ namespace Galax::Renderer {
         std::shared_ptr<Texture> getAlbedoTexture();
         std::shared_ptr<Texture> getNormalTexture();
         std::shared_ptr<Texture> getPositionTexture();
+        std::shared_ptr<Texture> getEmissionTexture();
 
 
     private:
@@ -45,6 +46,7 @@ namespace Galax::Renderer {
         std::shared_ptr<Texture> albedo;
         std::shared_ptr<Texture> position;
         std::shared_ptr<Texture> normal;
+        std::shared_ptr<Texture> emission;
 
         std::shared_ptr<FrameBuffer> frameBuffer;
 

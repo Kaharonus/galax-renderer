@@ -5,6 +5,7 @@
 #include <glbinding/gl/gl.h>
 
 #include "QRenderer.h"
+#include "../Extensions.h"
 #include <chrono>
 #include <chrono>
 #include <thread>
@@ -55,6 +56,10 @@ void QRenderer::resize() {
     viewportWidth = width();
     viewportHeight = height();
     gBuffer->resize(viewportWidth, viewportHeight);
+    lightingModel->resize(viewportWidth, viewportHeight);
+    for (auto &effect: postProcesses) {
+        effect->resize(viewportWidth, viewportHeight);
+    }
     scene->setDimensions(viewportWidth, viewportHeight);
 }
 
@@ -85,11 +90,11 @@ void QRenderer::paintGL() {
 
     lightingModel->draw();
 
-    for(auto& effect : postProcesses) {
+    for(auto [i,effect] : enumerate(postProcesses)) {
         effect->draw();
     }
 
-    copyLastFBOToScreen();
+    //copyLastFBOToScreen();
     context->swapBuffers(this);
     context->doneCurrent();
     auto frameEnd = std::chrono::high_resolution_clock::now();
@@ -184,6 +189,7 @@ void QRenderer::setLightingModel(std::shared_ptr<LightingModel> lightingModel) {
     this->lightingModel->addTexture(gBuffer->getAlbedoTexture());
     this->lightingModel->addTexture(gBuffer->getNormalTexture());
     this->lightingModel->addTexture(gBuffer->getPositionTexture());
+    this->lightingModel->addTexture(gBuffer->getEmissionTexture());
 
 }
 

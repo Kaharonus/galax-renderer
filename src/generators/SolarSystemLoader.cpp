@@ -4,6 +4,7 @@
 
 #include "SolarSystemLoader.h"
 #include "PlanetLoader.h"
+#include "SunLoader.h"
 
 using namespace Galax::Generators;
 using namespace Galax::Assets;
@@ -51,11 +52,49 @@ std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateHDR(std::shared_pt
 }
 
 
+std::shared_ptr<Node> SolarSystemLoader::generateSkybox(std::shared_ptr<AssetLoader> assets){
+    auto sky = std::make_shared<Node>("Skybox");
+    sky->setMesh(assets->getMesh("models/skybox.obj", "skybox mesh"));
+    auto skyTexture = assets->getCubemap("textures/skybox", "skybox");
+    skyTexture->setDimensions(4096, 4096);
+    sky->addTexture(skyTexture);
+    auto skyVertex = assets->getShader("shaders/skybox/skybox.vs.shader", Shader::VERTEX, "Skybox vertex shader");
+    auto skyFragment = assets->getShader("shaders/skybox/skybox.fs.shader", Shader::FRAGMENT, "Skybox fragment shader");
+    sky->setProgram(std::make_shared<Program>("Skybox program", skyVertex, skyFragment));
+    return sky;
+}
+
+
 Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSystem() {
 
     assets = std::make_shared<AssetLoader>();
     assets->load("assets.data");
     PlanetLoader::init(assets);
+
+    auto camera = std::make_shared<Camera>("freeCam");
+    camera->acceptInput(true);
+    camera->setPosition(glm::vec3(-4.5, 0, -6));
+
+    auto system = std::make_shared<SolarSystem>();
+
+    auto sky = generateSkybox(assets);
+
+    sky->setCamera(camera);
+    system->setRoot(sky);
+
+    //TODO generate sun
+
+    auto sun = SunLoader::load(assets);
+    sun->setCamera(camera);
+    sky->addChild(sun);
+
+
+    //generate planets
+    auto planet = PlanetLoader::fromType("EarthLike", Planet::Type::TEMPERATE);
+    planet->addAnimation(generatePlanetSpin(5000));
+    planet->setCamera(camera);
+    sky->addChild(planet);
+
 
 
     //Create the lighting model
@@ -65,26 +104,6 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     auto lightTexture = std::make_shared<Texture>("lightMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::REPEAT, Texture::NEAREST);
     lightingModel->addOutputTexture(lightTexture);
 
-    auto system = std::make_shared<SolarSystem>();
-
-
-    auto camera = std::make_shared<Camera>("freeCam");
-
-
-
-    camera->acceptInput(true);
-    camera->setPosition(glm::vec3(0, 0, -3));
-
-    //TODO generate sun
-
-
-    //generate planets
-
-    auto planet = PlanetLoader::fromType("EarthLike", Planet::Type::TEMPERATE);
-    planet->addAnimation(generatePlanetSpin(5000));
-    planet->setCamera(camera);
-
-    system->setRoot(planet);
 
 
     //generate post processes

@@ -263,11 +263,15 @@ void Texture::upload() {
             break;
         }
         case TYPE_CUBE:
-            glTextureStorage2D(id, 1, (GLenum) format, w, h);
+            checkError(true);
             for (int i = 0; i < 6; i++) {
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, (GLenum) toInternal(), w, h, 0, (GLenum) format,
                              (GLenum) dataType, data[i].data());
+                checkError(true);
+
             }
+            checkError(true);
+
             break;
         case TYPE_3D:
             glTexImage3D(GL_TEXTURE_3D, 0, (GLenum) toInternal(), w, h, d, 0, (GLenum) format, (GLenum) dataType,

@@ -94,6 +94,7 @@ namespace Galax::Renderer::SceneObjects {
         glm::vec3 scale;
         glm::mat4 modelMatrix;
         std::shared_ptr<Uniform> modelMatrixUniform;
+        std::shared_ptr<Uniform> transposeInverseModelUniform;
 
         void init();
 

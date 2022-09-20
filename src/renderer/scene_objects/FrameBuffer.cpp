@@ -17,11 +17,11 @@ FrameBuffer::FrameBuffer(const std::string &name) : SceneObject(name) {
     init();
 }
 
-void FrameBuffer::init(){
+void FrameBuffer::init() {
     // Query the maximum number of color attachments
     GLenum result;
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &result);
-    maxTextures = (int)result;
+    maxTextures = (int) result;
     this->width = 1;
     this->height = 1;
     create();
@@ -32,7 +32,7 @@ uint FrameBuffer::getId() {
     return id;
 }
 
-void FrameBuffer::create(){
+void FrameBuffer::create() {
     glGenFramebuffers(1, &this->id);
     // create the textures
     resize(width, height);
@@ -43,10 +43,11 @@ void FrameBuffer::addOutputTexture(std::shared_ptr<Texture> texture) {
 }
 
 void FrameBuffer::bind() {
-    if(id == 0){
+    if (id == 0) {
         create();
     }
     glBindFramebuffer(GL_FRAMEBUFFER, id);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     lastBoundFrameBuffer = id;
 }
 
@@ -71,23 +72,24 @@ void FrameBuffer::copyFrom(unsigned int target) {
 }
 
 
-
 void FrameBuffer::resize(int width, int height) {
     this->width = width;
     this->height = height;
 
     glBindFramebuffer(GL_FRAMEBUFFER, id);
+
+    glViewport(0, 0, width, height);
     checkError(true);
 
     std::vector<GLenum> attachments;
-    for (auto [i, texture] : enumerate(outTextures)) {
+    for (auto [i, texture]: enumerate(outTextures)) {
         checkError(true);
         texture->setDimensions(width, height);
         texture->upload();
-        glBindTexture((GLenum)texture->getType(), texture->getId());
+        glBindTexture((GLenum) texture->getType(), texture->getId());
         checkError(true);
 
-        switch(texture->getType()){
+        switch (texture->getType()) {
             case Texture::TYPE_2D:
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texture->getId(), 0);
                 break;
@@ -102,7 +104,7 @@ void FrameBuffer::resize(int width, int height) {
         attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
     }
 
-    glDrawBuffers((GLsizei)attachments.size(), attachments.data());
+    glDrawBuffers((GLsizei) attachments.size(), attachments.data());
 
     if (rbo == 0) {
         glGenRenderbuffers(1, &rbo);
@@ -116,4 +118,12 @@ void FrameBuffer::resize(int width, int height) {
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+}
+
+int FrameBuffer::getWidth() const {
+    return width;
+}
+
+int FrameBuffer::getHeight() const {
+    return height;
 }

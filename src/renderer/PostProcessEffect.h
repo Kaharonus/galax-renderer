@@ -28,6 +28,8 @@ namespace Galax::Renderer {
         void setShader(std::shared_ptr<Shader> shader);
         void resize(int width, int height);
 
+        std::shared_ptr<FrameBuffer> getFrameBuffer() const;
+
     private:
         bool initialized = false;
 

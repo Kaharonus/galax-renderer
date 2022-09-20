@@ -6,6 +6,7 @@
 #pragma once
 #include "../renderer/scene_objects/Shader.h"
 #include "../renderer/scene_objects/Mesh.h"
+#include "../renderer/scene_objects/Texture.h"
 
 
 #include <nlohmann/json.hpp>
@@ -25,6 +26,8 @@ namespace Galax::Assets {
         std::shared_ptr<Mesh> getMesh(const std::string &asset, std::string name = "");
 
         std::string readTextFile(std::string asset);
+
+        std::shared_ptr<Texture> getCubemap(const std::string& asset, std::string name = "");
 
         template <typename T> std::shared_ptr<T> getJson(const std::string& asset){
             auto text = readTextFile(asset);

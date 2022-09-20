@@ -180,12 +180,12 @@ glm::vec3 PlanetLoader::fromHex(const std::string &hex) {
 void PlanetLoader::generateMesh(const std::shared_ptr<AssetLoader> &loader) {
     auto result = std::vector<std::shared_ptr<Mesh>>();
     std::string basePath = "models/planet/";
-    auto levels = 1;
+    auto levels = 4;
     for (int i = 0; i < levels; i++) {
         auto path = basePath + "lod" + std::to_string(i) + ".obj";
         auto mesh = loader->getMesh(path);
         auto planetMesh = calculatePlanetMesh(mesh);
-        auto distance = i * 10.f;
+        auto distance = i * 15.f;
         meshes[distance] = planetMesh;
     }
 }

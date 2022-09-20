@@ -23,6 +23,7 @@ Node::Node(const std::string &name, std::shared_ptr<Node> parent) : SceneObject(
 
 void Node::init(){
     modelMatrixUniform = std::make_shared<Uniform>("model", Uniform::Type::MAT4, glm::mat4(1.0));
+    transposeInverseModelUniform = std::make_shared<Uniform>("transposeInverseModel", Uniform::Type::MAT4, glm::mat4(1.0));
 
     setPosition(glm::vec3(0.0f));
     setRotation(glm::vec3(0.0f));
@@ -151,6 +152,7 @@ void Node::calculateModelMatrix() {
     modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
     modelMatrix = glm::scale(modelMatrix, scale);
     modelMatrixUniform->setValue(modelMatrix);
+    transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(modelMatrix)));
 }
 
 float Node::getDistance() {
@@ -188,6 +190,7 @@ void Node::useCamera() {
     program->setUniform(camera->getPositionUniform());
     program->setUniform(camera->getRotationUniform());
     program->setUniform(modelMatrixUniform);
+    program->setUniform(transposeInverseModelUniform);
 
 }
 

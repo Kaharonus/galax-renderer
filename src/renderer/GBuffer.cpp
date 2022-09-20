@@ -32,6 +32,10 @@ void GBuffer::init() {
                                              Texture::REPEAT, Texture::NEAREST);
     this->frameBuffer->addOutputTexture(albedo);
 
+    this->emission = std::make_shared<Texture>("gEmission", Texture::TYPE_2D, Texture::RGBA, Texture::FLOAT,
+                                               Texture::REPEAT, Texture::NEAREST);
+    this->frameBuffer->addOutputTexture(emission);
+
     frameBuffer->resize(width, height);
 
 }
@@ -49,8 +53,6 @@ uint GBuffer::getId() {
 void GBuffer::bind() {
     frameBuffer->bind();
     glViewport(0, 0, width, height);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 
@@ -68,4 +70,8 @@ std::shared_ptr<Texture> GBuffer::getNormalTexture() {
 
 std::shared_ptr<Texture> GBuffer::getAlbedoTexture() {
     return albedo;
+}
+
+std::shared_ptr<Texture> GBuffer::getEmissionTexture() {
+    return emission;
 }
