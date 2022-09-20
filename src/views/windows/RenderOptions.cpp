@@ -211,12 +211,15 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
     }
 }
 
-void RenderOptions::setScene(std::shared_ptr<Galax::Renderer::Scene> scene, std::shared_ptr<Galax::Renderer::LightingModel> lighting) {
+void RenderOptions::setScene(std::shared_ptr<Galax::Renderer::Scene> scene,
+                             std::shared_ptr<Galax::Renderer::LightingModel> lighting,
+                             const std::vector<std::shared_ptr<Galax::Renderer::PostProcessEffect>>& effects) {
     this->scene = scene;
     this->lighting = lighting;
+    this->effects = effects;
     addNode(scene->getRoot(), nullptr);
-
     addLighting(lighting);
+    addEffects(effects);
 }
 
 void RenderOptions::addLighting(std::shared_ptr<Galax::Renderer::LightingModel> model) {
@@ -241,6 +244,45 @@ void RenderOptions::addLighting(std::shared_ptr<Galax::Renderer::LightingModel> 
     shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
     shaderNode->setText(1, shader->getName().data());
 };
+
+void RenderOptions::addEffects(const std::vector<std::shared_ptr<Galax::Renderer::PostProcessEffect>>& effects){
+    auto root = new QTreeWidgetItem(nodeView);
+    root->setText(0, "Effects");
+    root->setText(1, "Effects");
+
+    for(const auto& effect : effects){
+        auto effectNode = new QTreeWidgetItem(root);
+        effectNode->setText(0, type(*effect).c_str());
+        effectNode->setText(1, effect->getName().data());
+
+        auto inTextures = effect->getInputTextures();
+        auto inTextureNode = new QTreeWidgetItem(effectNode);
+        inTextureNode->setText(0, "Input textures");
+        for(const auto& texture : inTextures){
+            auto textureItem = new QDataTreeItem<Texture>(inTextureNode);
+            textureItem->setData(texture);
+            textureItem->setText(0, type(*texture).c_str());
+            textureItem->setText(1, texture->getName().data());
+        }
+
+
+        auto outTextures = effect->getOutputTextures();
+        auto outTextureNode = new QTreeWidgetItem(effectNode);
+        outTextureNode->setText(0, "Input textures");
+        for(const auto& texture : outTextures){
+            auto textureItem = new QDataTreeItem<Texture>(outTextureNode);
+            textureItem->setData(texture);
+            textureItem->setText(0, type(*texture).c_str());
+            textureItem->setText(1, texture->getName().data());
+        }
+
+        auto shader = effect->getShader();
+        auto shaderNode = new QDataTreeItem<Shader>(effectNode);
+        shaderNode->setData(shader);
+        shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
+        shaderNode->setText(1, shader->getName().data());
+    }
+}
 
 
 std::string RenderOptions::demangle(const char *name) {

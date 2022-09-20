@@ -3,6 +3,8 @@
 
 #include "../../renderer/Scene.h"
 #include "../../renderer/LightingModel.h"
+#include "../../renderer/PostProcessEffect.h"
+
 #include <QCodeEditor>
 #include <QMainWindow>
 #include <QOpenGLContext>
@@ -23,7 +25,10 @@ class RenderOptions : public QMainWindow {
 public:
     explicit RenderOptions(QWidget* parent = nullptr);
 
-    void setScene(std::shared_ptr<Galax::Renderer::Scene> scene, std::shared_ptr<Galax::Renderer::LightingModel> lighting);
+    void setScene(std::shared_ptr<Galax::Renderer::Scene> scene,
+                  std::shared_ptr<Galax::Renderer::LightingModel> lighting,
+                  const std::vector<std::shared_ptr<Galax::Renderer::PostProcessEffect>>& effects
+                  );
 
     ~RenderOptions() override;
 
@@ -37,6 +42,7 @@ private:
 
     std::shared_ptr<Galax::Renderer::Scene> scene;
     std::shared_ptr<Galax::Renderer::LightingModel> lighting;
+    std::vector<std::shared_ptr<Galax::Renderer::PostProcessEffect>> effects;
 
     QCodeEditor* codeEditor;
     QLabel* errorLabel;
@@ -135,4 +141,6 @@ private:
     void editNode(std::shared_ptr<Node> node);
 
     void addLighting(std::shared_ptr<Galax::Renderer::LightingModel> sharedPtr);
+
+    void addEffects(const std::vector<std::shared_ptr<Galax::Renderer::PostProcessEffect>> &effects);
 };

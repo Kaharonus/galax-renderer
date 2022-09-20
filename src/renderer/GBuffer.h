@@ -9,6 +9,7 @@
 
 #include "SceneObject.h"
 #include "scene_objects/Texture.h"
+#include "scene_objects/FrameBuffer.h"
 
 namespace Galax::Renderer {
     using namespace Galax::Renderer::SceneObjects;
@@ -31,7 +32,6 @@ namespace Galax::Renderer {
         }
 
         void resize(int width, int height);
-        void copyToScreen();
 
         std::shared_ptr<Texture> getAlbedoTexture();
         std::shared_ptr<Texture> getNormalTexture();
@@ -42,15 +42,13 @@ namespace Galax::Renderer {
         int width = 1;
         int height = 1;
 
-        unsigned int gBuffer = 0;
-
-        unsigned int rbo = 0;
         std::shared_ptr<Texture> albedo;
         std::shared_ptr<Texture> position;
         std::shared_ptr<Texture> normal;
 
+        std::shared_ptr<FrameBuffer> frameBuffer;
 
-        void initTextures();
+
     };
 
 }

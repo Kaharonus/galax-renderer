@@ -51,7 +51,7 @@ void QRenderer::initializeGL(const QSurfaceFormat &format) {
     glFrontFace(GL_CCW);
 }
 
-void QRenderer::resize(){
+void QRenderer::resize() {
     viewportWidth = width();
     viewportHeight = height();
     gBuffer->resize(viewportWidth, viewportHeight);
@@ -64,13 +64,12 @@ void QRenderer::paintGL() {
     static int previousWidth = 0;
 
 
-
     SceneObject::setFrameTime(frameTime);
     auto frameStart = std::chrono::high_resolution_clock::now();
 
     context->makeCurrent(this);
 
-    if(previousHeight != height() || previousWidth != width()){
+    if (previousHeight != height() || previousWidth != width()) {
         resize();
         previousHeight = viewportHeight;
         previousWidth = viewportWidth;
@@ -78,7 +77,7 @@ void QRenderer::paintGL() {
     }
 
     gl::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gl::glClear((gl::ClearBufferMask) GL_COLOR_BUFFER_BIT | (gl::ClearBufferMask) GL_DEPTH_BUFFER_BIT);
 
     if (scene) {
         scene->draw();
@@ -86,12 +85,24 @@ void QRenderer::paintGL() {
 
     lightingModel->draw();
 
-    gBuffer->copyToScreen();
+    for(auto& effect : postProcesses) {
+        effect->draw();
+    }
+
+    copyLastFBOToScreen();
     context->swapBuffers(this);
     context->doneCurrent();
     auto frameEnd = std::chrono::high_resolution_clock::now();
     frameTime = (double) std::chrono::duration_cast<std::chrono::nanoseconds>(frameEnd - frameStart).count() /
                 1000000.0;
+}
+
+void QRenderer::copyLastFBOToScreen() {
+    gl::glBindFramebuffer((gl::GLenum) GL_READ_FRAMEBUFFER, SceneObject::getLastFrameBuffer());
+    gl::glBindFramebuffer((gl::GLenum) GL_DRAW_FRAMEBUFFER, 0);
+    gl::glBlitFramebuffer(0, 0, this->viewportWidth, this->viewportHeight, 0, 0, this->viewportWidth,
+                          this->viewportHeight, (gl::ClearBufferMask) GL_DEPTH_BUFFER_BIT, (gl::GLenum) GL_NEAREST);
+    gl::glBindFramebuffer((gl::GLenum) GL_FRAMEBUFFER, 0);
 }
 
 void QRenderer::timerEvent(QTimerEvent *event) {
@@ -174,6 +185,10 @@ void QRenderer::setLightingModel(std::shared_ptr<LightingModel> lightingModel) {
     this->lightingModel->addTexture(gBuffer->getNormalTexture());
     this->lightingModel->addTexture(gBuffer->getPositionTexture());
 
+}
+
+void QRenderer::addPostProcess(std::shared_ptr<PostProcessEffect> postProcess) {
+    this->postProcesses.push_back(postProcess);
 }
 
 

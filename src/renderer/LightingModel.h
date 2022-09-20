@@ -11,6 +11,7 @@
 #include "scene_objects/Camera.h"
 #include "scene_objects/Light.h"
 #include "scene_objects/Program.h"
+#include "scene_objects/Quad.h"
 #include "GBuffer.h"
 
 #include <array>
@@ -32,8 +33,6 @@ namespace Galax::Renderer {
 
         void draw();
 
-        void unbind();
-
         void setLightningShader(std::shared_ptr<Shader> shader);
 
         void addTexture(std::shared_ptr<Texture> texture);
@@ -45,36 +44,23 @@ namespace Galax::Renderer {
 
         std::shared_ptr<Shader> getLightingShader();
 
+        void addOutputTexture(std::shared_ptr<Texture> texture);
+
+        void resize(int width, int height);
+
 
 
     private:
-        unsigned int quadVAO = 0;
-        unsigned int quadVBO = 0;
+        int width = 1;
+        int height = 1;
 
-        std::shared_ptr<Shader> vertexShader;
         std::shared_ptr<Shader> lightingShader;
-        std::shared_ptr<Program> lightingProgram;
+        std::shared_ptr<Quad> quad;
         std::vector<std::shared_ptr<Texture>> textures;
         std::vector<std::shared_ptr<Uniform>> uniforms;
 
-        std::array<float, 16> vertices = {
-                -1.0f, -1.0f, 0.0f,
-                1.0f, -1.0f, 0.0f,
-                -1.0f, 1.0f, 0.0f,
-                1.0f, 1.0f, 0.0f
-        };
-
-
-        std::string vertexShaderSource = R"(
-        #version 430 core
-        layout(location = 0) in vec3 position;
-
-        out vec2 texCoords;
-
-        void main() {
-            gl_Position = vec4(position, 1.0);
-            texCoords = vec2(position.x + 1, position.y + 1) / 2.0;
-        })";
+        std::vector<std::shared_ptr<Texture>> outputTextures;
+        std::shared_ptr<FrameBuffer> outputFrameBuffer;
 
     };
 

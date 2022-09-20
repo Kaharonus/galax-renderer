@@ -10,13 +10,10 @@ using namespace gl;
 using namespace Galax::Renderer;
 
 LightingModel::LightingModel() : SceneObject("Lighting model") {
-
-
 }
 
 LightingModel::~LightingModel() {
-    glDeleteBuffers(1, &quadVBO);
-    glDeleteVertexArrays(1, &quadVAO);
+
 }
 
 void LightingModel::addTexture(std::shared_ptr<Texture> texture) {
@@ -25,25 +22,24 @@ void LightingModel::addTexture(std::shared_ptr<Texture> texture) {
 
 void LightingModel::setLightningShader(std::shared_ptr<Shader> shader) {
     lightingShader = shader;
+    if(quad){
+        quad->setFragShader(shader);
+    }
 }
 
 void LightingModel::init() {
-    //prepare the vao
-    glGenVertexArrays(1, &quadVAO);
-    glBindVertexArray(quadVAO);
-    glGenBuffers(1, &quadVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    this->quad = std::make_shared<Quad>("Lighting model quad");
+    quad->setFragShader(lightingShader);
 
+    //Check if we need to create a render buffer
+    if(outputTextures.empty()){
+        return;
+    }
+    this->outputFrameBuffer = std::make_shared<FrameBuffer>("Lighting model output");
+    for(auto& texture : outputTextures){
+        this->outputFrameBuffer->addOutputTexture(texture);
+    }
 
-    vertexShader = std::make_shared<Shader>("lightning quad shader", Shader::VERTEX);
-    vertexShader->setSource(vertexShaderSource);
-
-    lightingProgram = std::make_shared<Program>("Lighting program", vertexShader, lightingShader);
-    lightingProgram->compile();
 
 }
 
@@ -52,30 +48,24 @@ void LightingModel::addUniform(std::shared_ptr<Uniform> uniform) {
 }
 
 void LightingModel::draw() {
-
-    if(lightingProgram == nullptr) {
+    if(!quad){
         init();
     }
 
+    auto lightingProgram = quad->getProgram();
+    if(!lightingProgram){
+        return;
+    }
     lightingProgram->use();
-    for(auto uniform : uniforms) {
+    for(auto& uniform : uniforms) {
         lightingProgram->setUniform(uniform);
     }
     for(auto [i, texture] : enumerate(textures)) {
         lightingProgram->setTexture(texture, i);
     }
-
-    glBindVertexArray(quadVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
-
-
-
+    quad->draw();
 }
 
-void LightingModel::unbind() {
-
-}
 
 uint LightingModel::getId() {
     return 0;
@@ -91,4 +81,15 @@ std::vector<std::shared_ptr<Uniform>> LightingModel::getUniforms() {
 
 std::shared_ptr<Shader> LightingModel::getLightingShader() {
     return lightingShader;
+}
+
+void LightingModel::addOutputTexture(std::shared_ptr<Texture> texture) {
+    outputTextures.push_back(texture);
+}
+
+void LightingModel::resize(int width, int height) {
+    this->width = width;
+    this->height = height;
+    this->outputFrameBuffer->resize(width, height);
+
 }

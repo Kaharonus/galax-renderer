@@ -25,11 +25,15 @@ namespace Galax::Renderer {
 
         static void setFrameTime(float frameTime);
 
+        static unsigned int getLastFrameBuffer();
+
         inline static bool initialized = false;
         virtual uint getId() = 0;
 
     protected:
+
         std::string name;
+        inline static unsigned int lastBoundFrameBuffer = 0;
         inline static float frameTime = 0.0f;
         inline static unsigned long startTime;
         inline static unsigned long currentTime;

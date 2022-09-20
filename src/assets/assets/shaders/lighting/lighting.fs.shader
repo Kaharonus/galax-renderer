@@ -1,6 +1,6 @@
 #version 430 core
 
-out vec4 fragColor;
+out vec4 lightMap;
 in vec2 texCoords;
 
 layout(binding = 0) uniform sampler2D gPosition;
@@ -27,5 +27,5 @@ void main() {
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * diffuseColor * diffuseIntensity;
 
-    fragColor = vec4((ambient + diffuse) * color, 1.0);
+    lightMap = vec4((ambient + diffuse) * color, 1.0);
 }

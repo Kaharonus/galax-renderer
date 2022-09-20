@@ -38,11 +38,14 @@ void MainWindow::setupRenderer(const QSurfaceFormat &format){
 void MainWindow::loadScene() {
     SolarSystemLoader systemLoader;
 
-    auto [system, lighting] = systemLoader.generateSystem();
+    auto [system, lighting, effects] = systemLoader.generateSystem();
 
     renderer->setScene(system);
     renderer->setLightingModel(lighting);
-    renderOptionsWindow->setScene(system, lighting);
+    for(auto& effect : effects){
+        renderer->addPostProcess(effect);
+    }
+    renderOptionsWindow->setScene(system, lighting, effects);
 }
 
 MainWindow::~MainWindow() {

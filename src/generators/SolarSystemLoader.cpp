@@ -42,12 +42,18 @@ std::shared_ptr<Animation> SolarSystemLoader::generateRotation(float distance){
     return animation;
 }
 
+std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateHDR(std::shared_ptr<Texture> lightMap){
+    auto hdr = std::make_shared<PostProcessEffect>("HDR");
+    auto shader = assets->getShader("shaders/effects/hdr.fs.shader", Shader::FRAGMENT);
+    hdr->setShader(shader);
+    hdr->addInputTexture(lightMap);
+    return hdr;
+}
 
 
+Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSystem() {
 
-std::tuple<std::shared_ptr<SolarSystem>, std::shared_ptr<LightingModel>> SolarSystemLoader::generateSystem() {
-
-    auto assets = std::make_shared<AssetLoader>();
+    assets = std::make_shared<AssetLoader>();
     assets->load("assets.data");
     PlanetLoader::init(assets);
 
@@ -55,6 +61,9 @@ std::tuple<std::shared_ptr<SolarSystem>, std::shared_ptr<LightingModel>> SolarSy
     //Create the lighting model
     auto lightingModel = std::make_shared<LightingModel>();
     lightingModel->setLightningShader(assets->getShader("shaders/lighting/lighting.fs.shader", Renderer::SceneObjects::Shader::FRAGMENT));
+
+    auto lightTexture = std::make_shared<Texture>("lightMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::REPEAT, Texture::NEAREST);
+    lightingModel->addOutputTexture(lightTexture);
 
     auto system = std::make_shared<SolarSystem>();
 
@@ -77,5 +86,10 @@ std::tuple<std::shared_ptr<SolarSystem>, std::shared_ptr<LightingModel>> SolarSy
 
     system->setRoot(planet);
 
-    return {system, lightingModel};
+
+    //generate post processes
+    std::vector<std::shared_ptr<PostProcessEffect>> effects;
+    effects.push_back(generateHDR(lightTexture));
+
+    return {system, lightingModel, effects};
 }

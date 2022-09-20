@@ -55,7 +55,7 @@ void SceneObject::checkError(bool shouldThrow) {
         error = true;
     }
     if (shouldThrow && error) {
-        //throw std::runtime_error("OpenGL Error");
+        throw std::runtime_error("OpenGL Error");
     }
 }
 
@@ -94,3 +94,6 @@ void SceneObject::init() {
     startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
+unsigned int SceneObject::getLastFrameBuffer() {
+    return lastBoundFrameBuffer;
+}
