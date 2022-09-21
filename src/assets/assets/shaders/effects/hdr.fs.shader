@@ -5,11 +5,14 @@ out vec4 FragColor;
 in vec2 texCoords;
 
 uniform sampler2D lightMap;
+uniform sampler2D bloomMap;
 
 void main(){
     float exposure = 1.0;
     const float gamma = 1.0;
     vec3 hdrColor = texture(lightMap, texCoords).rgb;
+    vec3 bloom = texture(bloomMap, texCoords).rgb;
+    hdrColor += bloom;
 
     // exposure tone mapping
     vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);

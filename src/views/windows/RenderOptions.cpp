@@ -268,7 +268,7 @@ void RenderOptions::addEffects(const std::vector<std::shared_ptr<Galax::Renderer
 
         auto outTextures = effect->getOutputTextures();
         auto outTextureNode = new QTreeWidgetItem(effectNode);
-        outTextureNode->setText(0, "Input textures");
+        outTextureNode->setText(0, "Output textures");
         for(const auto& texture : outTextures){
             auto textureItem = new QDataTreeItem<Texture>(outTextureNode);
             textureItem->setData(texture);

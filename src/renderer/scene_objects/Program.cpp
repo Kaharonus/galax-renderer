@@ -207,7 +207,7 @@ void Program::setTexture(const std::shared_ptr<Texture>& texture, int unit) {
     auto id = texture->getNameHash();
     auto location = this->uniformLocations[id];
     if (location == -1) {
-        std::cerr << "Texture " << texture->getName() << " not found" << std::endl;
+        std::cerr << "Texture " << texture->getName() << " not found. (Raised by " << this->name <<")" << std::endl;
         return;
     }
     texture->bind(unit);

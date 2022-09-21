@@ -39,6 +39,13 @@ namespace Galax::Generators{
         std::shared_ptr<PostProcessEffect> generateHDR(std::shared_ptr<Texture> lightMap);
 
         std::shared_ptr<Node> generateSkybox(std::shared_ptr<AssetLoader> assets);
+
+        std::shared_ptr<PostProcessEffect> generateBloom();
+
+        std::shared_ptr<PostProcessEffect>
+        generateHDR(std::shared_ptr<Texture> lightMap, std::shared_ptr<Texture> bloomTexture);
+
+        std::shared_ptr<PostProcessEffect> generateBloom(std::shared_ptr<Texture> light);
     };
 }
 

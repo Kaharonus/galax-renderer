@@ -24,6 +24,8 @@ void PostProcessEffect::init() {
     quad = std::make_shared<Quad>("PostProcessQuad (" + this->name + ")");
     quad->setFragShader(shader);
 
+    callCountUniform = std::make_shared<Uniform>("currentCall", Uniform::Type::INT, 1);
+
     if(outputTextures.empty()){
         return;
     }
@@ -33,10 +35,36 @@ void PostProcessEffect::init() {
         frameBuffer->addOutputTexture(texture);
     }
 
+    if(this->callCount > 1){ // We need a secondary fbo to pingpong the data
+        secondFrameBuffer = std::make_shared<FrameBuffer>("PostProcessSecondaryFrameBuffer (" + this->name + ")");
+        for (auto &texture: outputTextures) {
+            secondFrameBuffer->addOutputTexture(texture);
+        }
+    }
+
 }
 
 unsigned int PostProcessEffect::getId() {
     return this->getNameHash();
+}
+
+void PostProcessEffect::drawSingle(){
+    auto program = quad->getProgram();
+    program->use();
+    for (auto [i, texture]: enumerate(inputTextures)) {
+        program->setTexture(texture, i);
+    }
+    for (auto &uniform: uniforms) {
+        program->setUniform(uniform);
+    }
+    quad->draw();
+    if (frameBuffer) {
+        frameBuffer->unbind();
+    }
+}
+
+void PostProcessEffect::drawMultiple(){
+
 }
 
 void PostProcessEffect::draw() {
@@ -44,17 +72,14 @@ void PostProcessEffect::draw() {
         init();
     }
     if (frameBuffer) {
-        frameBuffer->bind();
+        frameBuffer->bind(false);
     }
-    auto program = quad->getProgram();
-    program->use();
-    for (auto [i, texture]: enumerate(inputTextures)) {
-        program->setTexture(texture, i);
+    if(callCount == 1){
+        drawSingle();
+    } else {
+        drawMultiple();
     }
-    quad->draw();
-    if (frameBuffer) {
-        frameBuffer->unbind();
-    }
+
 }
 
 
@@ -97,4 +122,16 @@ std::shared_ptr<Shader> PostProcessEffect::getShader() const {
 
 std::shared_ptr<FrameBuffer> PostProcessEffect::getFrameBuffer() const {
     return frameBuffer;
+}
+
+void PostProcessEffect::addUniform(std::shared_ptr<Uniform> uniform) {
+    uniforms.push_back(uniform);
+}
+
+void PostProcessEffect::setCallCount(int count) {
+    callCount = count;
+}
+
+int PostProcessEffect::getCallCount() const {
+    return callCount;
 }

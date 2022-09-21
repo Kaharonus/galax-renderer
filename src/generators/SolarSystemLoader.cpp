@@ -43,11 +43,13 @@ std::shared_ptr<Animation> SolarSystemLoader::generateRotation(float distance){
     return animation;
 }
 
-std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateHDR(std::shared_ptr<Texture> lightMap){
+std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateHDR(std::shared_ptr<Texture> lightMap, std::shared_ptr<Texture> bloomMap){
     auto hdr = std::make_shared<PostProcessEffect>("HDR");
     auto shader = assets->getShader("shaders/effects/hdr.fs.shader", Shader::FRAGMENT);
     hdr->setShader(shader);
     hdr->addInputTexture(lightMap);
+    hdr->addInputTexture(bloomMap);
+
     return hdr;
 }
 
@@ -64,6 +66,18 @@ std::shared_ptr<Node> SolarSystemLoader::generateSkybox(std::shared_ptr<AssetLoa
     return sky;
 }
 
+
+
+std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateBloom(std::shared_ptr<Texture> bloomMap) {
+    auto bloom = std::make_shared<PostProcessEffect>("Bloom");
+    auto shader = assets->getShader("shaders/effects/bloom.fs.shader", Shader::FRAGMENT);
+    bloom->addOutputTexture(bloomMap);
+    bloom->addInputTexture(bloomMap);
+    bloom->setShader(shader);
+    //Should be an even number - every other iteration is a switch between horizontal and vertical blur
+    bloom->setCallCount(10);
+    return bloom;
+}
 
 Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSystem() {
 
@@ -88,7 +102,6 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     sun->setCamera(camera);
     sky->addChild(sun);
 
-
     //generate planets
     auto planet = PlanetLoader::fromType("EarthLike", Planet::Type::TEMPERATE);
     planet->addAnimation(generatePlanetSpin(5000));
@@ -104,11 +117,17 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     auto lightTexture = std::make_shared<Texture>("lightMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::REPEAT, Texture::NEAREST);
     lightingModel->addOutputTexture(lightTexture);
 
-
+    auto bloomTexture = std::make_shared<Texture>("bloomMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::REPEAT, Texture::NEAREST);
+    lightingModel->addOutputTexture(bloomTexture);
 
     //generate post processes
     std::vector<std::shared_ptr<PostProcessEffect>> effects;
-    effects.push_back(generateHDR(lightTexture));
 
+    auto bloom = generateBloom(bloomTexture);
+    effects.push_back(bloom);
+    auto bloomMap = *bloom->getOutputTextures().rbegin();
+    auto hdr = generateHDR(lightTexture, bloomMap);
+    effects.push_back(hdr);
     return {system, lightingModel, effects};
 }
+

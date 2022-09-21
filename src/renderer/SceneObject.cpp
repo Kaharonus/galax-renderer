@@ -7,15 +7,40 @@
 using namespace Galax::Renderer;
 using namespace gl;
 
+std::unordered_set<unsigned int> SceneObject::usedNames;
+
 SceneObject::SceneObject() {
     this->name = getNextDefaultName();
+    checkName();
 }
 
-SceneObject::SceneObject(std::string name) {
+SceneObject::SceneObject(const std::string& name) {
     this->name = name;
+    checkName();
+}
+
+void SceneObject::checkName(){
+    auto hash = getNameHash();
+    std::vector<unsigned long> allowedDuplicates = {
+            503167521, //model
+            3463620694, //transposeInverseModel
+            1688038832, //currentCall (post processing needs this)
+    };
+
+    for(auto allowedDuplicate : allowedDuplicates){
+        if(hash == allowedDuplicate){
+            return;
+        }
+    }
+
+    if(usedNames.find(hash) != usedNames.end()){
+        throw std::runtime_error("Name " + name + " already in use");
+    }
+    usedNames.insert(this->getNameHash());
 }
 
 SceneObject::~SceneObject() {
+    usedNames.erase(this->getNameHash());
 }
 
 std::string SceneObject::getName() {

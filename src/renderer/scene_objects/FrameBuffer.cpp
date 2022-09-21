@@ -42,12 +42,14 @@ void FrameBuffer::addOutputTexture(std::shared_ptr<Texture> texture) {
     outTextures.push_back(texture);
 }
 
-void FrameBuffer::bind() {
+void FrameBuffer::bind(bool clear) {
     if (id == 0) {
         create();
     }
     glBindFramebuffer(GL_FRAMEBUFFER, id);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if(clear){
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
     lastBoundFrameBuffer = id;
 }
 

@@ -20,25 +20,34 @@ namespace Galax::Renderer {
 
         unsigned int getId() override;
         void draw();
-        std::vector<std::shared_ptr<Texture>> getOutputTextures() const;
-        std::vector<std::shared_ptr<Texture>> getInputTextures() const;
-        std::shared_ptr<Shader> getShader() const;
+        [[nodiscard]] std::vector<std::shared_ptr<Texture>> getOutputTextures() const;
+        [[nodiscard]] std::vector<std::shared_ptr<Texture>> getInputTextures() const;
+        [[nodiscard]] std::shared_ptr<Shader> getShader() const;
         void addInputTexture(std::shared_ptr<Texture> texture);
         void addOutputTexture(std::shared_ptr <Texture> texture);
         void setShader(std::shared_ptr<Shader> shader);
         void resize(int width, int height);
-
-        std::shared_ptr<FrameBuffer> getFrameBuffer() const;
+        void addUniform(std::shared_ptr<Uniform> uniform);
+        void setCallCount(int count);
+        [[nodiscard]] int getCallCount() const;
+        [[nodiscard]] std::shared_ptr<FrameBuffer> getFrameBuffer() const;
 
     private:
-        bool initialized = false;
+        void init();
 
+        int callCount = 1;
+        bool initialized = false;
         std::shared_ptr<Shader> shader;
         std::shared_ptr<Quad> quad;
         std::shared_ptr<FrameBuffer> frameBuffer;
+        std::shared_ptr<FrameBuffer> secondFrameBuffer;
         std::vector<std::shared_ptr<Texture>> inputTextures;
         std::vector<std::shared_ptr<Texture>> outputTextures;
+        std::vector<std::shared_ptr<Uniform>> uniforms;
+        std::shared_ptr<Uniform> callCountUniform;
 
-        void init();
+        void drawMultiple();
+
+        void drawSingle();
     };
 }

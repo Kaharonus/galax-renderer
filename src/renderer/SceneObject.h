@@ -1,10 +1,10 @@
 
 #pragma once
 
-//#include <glbinding/gl/gl.h>
 #include <memory>
 #include <chrono>
 #include <string>
+#include <unordered_set>
 
 
 namespace Galax::Renderer {
@@ -15,7 +15,7 @@ namespace Galax::Renderer {
         static void init();
 
         SceneObject();
-        SceneObject(std::string name);
+        SceneObject(const std::string &name);
         ~SceneObject();
         //virtual void render() = 0;
         std::string getName();
@@ -45,6 +45,8 @@ namespace Galax::Renderer {
 
     private:
 
+        static std::unordered_set<unsigned int> usedNames;
+
         uint id = 0;
 
         std::string matchError(int error);
@@ -52,5 +54,8 @@ namespace Galax::Renderer {
         virtual void ignorethisshitrighthere(){}; // A hack to make the compiler happy :)
 
         inline static unsigned int defaultNameCounter = 0;
+
+
+        void checkName();
     };
 } // namespace MapGenerator::Renderer::SceneObjects

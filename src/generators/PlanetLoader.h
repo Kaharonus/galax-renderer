@@ -40,7 +40,7 @@ namespace Galax::Generators {
 
         static void generateMesh(const std::shared_ptr<AssetLoader> &loader);
 
-        static std::shared_ptr<Mesh> calculatePlanetMesh(const std::shared_ptr<Mesh> &orig);
+        static std::shared_ptr<Mesh> calculatePlanetMesh(const std::shared_ptr<Mesh> &orig, int i);
 
 
     };

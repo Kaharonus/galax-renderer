@@ -17,7 +17,7 @@ namespace Galax::Renderer::SceneObjects {
         FrameBuffer();
         explicit FrameBuffer(const std::string& name);
 
-        void bind();
+        void bind(bool clear = true);
         void unbind();
         void addOutputTexture(std::shared_ptr<Texture> texture);
 
