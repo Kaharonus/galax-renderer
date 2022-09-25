@@ -21,9 +21,10 @@ Node::Node(const std::string &name, std::shared_ptr<Node> parent) : SceneObject(
     this->parent = parent;
 }
 
-void Node::init(){
+void Node::init() {
     modelMatrixUniform = std::make_shared<Uniform>("model", Uniform::Type::MAT4, glm::mat4(1.0));
-    transposeInverseModelUniform = std::make_shared<Uniform>("transposeInverseModel", Uniform::Type::MAT4, glm::mat4(1.0));
+    transposeInverseModelUniform = std::make_shared<Uniform>("transposeInverseModel", Uniform::Type::MAT4,
+                                                             glm::mat4(1.0));
 
     setPosition(glm::vec3(0.0f));
     setRotation(glm::vec3(0.0f));
@@ -166,10 +167,10 @@ float Node::getDistance() {
 void Node::selectLOD(float distance) {
     distance = std::abs(distance);
     auto it = meshLODs.begin();
-    while(it != meshLODs.end()) {
+    while (it != meshLODs.end()) {
         auto current = it;
         auto next = std::next(it);
-        if(distance > current->first && distance < next->first) {
+        if (distance > current->first && distance < next->first) {
             mesh = current->second;
             return;
         }
@@ -195,10 +196,10 @@ void Node::useCamera() {
 }
 
 
-void Node::updateAnimations(){
-    for(const auto& anim: animations){
+void Node::updateAnimations() {
+    for (const auto &anim: animations) {
         anim->update();
-        switch(anim->getTarget()){
+        switch (anim->getTarget()) {
             case Animation::POSITION:
                 setPosition(anim->getValue());
                 break;
@@ -216,11 +217,22 @@ void Node::updateAnimations(){
 }
 
 void Node::draw() {
-    if (meshLODs.empty()) {
+
+    if (meshLODs.empty()) { // There is no mesh to draw
         return;
     }
     if (program == nullptr) {
         return;
+    }
+    if (drawTarget == DrawTarget::TEXTURE) {
+        if(!frameBuffer){
+            assert(drawTexture != nullptr);
+            frameBuffer = std::make_shared<FrameBuffer>("Node " + name + " FrameBuffer");
+            frameBuffer->addOutputTexture(drawTexture);
+            auto [w, h, _] = drawTexture->getDimensions();
+            frameBuffer->resize(w, h);
+        }
+        frameBuffer->bind();
     }
 
     program->use();
@@ -244,11 +256,14 @@ void Node::draw() {
     mesh->bind();
     auto drawMode = GL_TRIANGLES;
 
-    if(program->hasTesslation()){
+    if (program->hasTesslation()) {
         glPatchParameteri(GL_PATCH_VERTICES, 3);
         drawMode = GL_PATCHES;
     }
-    glDrawElements(drawMode, (int)mesh->size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(drawMode, (int) mesh->size(), GL_UNSIGNED_INT, 0);
+    if(drawTarget == DrawTarget::TEXTURE){
+        frameBuffer->unbind();
+    }
 
 
 }
@@ -267,4 +282,17 @@ std::vector<std::shared_ptr<Uniform>> Node::getUniforms() const {
 
 std::vector<std::shared_ptr<Texture>> Node::getTextures() const {
     return textures;
+}
+
+void Node::setDrawTarget(Node::DrawTarget target) {
+    drawTarget = target;
+}
+
+Node::DrawTarget Node::getDrawTarget() const {
+    return drawTarget;
+}
+
+void Node::setDrawTexture(std::shared_ptr<Texture> texture) {
+    assert(drawTarget == DrawTarget::TEXTURE);
+    drawTexture = texture;
 }

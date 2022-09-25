@@ -9,6 +9,7 @@
 #include "Program.h"
 #include "Texture.h"
 #include "Animation.h"
+#include "FrameBuffer.h"
 
 
 #include <algorithm>
@@ -23,6 +24,12 @@
 namespace Galax::Renderer::SceneObjects {
     class Node : public SceneObject {
     public:
+        enum class DrawTarget{
+            SCREEN,
+            TEXTURE
+        };
+
+
         Node();
         Node(const std::string& name);
         Node(const std::string& name, std::shared_ptr<Node> parent);
@@ -32,6 +39,8 @@ namespace Galax::Renderer::SceneObjects {
 
         ~Node();
 
+        void setDrawTarget(DrawTarget target);
+        void setDrawTexture(std::shared_ptr<Texture> texture);
         void addChild(std::shared_ptr<Node> child);
         void removeChild(std::shared_ptr<Node> child);
         void removeAllChildren();
@@ -69,11 +78,17 @@ namespace Galax::Renderer::SceneObjects {
         std::shared_ptr<Camera> getCamera() const;
         std::vector<std::shared_ptr<Uniform>> getUniforms() const;
         std::vector<std::shared_ptr<Texture>> getTextures() const;
+        DrawTarget getDrawTarget() const;
 
     private:
         void useCamera();
         void calculateModelMatrix();
         void selectLOD(float distance);
+
+
+        DrawTarget drawTarget = DrawTarget::SCREEN;
+        std::shared_ptr<FrameBuffer> frameBuffer;
+        std::shared_ptr<Texture> drawTexture;
 
         std::vector<std::shared_ptr<Uniform>> uniforms;
         std::vector<std::shared_ptr<Texture>> textures;
