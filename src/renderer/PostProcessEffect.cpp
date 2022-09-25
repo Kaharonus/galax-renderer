@@ -30,18 +30,66 @@ void PostProcessEffect::init() {
         return;
     }
 
+
+    // Get elements that are in both the input and the output
+    // Since there are max 8 textures (by default) having an O(n^2) algorithm is fine
+    std::vector<std::shared_ptr<Texture>> commonTextures;
+    for (auto &inputTexture: inputTextures) {
+        for (auto &outputTexture: outputTextures) {
+            if(inputTexture != outputTexture){
+                commonTextures.push_back(inputTexture);
+            }
+        }
+    }
     frameBuffer = std::make_shared<FrameBuffer>("PostProcessFrameBuffer (" + this->name + ")");
-    for (auto &texture: outputTextures) {
-        frameBuffer->addOutputTexture(texture);
+    if(callCount == 1) {
+        if(!commonTextures.empty()){
+            //This would take too much unnecessary memory, so we don't allow it
+            throw std::runtime_error("PostProcessEffect: Cannot have common input and output textures when callCount is 1 "
+                                     "(the texture copy necessary is just a waste of resources)");
+        }
+        for (auto &texture: outputTextures) {
+            frameBuffer->addOutputTexture(texture);
+        }
+        return;
     }
 
-    if(this->callCount > 1){ // We need a secondary fbo to pingpong the data
-        secondFrameBuffer = std::make_shared<FrameBuffer>("PostProcessSecondaryFrameBuffer (" + this->name + ")");
-        for (auto &texture: outputTextures) {
+
+
+    // Create temporary textures
+    for(auto &texture: commonTextures){
+        auto temporaryTexture1 = std::make_shared<Texture>("1tmp_" + texture->getName(),
+                                                          texture->getType(),
+                                                          texture->getFormat(),
+                                                          texture->getDataType(),
+                                                          texture->getWrap(),
+                                                          texture->getFiltering());
+        temporaryTexture1->setDimensions(texture->getWidth(), texture->getHeight());
+
+        auto temporaryTexture2 = std::make_shared<Texture>("2tmp_" + texture->getName(),
+                                                           texture->getType(),
+                                                           texture->getFormat(),
+                                                           texture->getDataType(),
+                                                           texture->getWrap(),
+                                                           texture->getFiltering());
+        temporaryTexture2->setDimensions(texture->getWidth(), texture->getHeight());
+
+        temporaryTextures[texture] = {temporaryTexture1, temporaryTexture2};
+    }
+    secondFrameBuffer = std::make_shared<FrameBuffer>("PostProcessSecondaryFrameBuffer (" + this->name + ")");
+    for (auto &texture: commonTextures) {
+        auto [temporaryTexture1, temporaryTexture2] = temporaryTextures[texture];
+        frameBuffer->addOutputTexture(temporaryTexture1);
+        frameBuffer->addOutputTexture(temporaryTexture2);
+        secondFrameBuffer->addOutputTexture(temporaryTexture1);
+        secondFrameBuffer->addOutputTexture(temporaryTexture2);
+    }
+    for (auto &texture: outputTextures) {
+        if(std::find(commonTextures.begin(), commonTextures.end(), texture) == commonTextures.end()){
+            frameBuffer->addOutputTexture(texture); //Add only if it's not in the common textures
             secondFrameBuffer->addOutputTexture(texture);
         }
     }
-
 }
 
 unsigned int PostProcessEffect::getId() {
@@ -49,6 +97,9 @@ unsigned int PostProcessEffect::getId() {
 }
 
 void PostProcessEffect::drawSingle(){
+    if (frameBuffer) {
+        frameBuffer->bind(false);
+    }
     auto program = quad->getProgram();
     program->use();
     for (auto [i, texture]: enumerate(inputTextures)) {
@@ -70,9 +121,6 @@ void PostProcessEffect::drawMultiple(){
 void PostProcessEffect::draw() {
     if (!initialized) {
         init();
-    }
-    if (frameBuffer) {
-        frameBuffer->bind(false);
     }
     if(callCount == 1){
         drawSingle();

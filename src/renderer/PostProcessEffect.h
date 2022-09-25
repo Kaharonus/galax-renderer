@@ -46,6 +46,8 @@ namespace Galax::Renderer {
         std::vector<std::shared_ptr<Uniform>> uniforms;
         std::shared_ptr<Uniform> callCountUniform;
 
+        std::unordered_map<std::shared_ptr<Texture>, std::tuple<std::shared_ptr<Texture>, std::shared_ptr<Texture>>> temporaryTextures;
+
         void drawMultiple();
 
         void drawSingle();

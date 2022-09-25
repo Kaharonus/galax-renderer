@@ -65,9 +65,10 @@ namespace Galax::Renderer::SceneObjects {
         [[nodiscard]] DataType getDataType() const;
         [[nodiscard]] Wrap getWrap() const;
         [[nodiscard]] Filtering getFiltering() const;
-        int getFormatSize() const;
-        int getDataSize() const;
-
+        [[nodiscard]] int getFormatSize() const;
+        [[nodiscard]] int getDataSize() const;
+        [[nodiscard]] int getWidth() const;
+        [[nodiscard]] int getHeight() const;
 
         void setDimensions(int width, int height);
         void setDimensions(int width, int height, int depth);

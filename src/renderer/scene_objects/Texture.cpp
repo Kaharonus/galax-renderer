@@ -422,5 +422,13 @@ void Texture::cancelDataRequest() {
     this->readCallback = nullptr;
 }
 
+int Texture::getWidth() const {
+    return std::get<0>(dimensions);
+}
+
+int Texture::getHeight() const {
+    return std::get<1>(dimensions);
+}
+
 
 
