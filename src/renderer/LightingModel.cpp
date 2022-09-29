@@ -51,12 +51,12 @@ void LightingModel::draw() {
         init();
     }
 
-    outputFrameBuffer->bind();
+    outputFrameBuffer->bind(true);
     auto lightingProgram = quad->getProgram();
     if(!lightingProgram){
         return;
     }
-    lightingProgram->use();
+    lightingProgram->bind();
     for(auto& uniform : uniforms) {
         lightingProgram->setUniform(uniform);
     }

@@ -6,11 +6,11 @@
 
 using namespace Galax::Renderer::SceneObjects;
 
-Camera::Camera() : SceneObject() {
+Camera::Camera() : ICamera() {
     init();
 }
 
-Camera::Camera(const std::string &name) : SceneObject(name) {
+Camera::Camera(const std::string &name) : ICamera(name) {
     init();
 }
 
@@ -187,19 +187,19 @@ uint Camera::getId() {
     return -1;
 }
 
-std::shared_ptr<Uniform> Camera::getProjectionUniform() const {
+std::shared_ptr<Galax::Renderer::IUniform> Camera::getProjectionUniform() const {
     return projectionUniform;
 }
 
-std::shared_ptr<Uniform> Camera::getViewUniform() const {
+std::shared_ptr<Galax::Renderer::IUniform> Camera::getViewUniform() const {
     return viewUniform;
 }
 
-std::shared_ptr<Uniform> Camera::getPositionUniform() const {
+std::shared_ptr<Galax::Renderer::IUniform> Camera::getPositionUniform() const {
     return cameraPositionUniform;
 }
 
-std::shared_ptr<Uniform> Camera::getRotationUniform() const {
+std::shared_ptr<Galax::Renderer::IUniform> Camera::getRotationUniform() const {
     return cameraRotationUniform;
 }
 

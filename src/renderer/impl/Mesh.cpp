@@ -7,13 +7,13 @@
 using namespace Galax::Renderer::SceneObjects;
 using namespace gl;
 
-Mesh::Mesh() : SceneObject() {
+Mesh::Mesh() : IMesh() {
     vbo = 0;
     ebo = 0;
     vao = 0;
 }
 
-Mesh::Mesh(const std::string &name) : SceneObject(name) {
+Mesh::Mesh(const std::string &name) : IMesh(name) {
     vbo = 0;
     ebo = 0;
     vao = 0;

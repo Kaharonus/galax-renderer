@@ -12,13 +12,14 @@
 #include <QGraphicsPixmapItem>
 #include <thread>
 
+using namespace Galax::Renderer;
 
 TextureControl::TextureControl(QWidget *parent) : QWidget(parent), ui(new Ui::TextureControl) {
     ui->setupUi(this);
     init();
 }
 
-TextureControl::TextureControl(std::shared_ptr<Texture> texture, QWidget *parent) : QWidget(parent),
+TextureControl::TextureControl(std::shared_ptr<ITexture> texture, QWidget *parent) : QWidget(parent),
                                                                                     ui(new Ui::TextureControl) {
     ui->setupUi(this);
     this->texture = texture;

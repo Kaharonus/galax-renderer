@@ -51,7 +51,7 @@ uint GBuffer::getId() {
 }
 
 void GBuffer::bind() {
-    frameBuffer->bind();
+    frameBuffer->bind(true);
     glViewport(0, 0, width, height);
 }
 

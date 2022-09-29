@@ -7,9 +7,10 @@
 #include "../orbital/Planet.h"
 #include "../orbital/SolarSystem.h"
 #include "../renderer/LightingModel.h"
-#include "../renderer/PostProcessEffect.h"
+#include "../renderer/impl/PostProcessEffect.h"
 
 #include "../assets/AssetLoader.h"
+#include "../effects/Bloom.h"
 
 #include <memory>
 
@@ -20,7 +21,7 @@ namespace Galax::Generators{
     using namespace Galax::Orbital;
     class SolarSystemLoader {
     public:
-        typedef std::tuple<std::shared_ptr<SolarSystem>, std::shared_ptr<LightingModel>, std::vector<std::shared_ptr<PostProcessEffect>>> RenderData;
+        typedef std::tuple<std::shared_ptr<SolarSystem>, std::shared_ptr<LightingModel>, std::vector<std::shared_ptr<IPostProcessEffect>>> RenderData;
 
         SolarSystemLoader() = default;
         ~SolarSystemLoader() = default;
@@ -36,16 +37,16 @@ namespace Galax::Generators{
 
         std::shared_ptr<Animation> generateRotation(float distance);
 
-        std::shared_ptr<PostProcessEffect> generateHDR(std::shared_ptr<Texture> lightMap);
-
         std::shared_ptr<Node> generateSkybox(std::shared_ptr<AssetLoader> assets);
 
-        std::shared_ptr<PostProcessEffect> generateBloom();
 
         std::shared_ptr<PostProcessEffect>
-        generateHDR(std::shared_ptr<Texture> lightMap, std::shared_ptr<Texture> bloomTexture);
+        generateHDR(std::shared_ptr<Texture> lightMap, std::shared_ptr<ITexture> bloomTexture);
 
-        std::shared_ptr<PostProcessEffect> generateBloom(std::shared_ptr<Texture> light);
+        std::shared_ptr<Galax::Effects::Bloom> generateBloom(std::shared_ptr<Texture> light);
+
+        std::shared_ptr<Effects::Bloom>
+        generateBloom(std::shared_ptr<AssetLoader> assets, std::shared_ptr<Texture> bloomMap);
     };
 }
 

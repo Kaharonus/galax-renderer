@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "SceneObject.h"
-#include "scene_objects/Texture.h"
-#include "scene_objects/FrameBuffer.h"
+#include "impl/Texture.h"
+#include "impl/FrameBuffer.h"
 
 namespace Galax::Renderer {
     using namespace Galax::Renderer::SceneObjects;

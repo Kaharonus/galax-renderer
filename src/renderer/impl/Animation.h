@@ -11,25 +11,16 @@
 #include <glm/vec3.hpp>
 #include "../SceneObject.h"
 #include "Uniform.h"
+#include "../interfaces/IAnimation.h"
 #include <map>
 #include <functional>
 
 namespace Galax::Renderer::SceneObjects {
-
-    class Animation : public SceneObject {
-        typedef std::function<UniformT (const Animation& current, UniformT interpolatedValue, float percentDone)> AnimationUpdateFunction;
-
+    class Animation : public IAnimation {
     public:
         enum Repeat {
             ONCE,
             LOOP,
-        };
-
-        enum Target {
-            POSITION,
-            ROTATION,
-            SCALE,
-            CUSTOM
         };
 
         enum StartType {
@@ -64,8 +55,8 @@ namespace Galax::Renderer::SceneObjects {
         void setStartType(StartType start);
 
         void setStartTime(float startTime);
+        void setTarget(Target target) override;
 
-        void setTarget(Target target);
 
         void setCustomTarget(std::shared_ptr<Uniform> target);
 
@@ -73,7 +64,7 @@ namespace Galax::Renderer::SceneObjects {
 
         void setEase(Ease ease);
 
-        void addKeyFrame(float time, const UniformT &value);
+        void addKeyFrame(float time, const IUniform::UniformT &value);
 
         void setUpdateFunction(AnimationUpdateFunction updateFunction);
 
@@ -90,11 +81,11 @@ namespace Galax::Renderer::SceneObjects {
             return startTime;
         };
 
-        [[nodiscard]]Target getTarget() const {
+        [[nodiscard]]Target getTarget() const override {
             return target;
         };
 
-        [[nodiscard]]std::shared_ptr<Uniform> getCustomTarget() const {
+        [[nodiscard]]std::shared_ptr<IUniform> getCustomTarget() const override {
             return customTarget;
         };
 
@@ -106,7 +97,7 @@ namespace Galax::Renderer::SceneObjects {
             return ease;
         };
 
-        [[nodiscard]] std::map<float, UniformT> getKeyFrames() const {
+        [[nodiscard]] std::map<float, IUniform::UniformT> getKeyFrames() const {
             return keyFrames;
         };
 
@@ -117,7 +108,7 @@ namespace Galax::Renderer::SceneObjects {
         void update();
 
 
-        glm::vec3 getValue();
+        glm::vec3 getValue() override;
 
 
     private:
@@ -129,11 +120,11 @@ namespace Galax::Renderer::SceneObjects {
         Target target;
         glm::vec3 value;
         std::shared_ptr<Uniform> customTarget;
-        std::map<float, UniformT> keyFrames;
+        std::map<float, IUniform::UniformT> keyFrames;
         Repeat repeat = ONCE;
         Ease ease = LINEAR;
         bool shouldAnimate = true;
-        std::map<float, UniformT>::iterator keyFrameIterator;
+        std::map<float, IUniform::UniformT>::iterator keyFrameIterator;
         AnimationUpdateFunction updateFunction;
         bool updateFunctionSet = false;
 
@@ -141,8 +132,8 @@ namespace Galax::Renderer::SceneObjects {
 
         void updateTime();
 
-        void setCustomTargetValue(const UniformT &u1, const UniformT &u2, float t);
-        void setValue(const UniformT &u1, const UniformT &u2, float t);
+        void setCustomTargetValue(const IUniform::UniformT &u1, const IUniform::UniformT &u2, float t);
+        void setValue(const IUniform::UniformT &u1, const IUniform::UniformT &u2, float t);
 
     };
 }

@@ -91,7 +91,7 @@ void QRenderer::paintGL() {
     lightingModel->draw();
 
     for(auto [i,effect] : enumerate(postProcesses)) {
-        effect->draw();
+        effect->render();
     }
 
     //copyLastFBOToScreen();
@@ -193,7 +193,7 @@ void QRenderer::setLightingModel(std::shared_ptr<LightingModel> lightingModel) {
 
 }
 
-void QRenderer::addPostProcess(std::shared_ptr<PostProcessEffect> postProcess) {
+void QRenderer::addPostProcess(std::shared_ptr<IPostProcessEffect> postProcess) {
     this->postProcesses.push_back(postProcess);
 }
 

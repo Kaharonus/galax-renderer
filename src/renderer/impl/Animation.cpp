@@ -7,15 +7,14 @@
 
 using namespace Galax::Renderer::SceneObjects;
 
-Animation::Animation() : SceneObject() {
+Animation::Animation() : IAnimation() {
+}
+
+Animation::Animation(const std::string& name) : IAnimation(name) {
 
 }
 
-Animation::Animation(const std::string& name) : SceneObject(name) {
-
-}
-
-Animation::Animation(const std::string& name, Target target, Repeat repeat) : SceneObject(name), target(target), repeat(repeat) {
+Animation::Animation(const std::string& name, Target target, Repeat repeat) : IAnimation(name), target(target), repeat(repeat) {
 
 }
 
@@ -48,7 +47,7 @@ void Animation::setEase(Ease ease) {
     this->ease = ease;
 }
 
-void Animation::addKeyFrame(float time, const UniformT& value) {
+void Animation::addKeyFrame(float time, const IUniform::UniformT& value) {
     keyFrames[time] = value;
     keyFrameIterator = keyFrames.begin();
 }
@@ -64,8 +63,8 @@ void Animation::setUpdateFunction(AnimationUpdateFunction updateFunction) {
 }
 
 
-void Animation::setCustomTargetValue(const UniformT& u1, const UniformT& u2, float t){
-    UniformT result;
+void Animation::setCustomTargetValue(const IUniform::UniformT& u1, const IUniform::UniformT& u2, float t){
+    IUniform::UniformT result;
     switch (customTarget->getType()) {
         case Uniform::BOOL:
             result = glm::mix(std::get<bool>(u1), std::get<bool>(u2), t);
@@ -96,7 +95,7 @@ void Animation::setCustomTargetValue(const UniformT& u1, const UniformT& u2, flo
     customTarget->setValue(result);
 }
 
-void Animation::setValue(const UniformT& u1, const UniformT& u2, float t){
+void Animation::setValue(const IUniform::UniformT& u1, const IUniform::UniformT& u2, float t){
     auto result = glm::mix(std::get<glm::vec3>(u1), std::get<glm::vec3>(u2), t);
     if(this->updateFunctionSet){
         result = std::get<glm::vec3>(this->updateFunction(*this, result, t));

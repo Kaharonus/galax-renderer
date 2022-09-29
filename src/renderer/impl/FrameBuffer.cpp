@@ -9,11 +9,11 @@
 using namespace gl;
 using namespace Galax::Renderer::SceneObjects;
 
-FrameBuffer::FrameBuffer() : SceneObject() {
+FrameBuffer::FrameBuffer() : IFrameBuffer() {
     init();
 }
 
-FrameBuffer::FrameBuffer(const std::string &name) : SceneObject(name) {
+FrameBuffer::FrameBuffer(const std::string &name) : IFrameBuffer(name) {
     init();
 }
 
@@ -38,7 +38,7 @@ void FrameBuffer::create() {
     resize(width, height);
 }
 
-void FrameBuffer::addOutputTexture(std::shared_ptr<Texture> texture) {
+void FrameBuffer::addOutputTexture(std::shared_ptr<ITexture> texture) {
     outTextures.push_back(texture);
 }
 
@@ -57,7 +57,7 @@ void FrameBuffer::unbind() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::copyTo(unsigned int target) {
+void FrameBuffer::copyTo(unsigned int target) const {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, target);
     glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
@@ -66,7 +66,7 @@ void FrameBuffer::copyTo(unsigned int target) {
 }
 
 
-void FrameBuffer::copyFrom(unsigned int target) {
+void FrameBuffer::copyFrom(unsigned int target) const {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, target);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
     glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);

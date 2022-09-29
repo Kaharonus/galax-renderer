@@ -18,39 +18,35 @@ void Scene::setInputHandler(std::shared_ptr<InputHandler> inputHandler) {
     }
 }
 
-void Scene::addMesh(std::shared_ptr<Mesh> mesh) {
+void Scene::addMesh(std::shared_ptr<IMesh> mesh) {
     this->meshes.insert(mesh);
 }
 
-void Scene::addProgram(std::shared_ptr<Program> program) {
+void Scene::addProgram(std::shared_ptr<IProgram> program) {
     this->programs.insert(program);
 }
 
-void Scene::addShader(std::shared_ptr<Shader> shader) {
+void Scene::addShader(std::shared_ptr<IShader> shader) {
     this->shaders.insert(shader);
 }
 
-void Scene::addTexture(std::shared_ptr<Texture> texture) {
+void Scene::addTexture(std::shared_ptr<ITexture> texture) {
     this->textures.insert(texture);
 }
 
-void Scene::addMaterial(std::shared_ptr<Material> material) {
-    this->materials.insert(material);
-}
-
-void Scene::addCamera(std::shared_ptr<Camera> camera) {
+void Scene::addCamera(std::shared_ptr<ICamera> camera) {
     this->cameras.insert(camera);
 }
 
-void Scene::setRoot(std::shared_ptr<Node> parent) {
+void Scene::setRoot(std::shared_ptr<INode> parent) {
     root = parent;
 }
 
-std::shared_ptr<Node> Scene::getRoot() {
+std::shared_ptr<INode> Scene::getRoot() {
     return root;
 }
 
-void Scene::buildNode(const Node &node) {
+void Scene::buildNode(const INode &node) {
     if (node.getMesh() != nullptr) {
         addMesh(node.getMesh());
     }
@@ -62,10 +58,7 @@ void Scene::buildNode(const Node &node) {
         addProgram(program);
         addProgram(node.getProgram());
     }
-    if (node.getMaterial() != nullptr) {
-        auto material = node.getMaterial();
-        addMaterial(material);
-    }
+
     if (node.getCamera() != nullptr) {
         auto camera = node.getCamera();
         camera->setInputHandler(inputHandler);
@@ -80,7 +73,7 @@ void Scene::build() {
     buildNode(*root);
 }
 
-void Scene::drawNode(Node &node) {
+void Scene::drawNode(INode &node) {
     node.draw();
     for (auto& child: node.getChildren()) {
         drawNode(*child);

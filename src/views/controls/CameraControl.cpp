@@ -5,7 +5,7 @@
 CameraControl::CameraControl() {
 }
 
-CameraControl::CameraControl(std::shared_ptr<Camera> camera, QWidget* parent) : QWidget(parent), ui(new Ui::CameraControl) {
+CameraControl::CameraControl(std::shared_ptr<ICamera> camera, QWidget* parent) : QWidget(parent), ui(new Ui::CameraControl) {
     ui->setupUi(this);
 
     this->camera = camera;
@@ -69,9 +69,4 @@ void CameraControl::update() {
     }
     ui->fov->setText(QString::number(this->camera->getFOV()));
     camera->setFOV(ui->fovSlider->value());
-
-    if(!ui->acceptInput->hasFocus()) {
-        ui->acceptInput->setChecked(this->camera->acceptsInput());
-    }
-    this->camera->acceptInput(ui->acceptInput->isChecked());
 }

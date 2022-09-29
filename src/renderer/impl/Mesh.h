@@ -1,13 +1,14 @@
 
 #pragma once
 #include "../SceneObject.h"
+#include "../interfaces/IMesh.h"
 #include <memory>
 #include <vector>
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 
 namespace Galax::Renderer::SceneObjects {
-    class Mesh : public SceneObject {
+    class Mesh : public IMesh {
     public:
         Mesh();
         Mesh(const std::string& name);
@@ -21,17 +22,17 @@ namespace Galax::Renderer::SceneObjects {
         void addVertex(const glm::vec3& vertex, const glm::vec3& normal, const glm::vec2& texCoord, const glm::vec3& tangent);
         void addIndex(unsigned int index);
         void addTriangleIndex(unsigned int i1, unsigned int i2, unsigned int i3);
-        glm::vec3 getCenter() const;
-        std::vector<float>& getVertices();
-        std::vector<unsigned int>& getIndices();
+        [[nodiscard]] glm::vec3 getCenter() const override;
+        std::vector<float>& getVertices() override;
+        std::vector<unsigned int>& getIndices() override;
         int getStride() const;
 
-        void bind();
-        void unbind();
+        void bind() override;
+        void unbind() override;
 
         void upload();
 
-        uint size();
+        uint size() override;
 
         void calculateTangents();
         void calculateNormals();

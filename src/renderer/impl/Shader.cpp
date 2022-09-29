@@ -7,7 +7,7 @@
 using namespace Galax::Renderer::SceneObjects;
 using namespace gl;
 
-Shader::Shader() : SceneObject() {
+Shader::Shader() : IShader() {
     this->type = Type::None;
 }
 
@@ -17,12 +17,8 @@ Shader::~Shader() {
     }
 }
 
-Shader::Shader(const std::string& source, Shader::Type type) : SceneObject() {
-    this->type = type;
-    this->code = source;
-}
 
-Shader::Shader(const std::string& name, const std::string& source, Shader::Type type) : SceneObject(name) {
+Shader::Shader(const std::string& name, const std::string& source, Shader::Type type) : IShader(name) {
     this->type = type;
     this->code = source;
 }
@@ -74,8 +70,7 @@ void Shader::recompile() {
     if (this->id != 0) {
         glDeleteShader(this->id);
     }
-    auto t = (GLenum)this->getGLType();
-    this->id = glCreateShader(t);
+    this->id = glCreateShader((GLenum)this->type);
 
     const char* source = this->code.c_str();
     int length = this->code.size();
@@ -92,36 +87,6 @@ void Shader::recompile() {
     }else{
         this->infoLog = "";
     }
-}
-
-
-
-int Shader::getGLType() {
-    GLenum type;
-    switch (this->type) {
-    case None:
-        throw std::runtime_error("Shader type is None");
-        break;
-    case VERTEX:
-        type = GL_VERTEX_SHADER;
-        break;
-    case FRAGMENT:
-        type = GL_FRAGMENT_SHADER;
-        break;
-    case GEOMETRY:
-        type = GL_GEOMETRY_SHADER;
-        break;
-    case TESSALATION_CTRL:
-        type = GL_TESS_CONTROL_SHADER;
-        break;
-    case TESSALATION_EVAL:
-        type = GL_TESS_EVALUATION_SHADER;
-        break;
-    case COMPUTE:
-        type = GL_COMPUTE_SHADER;
-        break;
-    }
-    return (int)type;
 }
 
 uint Shader::getId() {

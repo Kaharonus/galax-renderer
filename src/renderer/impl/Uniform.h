@@ -11,35 +11,25 @@
 
 
 #include "../SceneObject.h"
+#include "../interfaces/IUniform.h"
 
 namespace Galax::Renderer::SceneObjects {
-    typedef std::variant<float, int, bool, glm::vec2, glm::vec3, glm::vec4, glm::mat3, glm::mat4> UniformT;
-    class Uniform : public SceneObject {
+    class Uniform : public IUniform {
     public:
 
-        enum Type{
-            FLOAT = 0,
-            INT = 1,
-            BOOL = 2,
-            VEC2 = 3,
-            VEC3 = 4,
-            VEC4 = 5,
-            MAT3 = 6,
-            MAT4 = 7
-        };
         Uniform(const std::string& name);
         Uniform(const std::string& name,Type type, const UniformT& value = UniformT());
-        void setValue(UniformT);
-        void setType(Type type);
+        void setValue(UniformT) override;
+        void setType(Type type) override;
 
         uint getId() override;
-        UniformT getValue() const;
+        UniformT getValue() const override;
         template <typename T> T getValue() const{
             return std::get<T>(value);
         };
 
-        Type getType() const;
-        ~Uniform();
+        Type getType() const override;
+        ~Uniform() override;
 
     private:
 

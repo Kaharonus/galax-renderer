@@ -3,7 +3,7 @@
 
 #include "../../renderer/Scene.h"
 #include "../../renderer/LightingModel.h"
-#include "../../renderer/PostProcessEffect.h"
+#include "../../renderer/impl/PostProcessEffect.h"
 
 #include <QCodeEditor>
 #include <QMainWindow>
@@ -18,7 +18,7 @@ namespace Ui {
     class RenderOptions;
 }
 QT_END_NAMESPACE
-
+using namespace Galax::Renderer;
 class RenderOptions : public QMainWindow {
     Q_OBJECT
 
@@ -27,7 +27,7 @@ public:
 
     void setScene(std::shared_ptr<Galax::Renderer::Scene> scene,
                   std::shared_ptr<Galax::Renderer::LightingModel> lighting,
-                  const std::vector<std::shared_ptr<Galax::Renderer::PostProcessEffect>>& effects
+                  const std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>>& effects
                   );
 
     ~RenderOptions() override;
@@ -42,7 +42,7 @@ private:
 
     std::shared_ptr<Galax::Renderer::Scene> scene;
     std::shared_ptr<Galax::Renderer::LightingModel> lighting;
-    std::vector<std::shared_ptr<Galax::Renderer::PostProcessEffect>> effects;
+    std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>> effects;
 
     QCodeEditor* codeEditor;
     QLabel* errorLabel;
@@ -51,14 +51,20 @@ private:
     QLayout* baseGridLayout;
     QTreeWidget* nodeView;
     QVBoxLayout* dataWidget;
-    std::shared_ptr<Shader> currentShader;
+    std::shared_ptr<IShader> currentShader;
 
-    void editShader(std::shared_ptr<Shader> shader);
-    void editCamera(std::shared_ptr<Camera> camera);
-    void editTexture(std::shared_ptr<Texture> camera);
+    void editShader(std::shared_ptr<IShader> shader);
+    void editCamera(std::shared_ptr<ICamera> camera);
+    void editTexture(std::shared_ptr<ITexture> camera);
+    void clearLayout(QLayout *layout);
 
+    void editNode(std::shared_ptr<INode> node);
+
+    void addLighting(std::shared_ptr<Galax::Renderer::LightingModel> sharedPtr);
+
+    void addEffects(const std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>> &effects);
     void prepareCodeEditor();
-    void addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent);
+    void addNode(std::shared_ptr<INode> node, QTreeWidgetItem* parent);
 
     std::string demangle(const char* name);
 
@@ -136,11 +142,5 @@ private:
     <style name="OutputArgument" italic="true"/>
 </style-scheme>)";
 
-    void clearLayout(QLayout *layout);
 
-    void editNode(std::shared_ptr<Node> node);
-
-    void addLighting(std::shared_ptr<Galax::Renderer::LightingModel> sharedPtr);
-
-    void addEffects(const std::vector<std::shared_ptr<Galax::Renderer::PostProcessEffect>> &effects);
 };

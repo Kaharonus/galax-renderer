@@ -3,10 +3,10 @@
 using namespace Galax::Renderer::SceneObjects;
 
 
-Uniform::Uniform(const std::string &name) : SceneObject(name) {
+Uniform::Uniform(const std::string &name) : IUniform(name) {
 }
 
-Uniform::Uniform(const std::string &name, Type type, const UniformT &value) : SceneObject(name) {
+Uniform::Uniform(const std::string &name, Type type, const UniformT &value) : IUniform(name) {
     this->value = value;
     this->type = type;
 }
@@ -31,6 +31,6 @@ void Uniform::setValue(UniformT v) {
     this->value = v;
 }
 
-UniformT Uniform::getValue() const {
+Uniform::UniformT Uniform::getValue() const {
     return value;
 }

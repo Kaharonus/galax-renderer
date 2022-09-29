@@ -92,25 +92,25 @@ RenderOptions::~RenderOptions() {
     delete ui;
 }
 
-void RenderOptions::editShader(std::shared_ptr<Shader> shader) {
+void RenderOptions::editShader(std::shared_ptr<IShader> shader) {
     prepareCodeEditor();
     currentShader = shader;
     codeEditor->setPlainText(shader->getSource().data());
 }
 
 
-void RenderOptions::editCamera(std::shared_ptr<Camera> camera){
+void RenderOptions::editCamera(std::shared_ptr<ICamera> camera){
     auto cam = new CameraControl(camera , this);
     dataWidget->layout()->addWidget(cam);
 }
 
-void RenderOptions::editTexture(std::shared_ptr<Texture> texture){
+void RenderOptions::editTexture(std::shared_ptr<ITexture> texture){
     auto tex = new TextureControl(texture, this);
     dataWidget->layout()->addWidget(tex);
 }
 
 
-void RenderOptions::editNode(std::shared_ptr<Node> node){
+void RenderOptions::editNode(std::shared_ptr<INode> node){
     auto nodeControl = new NodeControl(node, this);
     dataWidget->layout()->addWidget(nodeControl);
 }
@@ -119,17 +119,17 @@ void RenderOptions::onItemClicked() {
     timer->stop();
     clearLayout(dataWidget->layout());
 
-    auto shader = dynamic_cast<QDataTreeItem<Shader>*>(nodeView->currentItem());
+    auto shader = dynamic_cast<QDataTreeItem<IShader>*>(nodeView->currentItem());
     if (shader) {
         editShader(shader->getData());
         return;
     }
-    auto camera = dynamic_cast<QDataTreeItem<Camera>*>(nodeView->currentItem());
+    auto camera = dynamic_cast<QDataTreeItem<ICamera>*>(nodeView->currentItem());
     if (camera) {
         editCamera(camera->getData());
         return;
     }
-    auto node = dynamic_cast<QDataTreeItem<Node>*>(nodeView->currentItem());
+    auto node = dynamic_cast<QDataTreeItem<INode>*>(nodeView->currentItem());
     if (node) {
         editNode(node->getData());
         return;
@@ -151,11 +151,11 @@ void RenderOptions::codeChanged() {
     this->errorLabel->setText(QString(currentShader->getInfoLog().c_str()));
 }
 
-void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent) {
+void RenderOptions::addNode(std::shared_ptr<INode> node, QTreeWidgetItem* parent) {
     // TODO: Add more options to the debug window
 
     // Builds the base of the node
-    auto root = parent ? new QDataTreeItem<Node>(parent) : new QDataTreeItem<Node>(nodeView);
+    auto root = parent ? new QDataTreeItem<INode>(parent) : new QDataTreeItem<INode>(nodeView);
     root->setText(0, type(*node).c_str());
     root->setText(1, node->getName().data());
     root->setData(node);
@@ -166,7 +166,7 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
         programNode->setText(0, type(*program).c_str());
         programNode->setText(1, program->getName().data());
         for (auto shader : program->getShaders()) {
-            auto shaderNode = new QDataTreeItem<Shader>(programNode);
+            auto shaderNode = new QDataTreeItem<IShader>(programNode);
             shaderNode->setData(shader);
             shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
             shaderNode->setText(1, shader->getName().data());
@@ -186,7 +186,7 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
     //Add the camera
     auto camera = node->getCamera();
     if(camera){
-        auto cameraNode = new QDataTreeItem<Camera>(root);
+        auto cameraNode = new QDataTreeItem<ICamera>(root);
         cameraNode->setData(camera);
         cameraNode->setText(0, type(*camera).c_str());
         cameraNode->setText(1, camera->getName().data());
@@ -196,7 +196,7 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
     auto textureNode = new QTreeWidgetItem(root);
     textureNode->setText(0, "Textures");
     for(const auto& texture : textures){
-        auto textureItem = new QDataTreeItem<Texture>(textureNode);
+        auto textureItem = new QDataTreeItem<ITexture>(textureNode);
         textureItem->setData(texture);
         textureItem->setText(0, type(*texture).c_str());
         textureItem->setText(1, texture->getName().data());
@@ -213,7 +213,7 @@ void RenderOptions::addNode(std::shared_ptr<Node> node, QTreeWidgetItem* parent)
 
 void RenderOptions::setScene(std::shared_ptr<Galax::Renderer::Scene> scene,
                              std::shared_ptr<Galax::Renderer::LightingModel> lighting,
-                             const std::vector<std::shared_ptr<Galax::Renderer::PostProcessEffect>>& effects) {
+                             const std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>>& effects) {
     this->scene = scene;
     this->lighting = lighting;
     this->effects = effects;
@@ -245,7 +245,7 @@ void RenderOptions::addLighting(std::shared_ptr<Galax::Renderer::LightingModel> 
     shaderNode->setText(1, shader->getName().data());
 };
 
-void RenderOptions::addEffects(const std::vector<std::shared_ptr<Galax::Renderer::PostProcessEffect>>& effects){
+void RenderOptions::addEffects(const std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>>& effects){
     auto root = new QTreeWidgetItem(nodeView);
     root->setText(0, "Effects");
     root->setText(1, "Effects");
@@ -259,7 +259,7 @@ void RenderOptions::addEffects(const std::vector<std::shared_ptr<Galax::Renderer
         auto inTextureNode = new QTreeWidgetItem(effectNode);
         inTextureNode->setText(0, "Input textures");
         for(const auto& texture : inTextures){
-            auto textureItem = new QDataTreeItem<Texture>(inTextureNode);
+            auto textureItem = new QDataTreeItem<ITexture>(inTextureNode);
             textureItem->setData(texture);
             textureItem->setText(0, type(*texture).c_str());
             textureItem->setText(1, texture->getName().data());
@@ -270,14 +270,14 @@ void RenderOptions::addEffects(const std::vector<std::shared_ptr<Galax::Renderer
         auto outTextureNode = new QTreeWidgetItem(effectNode);
         outTextureNode->setText(0, "Output textures");
         for(const auto& texture : outTextures){
-            auto textureItem = new QDataTreeItem<Texture>(outTextureNode);
+            auto textureItem = new QDataTreeItem<ITexture>(outTextureNode);
             textureItem->setData(texture);
             textureItem->setText(0, type(*texture).c_str());
             textureItem->setText(1, texture->getName().data());
         }
 
         auto shader = effect->getShader();
-        auto shaderNode = new QDataTreeItem<Shader>(effectNode);
+        auto shaderNode = new QDataTreeItem<IShader>(effectNode);
         shaderNode->setData(shader);
         shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
         shaderNode->setText(1, shader->getName().data());

@@ -7,7 +7,7 @@
 #include "input/InputHandler.h"
 #include "GBuffer.h"
 #include "LightingModel.h"
-#include "PostProcessEffect.h"
+#include "impl/PostProcessEffect.h"
 
 #include <chrono>
 #include <iostream>
@@ -44,7 +44,7 @@ namespace Galax::Renderer {
 
         void setScene(std::shared_ptr<Scene> scene);
         void setLightingModel(std::shared_ptr<LightingModel> lightingModel);
-        void addPostProcess(std::shared_ptr<PostProcessEffect> postProcess);
+        void addPostProcess(std::shared_ptr<IPostProcessEffect> postProcess);
 
         double getFrameTime() const;
 
@@ -77,7 +77,7 @@ namespace Galax::Renderer {
 
         std::shared_ptr<Scene> scene;
         std::shared_ptr<LightingModel> lightingModel;
-        std::vector<std::shared_ptr<PostProcessEffect>> postProcesses;
+        std::vector<std::shared_ptr<IPostProcessEffect>> postProcesses;
 
         std::shared_ptr<GBuffer> gBuffer;
 

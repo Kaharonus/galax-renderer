@@ -9,11 +9,11 @@
 #include <unordered_map>
 
 #include "../assets/AssetLoader.h"
-#include "../renderer/scene_objects/Shader.h"
-#include "../renderer/scene_objects/Program.h"
-#include "../renderer/scene_objects/Texture.h"
-#include "../renderer/scene_objects/Mesh.h"
-#include "../renderer/scene_objects/Node.h"
+#include "../renderer/impl/Shader.h"
+#include "../renderer/impl/Program.h"
+#include "../renderer/impl/Texture.h"
+#include "../renderer/impl/Mesh.h"
+#include "../renderer/impl/Node.h"
 
 
 namespace Galax::Generators {

@@ -5,6 +5,7 @@
 #include "SolarSystemLoader.h"
 #include "PlanetLoader.h"
 #include "SunLoader.h"
+#include "../effects/Bloom.h"
 
 using namespace Galax::Generators;
 using namespace Galax::Assets;
@@ -17,7 +18,7 @@ std::shared_ptr<Animation> SolarSystemLoader::generatePlanetSpin(int spinLength)
     animation->setLength(spinLength);
     animation->setRepeat(Animation::Repeat::LOOP);
     animation->setEase(Animation::Ease::LINEAR);
-    animation->setTarget(Animation::Target::ROTATION);
+    animation->setTarget(IAnimation::Target::ROTATION);
     animation->addKeyFrame(0, glm::vec3(0, 0, 0));
     animation->addKeyFrame(spinLength, glm::vec3(0, 360, 0));
     return animation;
@@ -30,10 +31,10 @@ std::shared_ptr<Animation> SolarSystemLoader::generateRotation(float distance){
     animation->setLength(length);
     animation->setRepeat(Animation::Repeat::LOOP);
     animation->setEase(Animation::Ease::LINEAR);
-    animation->setTarget(Animation::Target::POSITION);
+    animation->setTarget(IAnimation::Target::POSITION);
     animation->addKeyFrame(0, glm::vec3(distance));
     animation->addKeyFrame(length, glm::vec3(distance));
-    animation->setUpdateFunction([](const Animation& animation, UniformT value, float time){
+    animation->setUpdateFunction([](const IAnimation& animation, IUniform::UniformT value, float time){
         constexpr auto pi2 = 2 * glm::pi<float>();
         auto x = std::sin(time * pi2);
         auto y = std::cos(time * pi2);
@@ -43,7 +44,7 @@ std::shared_ptr<Animation> SolarSystemLoader::generateRotation(float distance){
     return animation;
 }
 
-std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateHDR(std::shared_ptr<Texture> lightMap, std::shared_ptr<Texture> bloomMap){
+std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateHDR(std::shared_ptr<Texture> lightMap, std::shared_ptr<ITexture> bloomMap){
     auto hdr = std::make_shared<PostProcessEffect>("HDR");
     auto shader = assets->getShader("shaders/effects/hdr.fs.shader", Shader::FRAGMENT);
     hdr->setShader(shader);
@@ -68,14 +69,13 @@ std::shared_ptr<Node> SolarSystemLoader::generateSkybox(std::shared_ptr<AssetLoa
 
 
 
-std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateBloom(std::shared_ptr<Texture> bloomMap) {
-    auto bloom = std::make_shared<PostProcessEffect>("Bloom");
-    auto shader = assets->getShader("shaders/effects/bloom.fs.shader", Shader::FRAGMENT);
-    bloom->addOutputTexture(bloomMap);
-    bloom->addInputTexture(bloomMap);
-    bloom->setShader(shader);
-    //Should be an even number - every other iteration is a switch between horizontal and vertical blur
-    bloom->setCallCount(10);
+std::shared_ptr<Galax::Effects::Bloom> SolarSystemLoader::generateBloom(std::shared_ptr<AssetLoader> assets, std::shared_ptr<Texture> bloomMap) {
+    auto bloom = std::make_shared<Galax::Effects::Bloom>();
+    auto result = std::make_shared<Texture>("bloomResult");
+    bloom->setInputTexture(bloomMap);
+    bloom->setOutputTexture(result);
+
+    bloom->setShader(assets->getShader("shaders/effects/bloom.fs.shader", Shader::FRAGMENT, "Bloom shader"));
     return bloom;
 }
 
@@ -120,10 +120,11 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     auto bloomTexture = std::make_shared<Texture>("bloomMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::REPEAT, Texture::NEAREST);
     lightingModel->addOutputTexture(bloomTexture);
 
-    //generate post processes
-    std::vector<std::shared_ptr<PostProcessEffect>> effects;
 
-    auto bloom = generateBloom(bloomTexture);
+    //generate post processes
+    std::vector<std::shared_ptr<IPostProcessEffect>> effects;
+
+    auto bloom = generateBloom(assets, bloomTexture);
     effects.push_back(bloom);
     auto bloomMap = *bloom->getOutputTextures().rbegin();
     auto hdr = generateHDR(lightTexture, bloomMap);

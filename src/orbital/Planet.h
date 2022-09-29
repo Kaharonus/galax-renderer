@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../renderer/scene_objects/Node.h"
+#include "../renderer/impl/Node.h"
 
 namespace Galax::Orbital {
 

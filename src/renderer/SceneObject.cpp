@@ -34,7 +34,7 @@ void SceneObject::checkName(){
     }
 
     if(usedNames.find(hash) != usedNames.end()){
-        throw std::runtime_error("Name " + name + " already in use");
+        throw std::runtime_error("Name " + name + " already in bind");
     }
     usedNames.insert(this->getNameHash());
 }

@@ -11,23 +11,25 @@
 #include <string>
 
 using namespace Galax::Renderer::SceneObjects;
+using namespace Galax::Renderer;
 using namespace gl;
 
-Program::Program() : SceneObject() {
+Program::Program() : IProgram() {
     compiled = false;
 }
-Program::Program(const std::string& name) : SceneObject(name) {
+Program::Program(const std::string& name) : IProgram(name) {
+
     compiled = false;
 }
 
-Program::Program(const std::string& name, const std::vector<std::shared_ptr<Shader>>& shaders) : SceneObject(name) {
+Program::Program(const std::string& name, const std::vector<std::shared_ptr<IShader>>& shaders) : IProgram(name) {
     compiled = false;
     for (auto shader : shaders) {
         addShader(shader);
     }
 }
 
-Program::Program(const std::string& name, const std::shared_ptr<Shader>& vertex, const std::shared_ptr<Shader>& fragment) : SceneObject(name) {
+Program::Program(const std::string& name, const std::shared_ptr<IShader>& vertex, const std::shared_ptr<IShader>& fragment) : IProgram(name) {
     if (vertex->getType() != Shader::Type::VERTEX) {
         throw std::runtime_error("Vertex shader is not of type VERTEX");
     }
@@ -45,7 +47,7 @@ Program::~Program() {
     }
 }
 
-void Program::addShader(const std::shared_ptr<Shader>& shader) {
+void Program::addShader(std::shared_ptr<IShader> shader) {
     switch (shader->getType()) {
     case Shader::None:
         throw std::runtime_error("Shader type is None");
@@ -71,7 +73,7 @@ void Program::addShader(const std::shared_ptr<Shader>& shader) {
     }
 }
 
-std::shared_ptr<Shader> Program::getShader(Shader::Type type) {
+std::shared_ptr<IShader> Program::getShader(IShader::Type type) {
     switch (type) {
     case Shader::None:
         throw std::runtime_error("Shader type is None");
@@ -168,7 +170,7 @@ bool Program::compile() {
 }
 
 
-void Program::setUniform(const std::shared_ptr<Uniform>& uniform) {
+void Program::setUniform(const std::shared_ptr<IUniform>& uniform) {
     auto uniformId = uniform->getId();
     auto location = this->uniformLocations[uniformId];
     if (location == -1) {
@@ -177,33 +179,33 @@ void Program::setUniform(const std::shared_ptr<Uniform>& uniform) {
     }
     switch (uniform->getType()) {
     case Uniform::Type::BOOL:
-        glProgramUniform1i(id, location, uniform->getValue<bool>());
+        glProgramUniform1i(id, location, std::get<bool>(uniform->getValue()));
         break;
     case Uniform::Type::INT:
-        glProgramUniform1i(id, location, uniform->getValue<int>());
+        glProgramUniform1i(id, location, std::get<int>(uniform->getValue()));
         break;
     case Uniform::Type::FLOAT:
-        glProgramUniform1f(id, location, uniform->getValue<float>());
+        glProgramUniform1f(id, location, std::get<float>(uniform->getValue()));
         break;
     case Uniform::Type::VEC2:
-        glProgramUniform2fv(id, location, 1, glm::value_ptr(uniform->getValue<glm::vec2>()));
+        glProgramUniform2fv(id, location, 1, glm::value_ptr(std::get<glm::vec2>(uniform->getValue())));
         break;
     case Uniform::Type::VEC3:
-        glProgramUniform3fv(id, location, 1, glm::value_ptr(uniform->getValue<glm::vec3>()));
+        glProgramUniform3fv(id, location, 1, glm::value_ptr(std::get<glm::vec3>(uniform->getValue())));
         break;
     case Uniform::Type::VEC4:
-        glProgramUniform4fv(id, location, 1, glm::value_ptr(uniform->getValue<glm::vec4>()));
+        glProgramUniform4fv(id, location, 1, glm::value_ptr(std::get<glm::vec4>(uniform->getValue())));
         break;
     case Uniform::Type::MAT3:
-        glProgramUniformMatrix3fv(id, location, 1, GL_FALSE, glm::value_ptr(uniform->getValue<glm::mat3>()));
+        glProgramUniformMatrix3fv(id, location, 1, GL_FALSE, glm::value_ptr(std::get<glm::mat3>(uniform->getValue())));
         break;
     case Uniform::Type::MAT4:
-        glProgramUniformMatrix4fv(id, location, 1, GL_FALSE, glm::value_ptr(uniform->getValue<glm::mat4>()));
+        glProgramUniformMatrix4fv(id, location, 1, GL_FALSE, glm::value_ptr(std::get<glm::mat4>(uniform->getValue())));
         break;
     }
 }
 
-void Program::setTexture(const std::shared_ptr<Texture>& texture, int unit) {
+void Program::setTexture(const std::shared_ptr<ITexture>& texture, int unit) {
     auto id = texture->getNameHash();
     auto location = this->uniformLocations[id];
     if (location == -1) {
@@ -215,8 +217,8 @@ void Program::setTexture(const std::shared_ptr<Texture>& texture, int unit) {
     //checkError();
 }
 
-std::vector<std::shared_ptr<Shader>> Program::getShaders() {
-    std::vector<std::shared_ptr<Shader>> shaders;
+std::vector<std::shared_ptr<IShader>> Program::getShaders() {
+    std::vector<std::shared_ptr<IShader>> shaders;
     if (this->vertexShader != nullptr) {
         shaders.push_back(this->vertexShader);
     }
@@ -238,7 +240,7 @@ std::vector<std::shared_ptr<Shader>> Program::getShaders() {
     return shaders;
 }
 
-void Program::addTexture(std::shared_ptr<Texture> texture) {
+void Program::addTexture(std::shared_ptr<ITexture> texture) {
     auto hash = texture->getNameHash();
     this->additionalTextures[hash] = texture;
 }
@@ -253,7 +255,7 @@ bool Program::shadersUpdated(){
     return vShader || fShader || gShader || tcShader || teShader || cShader;
 }
 
-void Program::use() {
+void Program::bind() {
     if (!compiled || this->shadersUpdated()) {
         auto success = compile();
     }
@@ -278,3 +280,13 @@ bool Program::hasTesslation() {
     return this->tessalationControlShader && this->tessalationEvaluationShader;
 }
 
+
+
+uint Program::getTexturePosition(const std::shared_ptr<ITexture>& texture) {
+    auto id = texture->getNameHash();
+    return this->uniformLocations[id];
+}
+
+void Program::unbind() {
+    glUseProgram(0);
+}

@@ -5,10 +5,10 @@
 #include <QWidget>
 #include <memory>
 #include <qwidget.h>
-#include "../../renderer/scene_objects/Camera.h"
+#include "../../renderer/impl/Camera.h"
 
 using namespace Galax::Renderer::SceneObjects;
-
+using namespace Galax::Renderer;
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class CameraControl;
@@ -20,7 +20,7 @@ class CameraControl : public QWidget {
     Q_OBJECT
 public:
     CameraControl();
-    CameraControl(std::shared_ptr<Camera> camera, QWidget* parent);
+    CameraControl(std::shared_ptr<ICamera> camera, QWidget* parent);
     ~CameraControl();
 
 protected slots:
@@ -29,6 +29,6 @@ protected slots:
 private:
     Ui::CameraControl* ui;
 
-    std::shared_ptr<Camera> camera;
+    std::shared_ptr<ICamera> camera;
     QTimer* timer;
 };

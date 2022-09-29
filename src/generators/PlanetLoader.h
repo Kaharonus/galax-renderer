@@ -8,17 +8,17 @@
 #include <unordered_map>
 #include "../orbital/Planet.h"
 #include "../assets/AssetLoader.h"
-#include "../renderer/scene_objects/Shader.h"
-#include "../renderer/scene_objects/Program.h"
-#include "../renderer/scene_objects/Texture.h"
+#include "../renderer/impl/Shader.h"
+#include "../renderer/impl/Program.h"
+#include "../renderer/impl/Texture.h"
 #include "../assets/PlanetConfig.h"
-#include "../renderer/scene_objects/Mesh.h"
+#include "../renderer/impl/Mesh.h"
 
 namespace Galax::Generators {
 
     using namespace Galax::Orbital;
     using namespace Galax::Assets;
-
+    using namespace Galax::Renderer;
     class PlanetLoader {
     public:
         static std::shared_ptr<Planet> fromType(const std::string &name, Planet::Type type);
@@ -30,7 +30,7 @@ namespace Galax::Generators {
         static std::unordered_map<Planet::Type, std::shared_ptr<Program>> programs;
         static std::unordered_map<Planet::Type, std::shared_ptr<PlanetConfig>> configs;
         static std::unordered_map<Planet::Type, std::shared_ptr<Texture>> colorPalette;
-        static std::map<float, std::shared_ptr<Mesh>> meshes;
+        static std::map<float, std::shared_ptr<IMesh>> meshes;
 
         static glm::vec3 fromHex(const std::string &hex);
 

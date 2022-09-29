@@ -18,7 +18,7 @@ bool PlanetLoader::initialized = false;
 std::unordered_map<Planet::Type, std::shared_ptr<Program>> PlanetLoader::programs;
 std::unordered_map<Planet::Type, std::shared_ptr<PlanetConfig>> PlanetLoader::configs;
 std::unordered_map<Planet::Type, std::shared_ptr<Texture>> PlanetLoader::colorPalette;
-std::map<float, std::shared_ptr<Mesh>> PlanetLoader::meshes;
+std::map<float, std::shared_ptr<IMesh>> PlanetLoader::meshes;
 
 
 std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::Orbital::Planet::Type type) {

@@ -6,12 +6,12 @@
 #pragma once
 
 #include "SceneObject.h"
-#include "scene_objects/Shader.h"
-#include "scene_objects/Texture.h"
-#include "scene_objects/Camera.h"
-#include "scene_objects/Light.h"
-#include "scene_objects/Program.h"
-#include "scene_objects/Quad.h"
+#include "impl/Shader.h"
+#include "impl/Texture.h"
+#include "impl/Camera.h"
+#include "impl/Light.h"
+#include "impl/Program.h"
+#include "impl/Quad.h"
 #include "GBuffer.h"
 
 #include <array>

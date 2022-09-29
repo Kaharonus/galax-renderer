@@ -1,6 +1,6 @@
 #version 430 core
 
-out vec4 bloom;
+out vec4 bloomResult;
 
 in vec2 texCoords;
 
@@ -29,5 +29,5 @@ void main()
             result += texture(bloomMap, texCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
         }
     }
-    bloom = vec4(result, 1.0);
+    bloomResult = vec4(result, 1.0);
 }

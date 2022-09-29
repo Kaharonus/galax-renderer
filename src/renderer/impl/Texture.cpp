@@ -12,12 +12,12 @@ using namespace Galax::Renderer::SceneObjects;
 using namespace gl;
 
 Texture::Texture(Type type, Format format, DataType dataType, Wrap wrap, Filtering filtering)
-        : SceneObject(), target(type), format(format), dataType(dataType), wrap(wrap), filtering(filtering) {
+        : ITexture(), target(type), format(format), dataType(dataType), wrap(wrap), filtering(filtering) {
     init();
 }
 
 Texture::Texture(const std::string &name, Type type, Format format, DataType dataType, Wrap wrap, Filtering filtering)
-        : SceneObject(name), target(type), format(format), dataType(dataType), wrap(wrap), filtering(filtering) {
+        : ITexture(name), target(type), format(format), dataType(dataType), wrap(wrap), filtering(filtering) {
     init();
 }
 
@@ -428,6 +428,10 @@ int Texture::getWidth() const {
 
 int Texture::getHeight() const {
     return std::get<1>(dimensions);
+}
+
+void Texture::unbind() {
+    glBindTexture((GLenum) target, 0);
 }
 
 
