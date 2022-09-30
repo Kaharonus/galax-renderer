@@ -21,6 +21,7 @@ namespace Galax::Renderer::SceneObjects {
         void bind(bool clear) override;
         void unbind() override;
         void addOutputTexture(std::shared_ptr<ITexture> texture);
+        void clearOutputTextures();
 
         [[nodiscard]] int getWidth() const override;
         [[nodiscard]] int getHeight() const override;

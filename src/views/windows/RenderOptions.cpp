@@ -135,7 +135,7 @@ void RenderOptions::onItemClicked() {
         return;
     }
 
-    auto texture = dynamic_cast<QDataTreeItem<Texture>*>(nodeView->currentItem());
+    auto texture = dynamic_cast<QDataTreeItem<ITexture>*>(nodeView->currentItem());
     if (texture) {
         editTexture(texture->getData());
         return;
@@ -232,14 +232,14 @@ void RenderOptions::addLighting(std::shared_ptr<Galax::Renderer::LightingModel> 
     auto textureNode = new QTreeWidgetItem(root);
     textureNode->setText(0, "Textures");
     for(const auto& texture : textures){
-        auto textureItem = new QDataTreeItem<Texture>(textureNode);
+        auto textureItem = new QDataTreeItem<ITexture>(textureNode);
         textureItem->setData(texture);
         textureItem->setText(0, type(*texture).c_str());
         textureItem->setText(1, texture->getName().data());
     }
 
     auto shader = model->getLightingShader();
-    auto shaderNode = new QDataTreeItem<Shader>(root);
+    auto shaderNode = new QDataTreeItem<IShader>(root);
     shaderNode->setData(shader);
     shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
     shaderNode->setText(1, shader->getName().data());

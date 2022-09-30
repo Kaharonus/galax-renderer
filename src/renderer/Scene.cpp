@@ -87,10 +87,16 @@ void Scene::draw() {
         camera->update();
     }
 
+#ifdef DEBUG
+    glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Geometry pass");
+#endif
+
     gBuffer->bind();
     drawNode(*root);
     gBuffer->unbind();
-
+#ifdef DEBUG
+    glPopDebugGroup();
+#endif
 }
 
 void Scene::setDimensions(int w, int h) {

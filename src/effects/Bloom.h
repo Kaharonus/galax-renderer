@@ -25,15 +25,21 @@ namespace Galax::Effects {
             void setInputTexture(std::shared_ptr<ITexture> texture);
             void setOutputTexture(std::shared_ptr<ITexture> texture);
             void setShader(std::shared_ptr<IShader> shader);
+            void setPasses(int passes);
+            int getPasses() const;
             [[nodiscard]] std::vector<std::shared_ptr<ITexture>> getInputTextures() const override;
             [[nodiscard]] std::vector<std::shared_ptr<ITexture>> getOutputTextures() const override;
             [[nodiscard]] std::shared_ptr<IShader> getShader() const override;
         private:
+            int passes = 2;
             std::shared_ptr<IShader> shader;
             std::shared_ptr<ITexture> inputTexture;
             std::shared_ptr<ITexture> outputTexture;
+            std::array<std::shared_ptr<ITexture>, 2> textures;
             std::array<std::shared_ptr<FrameBuffer>, 2> buffers;
             std::shared_ptr<Quad> quad;
+            std::shared_ptr<Program> program;
+            std::shared_ptr<Uniform> currentCall;
 
             void init();
         };

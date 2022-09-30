@@ -90,7 +90,6 @@ namespace Galax::Renderer {
 
         void resize();
 
-        void copyLastFBOToScreen();
     };
 
 } // namespace MapGenerator::Renderer

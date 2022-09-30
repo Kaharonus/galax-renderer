@@ -5,6 +5,7 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS *.h *.cpp *.ui)
 set(SOURCES ${SOURCES} generators/SolarSystemLoader.cpp generators/SolarSystemLoader.h)
+add_compile_options("$<$<CONFIG:DEBUG>:-DDEBUG>")
 
 # --------------------------------------------------------------------------------
 # QT

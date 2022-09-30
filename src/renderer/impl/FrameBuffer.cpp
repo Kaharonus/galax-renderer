@@ -38,6 +38,8 @@ void FrameBuffer::create() {
     resize(width, height);
 }
 
+
+
 void FrameBuffer::addOutputTexture(std::shared_ptr<ITexture> texture) {
     outTextures.push_back(texture);
 }
@@ -128,4 +130,8 @@ int FrameBuffer::getWidth() const {
 
 int FrameBuffer::getHeight() const {
     return height;
+}
+
+void FrameBuffer::clearOutputTextures() {
+    outTextures.clear();
 }

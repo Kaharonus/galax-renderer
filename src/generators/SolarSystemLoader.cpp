@@ -70,8 +70,8 @@ std::shared_ptr<Node> SolarSystemLoader::generateSkybox(std::shared_ptr<AssetLoa
 
 
 std::shared_ptr<Galax::Effects::Bloom> SolarSystemLoader::generateBloom(std::shared_ptr<AssetLoader> assets, std::shared_ptr<Texture> bloomMap) {
-    auto bloom = std::make_shared<Galax::Effects::Bloom>();
-    auto result = std::make_shared<Texture>("bloomResult");
+    auto bloom = std::make_shared<Galax::Effects::Bloom>("Bloom");
+    auto result = std::make_shared<Texture>("bloomResult", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::NEAREST);
     bloom->setInputTexture(bloomMap);
     bloom->setOutputTexture(result);
 
@@ -114,10 +114,10 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     auto lightingModel = std::make_shared<LightingModel>();
     lightingModel->setLightningShader(assets->getShader("shaders/lighting/lighting.fs.shader", Renderer::SceneObjects::Shader::FRAGMENT));
 
-    auto lightTexture = std::make_shared<Texture>("lightMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::REPEAT, Texture::NEAREST);
+    auto lightTexture = std::make_shared<Texture>("lightMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::NEAREST);
     lightingModel->addOutputTexture(lightTexture);
 
-    auto bloomTexture = std::make_shared<Texture>("bloomMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::REPEAT, Texture::NEAREST);
+    auto bloomTexture = std::make_shared<Texture>("bloomMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::NEAREST);
     lightingModel->addOutputTexture(bloomTexture);
 
 

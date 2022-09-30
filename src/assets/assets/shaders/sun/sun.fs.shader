@@ -12,5 +12,5 @@ void main(){
     gAlbedo = vec4(0.97, 0.84, 0.09, 1);
     gPosition = vPosition;
     gNormal = vNormal;
-    gEmission = vec3(10) * gAlbedo.rgb;
+    gEmission = vec3(5) * gAlbedo.rgb;
 }

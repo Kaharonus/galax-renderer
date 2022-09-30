@@ -22,13 +22,13 @@ namespace Galax::Renderer::SceneObjects{
 
         unsigned int getId() override;
 
-        void setFragShader(std::shared_ptr<Shader> shader);
+        void setFragShader(std::shared_ptr<IShader> shader);
         [[nodiscard]] std::shared_ptr<Program> getProgram() const;
         void draw();
 
     private:
 
-        std::shared_ptr<Shader> fragShader;
+        std::shared_ptr<IShader> fragShader;
         std::shared_ptr<Program> program;
 
         inline static std::shared_ptr<Shader> vertexShader = nullptr;

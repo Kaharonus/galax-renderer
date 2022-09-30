@@ -90,24 +90,29 @@ void QRenderer::paintGL() {
 
     lightingModel->draw();
 
+#ifdef DEBUG
+    glPushDebugGroup((gl::GLenum)GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Post processing");
+#endif
     for(auto [i,effect] : enumerate(postProcesses)) {
+#ifdef DEBUG
+        glPushDebugGroup((gl::GLenum)GL_DEBUG_SOURCE_APPLICATION, 0, -1, effect->getName().c_str());
+#endif
+        //Drawing here
         effect->render();
+#ifdef DEBUG
+        glPopDebugGroup();
+#endif
     }
+#ifdef DEBUG
+    glPopDebugGroup();
+#endif
 
-    //copyLastFBOToScreen();
+
     context->swapBuffers(this);
     context->doneCurrent();
     auto frameEnd = std::chrono::high_resolution_clock::now();
     frameTime = (double) std::chrono::duration_cast<std::chrono::nanoseconds>(frameEnd - frameStart).count() /
                 1000000.0;
-}
-
-void QRenderer::copyLastFBOToScreen() {
-    gl::glBindFramebuffer((gl::GLenum) GL_READ_FRAMEBUFFER, SceneObject::getLastFrameBuffer());
-    gl::glBindFramebuffer((gl::GLenum) GL_DRAW_FRAMEBUFFER, 0);
-    gl::glBlitFramebuffer(0, 0, this->viewportWidth, this->viewportHeight, 0, 0, this->viewportWidth,
-                          this->viewportHeight, (gl::ClearBufferMask) GL_DEPTH_BUFFER_BIT, (gl::GLenum) GL_NEAREST);
-    gl::glBindFramebuffer((gl::GLenum) GL_FRAMEBUFFER, 0);
 }
 
 void QRenderer::timerEvent(QTimerEvent *event) {

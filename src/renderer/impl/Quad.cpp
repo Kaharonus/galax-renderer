@@ -14,7 +14,7 @@ Quad::Quad() : SceneObject() {}
 Quad::Quad(const std::string &name) : SceneObject(name) {
 }
 
-void Quad::setFragShader(std::shared_ptr<Shader> shader) {
+void Quad::setFragShader(std::shared_ptr<IShader> shader) {
     if (!initialized) {
         init();
     }
