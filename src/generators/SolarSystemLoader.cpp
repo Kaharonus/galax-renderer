@@ -72,6 +72,7 @@ std::shared_ptr<Node> SolarSystemLoader::generateSkybox(std::shared_ptr<AssetLoa
 std::shared_ptr<Galax::Effects::Bloom> SolarSystemLoader::generateBloom(std::shared_ptr<AssetLoader> assets, std::shared_ptr<Texture> bloomMap) {
     auto bloom = std::make_shared<Galax::Effects::Bloom>("Bloom");
     auto result = std::make_shared<Texture>("bloomResult", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::NEAREST);
+    bloom->setPasses(5);
     bloom->setInputTexture(bloomMap);
     bloom->setOutputTexture(result);
 

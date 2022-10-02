@@ -12,6 +12,8 @@
 #include "impl/Light.h"
 #include "impl/Program.h"
 #include "impl/Quad.h"
+#include "impl/SSBO.h"
+
 #include "GBuffer.h"
 
 #include <array>
@@ -33,18 +35,19 @@ namespace Galax::Renderer {
 
         void draw();
 
-        void setLightningShader(std::shared_ptr<Shader> shader);
+        void setLightningShader(std::shared_ptr<IShader> shader);
 
-        void addTexture(std::shared_ptr<Texture> texture);
+        void addTexture(std::shared_ptr<ITexture> texture);
 
-        void addUniform(std::shared_ptr<Uniform> uniform);
+        void addUniform(std::shared_ptr<IUniform> uniform);
 
-        std::vector<std::shared_ptr<Uniform>> getUniforms();
-        std::vector<std::shared_ptr<Texture>> getTextures();
+        std::vector<std::shared_ptr<IUniform>> getUniforms();
+        std::vector<std::shared_ptr<ITexture>> getTextures();
 
-        std::shared_ptr<Shader> getLightingShader();
+        std::shared_ptr<IShader> getLightingShader();
 
-        void addOutputTexture(std::shared_ptr<Texture> texture);
+        void addOutputTexture(std::shared_ptr<ITexture> texture);
+        void addLight(std::shared_ptr<ILight> light);
 
         void resize(int width, int height);
 
@@ -54,12 +57,15 @@ namespace Galax::Renderer {
         int width = 1;
         int height = 1;
 
-        std::shared_ptr<Shader> lightingShader;
+        std::shared_ptr<IShader> lightingShader;
         std::shared_ptr<Quad> quad;
-        std::vector<std::shared_ptr<Texture>> textures;
-        std::vector<std::shared_ptr<Uniform>> uniforms;
+        std::vector<std::shared_ptr<ITexture>> textures;
+        std::vector<std::shared_ptr<IUniform>> uniforms;
+        std::vector<std::shared_ptr<ILight>> lights;
+        std::shared_ptr<Uniform> lightCountUniform;
+        std::shared_ptr<SSBO> lightSSBO;
 
-        std::vector<std::shared_ptr<Texture>> outputTextures;
+        std::vector<std::shared_ptr<ITexture>> outputTextures;
         std::shared_ptr<FrameBuffer> outputFrameBuffer;
 
     };

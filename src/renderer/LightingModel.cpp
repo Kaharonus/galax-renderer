@@ -16,11 +16,11 @@ LightingModel::~LightingModel() {
 
 }
 
-void LightingModel::addTexture(std::shared_ptr<Texture> texture) {
+void LightingModel::addTexture(std::shared_ptr<ITexture> texture) {
     textures.push_back(texture);
 }
 
-void LightingModel::setLightningShader(std::shared_ptr<Shader> shader) {
+void LightingModel::setLightningShader(std::shared_ptr<IShader> shader) {
     lightingShader = shader;
     if(quad){
         quad->setFragShader(shader);
@@ -40,9 +40,15 @@ void LightingModel::init() {
         this->outputFrameBuffer->addOutputTexture(texture);
     }
     this->outputFrameBuffer->resize(width, height);
+    this->lightCountUniform = std::make_shared<Uniform>("lightCount", Uniform::INT, 0);
+
+    this->lightSSBO = std::make_shared<SSBO>("Light SSBO");
+    for(auto &light: lights){
+        this->lightSSBO->addData(light->getLightData());
+    }
 }
 
-void LightingModel::addUniform(std::shared_ptr<Uniform> uniform) {
+void LightingModel::addUniform(std::shared_ptr<IUniform> uniform) {
     uniforms.push_back(uniform);
 }
 
@@ -63,6 +69,8 @@ void LightingModel::draw() {
     for(auto [i, texture] : enumerate(textures)) {
         lightingProgram->setTexture(texture, i);
     }
+    lightingProgram->setUniform(lightCountUniform);
+    this->lightSSBO->bind();
     quad->draw();
     outputFrameBuffer->unbind();
 }
@@ -72,19 +80,19 @@ uint LightingModel::getId() {
     return 0;
 }
 
-std::vector<std::shared_ptr<Texture>> LightingModel::getTextures() {
+std::vector<std::shared_ptr<ITexture>> LightingModel::getTextures() {
     return textures;
 }
 
-std::vector<std::shared_ptr<Uniform>> LightingModel::getUniforms() {
+std::vector<std::shared_ptr<IUniform>> LightingModel::getUniforms() {
     return uniforms;
 }
 
-std::shared_ptr<Shader> LightingModel::getLightingShader() {
+std::shared_ptr<IShader> LightingModel::getLightingShader() {
     return lightingShader;
 }
 
-void LightingModel::addOutputTexture(std::shared_ptr<Texture> texture) {
+void LightingModel::addOutputTexture(std::shared_ptr<ITexture> texture) {
     outputTextures.push_back(texture);
 }
 
@@ -94,4 +102,9 @@ void LightingModel::resize(int width, int height) {
     if(outputFrameBuffer){
         outputFrameBuffer->resize(width, height);
     }
+}
+
+void LightingModel::addLight(std::shared_ptr<ILight> light) {
+    lights.push_back(light);
+    lightCountUniform->setValue(lightCountUniform->getValue<int>() + 1);
 }
