@@ -6,7 +6,6 @@ layout (vertices = 1) out;
 
 // attributes of the input CPs
 in vec3 vPosition[];
-in vec3 vNormalSmooth[];
 
 struct OutputPatch{
     vec3 WorldPos030;
@@ -58,12 +57,12 @@ void CalcPositions(){
     tcData.WorldPos120 = tcData.WorldPos300 + Edge003 * 2.0 / 3.0;
 
     // Project each midpoint on the plane defined by the nearest vertex and its normal
-    tcData.WorldPos021 = ProjectToPlane(tcData.WorldPos021, tcData.WorldPos030, vNormalSmooth[0]);
-    tcData.WorldPos012 = ProjectToPlane(tcData.WorldPos012, tcData.WorldPos003, vNormalSmooth[1]);
-    tcData.WorldPos102 = ProjectToPlane(tcData.WorldPos102, tcData.WorldPos003, vNormalSmooth[1]);
-    tcData.WorldPos201 = ProjectToPlane(tcData.WorldPos201, tcData.WorldPos300, vNormalSmooth[2]);
-    tcData.WorldPos210 = ProjectToPlane(tcData.WorldPos210, tcData.WorldPos300, vNormalSmooth[2]);
-    tcData.WorldPos120 = ProjectToPlane(tcData.WorldPos120, tcData.WorldPos030, vNormalSmooth[0]);
+    tcData.WorldPos021 = ProjectToPlane(tcData.WorldPos021, tcData.WorldPos030, vPosition[0]);
+    tcData.WorldPos012 = ProjectToPlane(tcData.WorldPos012, tcData.WorldPos003, vPosition[1]);
+    tcData.WorldPos102 = ProjectToPlane(tcData.WorldPos102, tcData.WorldPos003, vPosition[1]);
+    tcData.WorldPos201 = ProjectToPlane(tcData.WorldPos201, tcData.WorldPos300, vPosition[2]);
+    tcData.WorldPos210 = ProjectToPlane(tcData.WorldPos210, tcData.WorldPos300, vPosition[2]);
+    tcData.WorldPos120 = ProjectToPlane(tcData.WorldPos120, tcData.WorldPos030, vPosition[0]);
 
     // Handle the center
     vec3 Center = (tcData.WorldPos003 + tcData.WorldPos030 + tcData.WorldPos300) / 3.0;

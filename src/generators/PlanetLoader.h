@@ -39,10 +39,6 @@ namespace Galax::Generators {
         static void generatePalette(Planet::Type type);
 
         static void generateMesh(const std::shared_ptr<AssetLoader> &loader);
-
-        static std::shared_ptr<Mesh> calculatePlanetMesh(const std::shared_ptr<Mesh> &orig, int i);
-
-
     };
 
 }

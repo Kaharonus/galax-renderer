@@ -14,16 +14,14 @@ void main()
     tex_offset *= 2;
     vec3 result = texture(bloomMap, texCoords).rgb * weight[0]; // current fragment's contribution
     bool horizontal = bool(currentCall % 2);
-    if(horizontal)
-    {
+    if(horizontal){
         for(int i = 1; i < 5; ++i)
         {
             result += texture(bloomMap, texCoords + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
             result += texture(bloomMap, texCoords - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
         }
     }
-    else
-    {
+    else {
         for(int i = 1; i < 5; ++i)
         {
             result += texture(bloomMap, texCoords + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
