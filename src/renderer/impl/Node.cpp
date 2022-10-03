@@ -135,11 +135,6 @@ void Node::calculateModelMatrix() {
     auto rotationMatrix = glm::mat4_cast(glm::quat(glm::radians(rotation)));
     auto scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
     modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-    /*modelMatrix = glm::translate(glm::mat4(1.0f), position);
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-    modelMatrix = glm::scale(modelMatrix, scale);*/
     modelMatrixUniform->setValue(modelMatrix);
     transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(modelMatrix)));
 }

@@ -110,7 +110,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
     //generate planets
     auto planet = PlanetLoader::fromType("EarthLike", Planet::Type::TEMPERATE);
-    //planet->addAnimation(generatePlanetSpin(5000));
+    planet->addAnimation(generatePlanetSpin(5000));
     planet->setCamera(camera);
     sky->addChild(planet);
 

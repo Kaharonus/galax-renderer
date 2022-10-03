@@ -15,29 +15,27 @@ out float gsNoise;
 uniform mat4 model;
 uniform mat4 projection;
 uniform mat4 view;
-uniform mat4 transposeInverseModel;
 
 void main(){
-    vec3 a = gs_in[0].position.xyz;
-    vec3 b = gs_in[1].position.xyz;
-    vec3 c = gs_in[2].position.xyz;
+    vec3 a = (model * gs_in[0].position).xyz;
+    vec3 b = (model * gs_in[1].position).xyz;
+    vec3 c = (model * gs_in[2].position).xyz;
     vec3 normal = normalize(cross(b-a, c-a));
-    normal = mat3(transposeInverseModel) * normal;
 
     gl_Position = projection * view * model * gs_in[0].position;
     gsNoise = gs_in[0].noise;
-    gsPosition = a;
+    gsPosition = gs_in[0].position.xyz;
     gsNormal = normal;
     EmitVertex();
 
     gl_Position = projection * view * model * gs_in[1].position;
-    gsPosition = b;
+    gsPosition = gs_in[1].position.xyz;
     gsNoise = gs_in[1].noise;
     gsNormal = normal;
     EmitVertex();
 
     gl_Position = projection * view * model * gs_in[2].position;
-    gsPosition = c;
+    gsPosition = gs_in[2].position.xyz;
     gsNoise = gs_in[2].noise;
     gsNormal = normal;
     EmitVertex();
