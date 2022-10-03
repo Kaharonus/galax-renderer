@@ -14,7 +14,7 @@ namespace Galax::Renderer{
         ISSBO(const std::string &name) : SceneObject(name) {};
         virtual ~ISSBO() = default;
         virtual void setData(const std::vector<char>& data) = 0;
-        virtual void bind() = 0;
+        virtual void bind(unsigned int location) = 0;
         virtual void unbind() = 0;
     };
 

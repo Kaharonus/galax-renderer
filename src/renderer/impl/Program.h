@@ -9,6 +9,7 @@
 #include "../interfaces/IProgram.h"
 #include "../interfaces/ITexture.h"
 #include "../interfaces/IUniform.h"
+#include "../interfaces/ISSBO.h"
 #include <vector>
 #include <map>
 
@@ -32,6 +33,7 @@ namespace Galax::Renderer::SceneObjects {
         bool hasTesslation() override;
 
         void setTexture(const std::shared_ptr<ITexture>& texture, int unit) override;
+        void setSSBO(const std::shared_ptr<ISSBO>& ssbo);
         uint getTexturePosition(const std::shared_ptr<ITexture>& texture) override;
         uint getTextureCount() override;
         std::shared_ptr<IShader> getShader(IShader::Type type) override;
@@ -65,7 +67,8 @@ namespace Galax::Renderer::SceneObjects {
         std::shared_ptr<IShader> tessalationControlShader;
         std::shared_ptr<IShader> tessalationEvaluationShader;
         std::shared_ptr<IShader> computeShader;
-        std::map<uint, IntDefaultedToMinusOne> uniformLocations;
+        std::unordered_map<uint, IntDefaultedToMinusOne> uniformLocations;
+        std::unordered_map<uint, IntDefaultedToMinusOne> ssboLocations;
 
         bool shadersUpdated();
     };

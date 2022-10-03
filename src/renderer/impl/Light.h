@@ -9,6 +9,7 @@
 
 namespace Galax::Renderer::SceneObjects{
     class Light : public ILight {
+    public:
         Light();
         Light(const std::string &name);
         ~Light() override = default;
@@ -20,6 +21,7 @@ namespace Galax::Renderer::SceneObjects{
         void setFalloff(float falloff) override;
         LightData getLightData() override;
         bool isUpdated() override;
+        uint getId() override;
 
     private:
         void init();

@@ -103,9 +103,14 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     sun->setCamera(camera);
     sky->addChild(sun);
 
+    auto sunLight = std::make_shared<Light>();
+    sunLight->setColor(glm::vec3(1, 1, 1));
+    sunLight->setIntensity(1);
+    sunLight->setPositionUniform(sun->getPositionUniform());
+
     //generate planets
     auto planet = PlanetLoader::fromType("EarthLike", Planet::Type::TEMPERATE);
-    planet->addAnimation(generatePlanetSpin(5000));
+    //planet->addAnimation(generatePlanetSpin(5000));
     planet->setCamera(camera);
     sky->addChild(planet);
 
@@ -120,6 +125,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
     auto bloomTexture = std::make_shared<Texture>("bloomMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::NEAREST);
     lightingModel->addOutputTexture(bloomTexture);
+    lightingModel->addLight(sunLight);
 
 
     //generate post processes

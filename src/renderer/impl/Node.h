@@ -59,6 +59,7 @@ namespace Galax::Renderer::SceneObjects {
 
         glm::mat4& getModelMatrix();
         glm::vec3& getPosition() override;
+        std::shared_ptr<IUniform> getPositionUniform();
         glm::vec3& getRotation() override;
         glm::vec3& getScale() override;
         [[nodiscard]] std::vector<std::shared_ptr<INode>> getChildren() const override;
@@ -92,6 +93,7 @@ namespace Galax::Renderer::SceneObjects {
 
 
         glm::vec3 position;
+        std::shared_ptr<Uniform> positionUniform;
         glm::vec3 rotation;
         glm::vec3 scale;
         glm::mat4 modelMatrix;

@@ -163,7 +163,6 @@ bool Program::compile() {
         GLchar name[256];
         glGetActiveUniform(id, i, sizeof(name), nullptr, &size, &type, name);
         this->uniformLocations[std::hash<std::string>{}(name)] = {i};
-        //uniforms.push_back(name);
     }
     return true;
 
@@ -222,18 +221,19 @@ std::vector<std::shared_ptr<IShader>> Program::getShaders() {
     if (this->vertexShader != nullptr) {
         shaders.push_back(this->vertexShader);
     }
-    if (this->fragmentShader != nullptr) {
-        shaders.push_back(this->fragmentShader);
-    }
-    if (this->geometryShader != nullptr) {
-        shaders.push_back(this->geometryShader);
-    }
     if (this->tessalationControlShader != nullptr) {
         shaders.push_back(this->tessalationControlShader);
     }
     if (this->tessalationEvaluationShader != nullptr) {
         shaders.push_back(this->tessalationEvaluationShader);
     }
+    if (this->geometryShader != nullptr) {
+        shaders.push_back(this->geometryShader);
+    }
+    if (this->fragmentShader != nullptr) {
+        shaders.push_back(this->fragmentShader);
+    }
+
     if (this->computeShader != nullptr) {
         shaders.push_back(this->computeShader);
     }
@@ -289,4 +289,23 @@ uint Program::getTexturePosition(const std::shared_ptr<ITexture>& texture) {
 
 void Program::unbind() {
     glUseProgram(0);
+}
+
+void Program::setSSBO(const std::shared_ptr<ISSBO> &ssbo) {
+    auto id = ssbo->getNameHash();
+    int location = this->ssboLocations[id];
+    if (location == -1) {
+        //Query the location
+
+        GLuint loc = glGetProgramResourceIndex(this->id, GL_SHADER_STORAGE_BLOCK, ssbo->getName().c_str());
+        if (loc == GL_INVALID_INDEX) {
+            std::cerr << "SSBO " << ssbo->getName() << " not found. (Raised by " << this->name << ")" << std::endl;
+            return;
+        }
+        this->ssboLocations[id] = {(int)loc};
+        location = (int)loc;
+    }
+
+    ssbo->bind(location);
+
 }

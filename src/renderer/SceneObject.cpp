@@ -25,6 +25,7 @@ void SceneObject::checkName(){
             503167521, //model
             3463620694, //transposeInverseModel
             1688038832, //currentCall (post processing needs this)
+            2530415913, //position uniform (part of model)
     };
 
     for(auto allowedDuplicate : allowedDuplicates){
@@ -80,7 +81,7 @@ void SceneObject::checkError(bool shouldThrow) {
         error = true;
     }
     if (shouldThrow && error) {
-        //throw std::runtime_error("OpenGL Error");
+//        throw std::runtime_error("OpenGL Error");
     }
 }
 

@@ -21,7 +21,7 @@ void Node::init() {
     modelMatrixUniform = std::make_shared<Uniform>("model", Uniform::Type::MAT4, glm::mat4(1.0));
     transposeInverseModelUniform = std::make_shared<Uniform>("transposeInverseModel", Uniform::Type::MAT4,
                                                              glm::mat4(1.0));
-
+    this->positionUniform = std::make_shared<Uniform>("position", Uniform::Type::VEC3, glm::vec3(0.0f));
     setPosition(glm::vec3(0.0f));
     setRotation(glm::vec3(0.0f));
     setScale(glm::vec3(1.0f));
@@ -52,6 +52,7 @@ void Node::removeAllChildren() {
 
 void Node::setPosition(const glm::vec3 &position) {
     this->position = position;
+    this->positionUniform->setValue(position);
     calculateModelMatrix();
 }
 
@@ -130,11 +131,15 @@ void Node::addAnimation(std::shared_ptr<IAnimation> animation) {
 }
 
 void Node::calculateModelMatrix() {
-    modelMatrix = glm::translate(glm::mat4(1.0f), position);
+    auto translationMatrix = glm::translate(glm::mat4(1.0f), position);
+    auto rotationMatrix = glm::mat4_cast(glm::quat(glm::radians(rotation)));
+    auto scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
+    modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+    /*modelMatrix = glm::translate(glm::mat4(1.0f), position);
     modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-    modelMatrix = glm::scale(modelMatrix, scale);
+    modelMatrix = glm::scale(modelMatrix, scale);*/
     modelMatrixUniform->setValue(modelMatrix);
     transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(modelMatrix)));
 }
@@ -282,4 +287,8 @@ void Node::setDrawTexture(std::shared_ptr<ITexture> texture) {
 
 std::vector<std::shared_ptr<IAnimation>> Node::getAnimations() const {
     return animations;
+}
+
+std::shared_ptr<IUniform> Node::getPositionUniform() {
+    return positionUniform;
 }

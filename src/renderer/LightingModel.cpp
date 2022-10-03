@@ -10,10 +10,11 @@ using namespace gl;
 using namespace Galax::Renderer;
 
 LightingModel::LightingModel() : SceneObject("Lighting model") {
+    this->lightCountUniform = std::make_shared<Uniform>("lightCount", Uniform::INT, 0);
+
 }
 
 LightingModel::~LightingModel() {
-
 }
 
 void LightingModel::addTexture(std::shared_ptr<ITexture> texture) {
@@ -40,9 +41,8 @@ void LightingModel::init() {
         this->outputFrameBuffer->addOutputTexture(texture);
     }
     this->outputFrameBuffer->resize(width, height);
-    this->lightCountUniform = std::make_shared<Uniform>("lightCount", Uniform::INT, 0);
 
-    this->lightSSBO = std::make_shared<SSBO>("Light SSBO");
+    this->lightSSBO = std::make_shared<SSBO>("lightData");
     for(auto &light: lights){
         this->lightSSBO->addData(light->getLightData());
     }
@@ -69,8 +69,15 @@ void LightingModel::draw() {
     for(auto [i, texture] : enumerate(textures)) {
         lightingProgram->setTexture(texture, i);
     }
+    for(auto [i,light]: enumerate(lights)){
+        if(light->isUpdated()){
+            lightSSBO->setDataAt(light->getLightData(), i);
+        }
+    }
+
     lightingProgram->setUniform(lightCountUniform);
-    this->lightSSBO->bind();
+    lightingProgram->setSSBO(lightSSBO);
+
     quad->draw();
     outputFrameBuffer->unbind();
 }

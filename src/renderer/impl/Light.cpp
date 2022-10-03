@@ -71,3 +71,7 @@ bool Light::isUpdated() {
     return isUpdated;
 }
 
+uint Light::getId() {
+    return this->getNameHash();
+}
+
