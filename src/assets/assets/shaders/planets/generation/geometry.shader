@@ -6,18 +6,8 @@ in TE_OUT {
     vec4 position;
 } gs_in[];
 
-
-out vec3 gsNormal;
-out float noiseY;
 out vec3 gsPosition;
 out float gsNoise;
-
-out vec3 feedbackPosition;
-out vec3 feedbackNormal;
-
-uniform mat4 model;
-uniform mat4 projection;
-uniform mat4 view;
 
 
 struct Noise{
@@ -140,34 +130,20 @@ void main(){
     v1 += o1;
     v2 += o2;
     v3 += o3;
-    mat3 mod3 = mat3(model);
 
-    vec3 a = mod3 * v1;
-    vec3 b = mod3 * v2;
-    vec3 c = mod3 * v3;
-
-
-    vec3 normal = normalize(cross(b-a, c-a));
-
-    gl_Position = projection * view * model * vec4(v1, 1);
-    gsPosition = (model * vec4(v1, 1)).xyz;
+    gl_Position = vec4(v1, 1);
+    gsPosition = v1;
     gsNoise = noiseA * multiplier;
-    noiseY = v1.y;
-    gsNormal = normal;
     EmitVertex();
 
-    gl_Position = projection * view * model * vec4(v2, 1);
-    gsPosition = (model * vec4(v2, 1)).xyz;
-    noiseY = v2.y;
+    gl_Position = vec4(v2, 1);
+    gsPosition = v2;
     gsNoise = noiseB * multiplier;
-    gsNormal = normal;
     EmitVertex();
 
-    gl_Position = projection * view * model * vec4(v3, 1);
-    gsPosition = (model * vec4(v3, 1)).xyz;
-    noiseY = v2.y;
+    gl_Position =  vec4(v3, 1);
+    gsPosition = v3;
     gsNoise = noiseC * multiplier;
-    gsNormal = normal;
     EmitVertex();
 
     EndPrimitive();

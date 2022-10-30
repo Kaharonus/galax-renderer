@@ -38,9 +38,6 @@ namespace Galax::Orbital {
 
         std::shared_ptr<FeedbackProgram> generatorProgram;
 
-        int renderSize = 0;
-        uint feedbackSizeQuery = 0;
-
         bool shouldGenerate = true;
 
         Type type;

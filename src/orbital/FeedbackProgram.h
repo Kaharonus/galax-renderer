@@ -16,9 +16,9 @@ namespace Galax::Orbital {
         FeedbackProgram() : Program(){};
         FeedbackProgram(const std::string& name) : Program(name){};
 
-        void addFeedbackVariable(const std::string& name);
+        void addFeedbackVariable(const std::string& name, int size);
 
-        std::vector<std::string> getFeedbackVariables();
+        std::vector<std::tuple<std::string, int>> getFeedbackVariables();
 
         void clearFeedbackVariables();
 
@@ -26,16 +26,24 @@ namespace Galax::Orbital {
 
         uint getTransformFeedbackId() const;
 
+        uint getFeedbackVaoId() const;
+
         void bind() override;
 
     protected:
+        // The size of the feedback buffer. The buffer is allocated per planet. The size is around 2M vertices, which is
+        // enough for testing purposes, HOWEVER it definitely needs to be properly tested and changed in the future.
+        uint feedbackBufferSize = 250'000'000;
+
         std::vector<std::string> feedbackVars;
-        uint feedbackBuffer = 0;
-        uint transformFeedback = 0;
+        std::vector<int> feedbackSizes;
+        uint feedbackBufferId = 0;
+        uint feedbackId = 0;
+        uint feedbackVaoId = 0;
 
         bool compile() override;
 
-        void createFeedbackBuffer();
+        void prepareFeedback();
 
     };
 } // Orital

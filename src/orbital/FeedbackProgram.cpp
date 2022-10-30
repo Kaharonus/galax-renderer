@@ -4,6 +4,7 @@
 
 #include <glbinding/gl/gl.h>
 #include <stdexcept>
+#include <numeric>
 
 #include "FeedbackProgram.h"
 
@@ -35,7 +36,7 @@ bool FeedbackProgram::compile() {
 
     readUniforms();
 
-    createFeedbackBuffer();
+    prepareFeedback();
     checkError(true);
 
 
@@ -49,7 +50,7 @@ void FeedbackProgram::bind() {
         checkError(true);
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, feedbackBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, feedbackBufferId);
     glUseProgram(this->id);
 
 
@@ -57,45 +58,63 @@ void FeedbackProgram::bind() {
 
 void FeedbackProgram::clearFeedbackVariables() {
     feedbackVars.clear();
+    feedbackSizes.clear();
 }
 
-void FeedbackProgram::addFeedbackVariable(const std::string &name) {
+void FeedbackProgram::addFeedbackVariable(const std::string &name, int size) {
     feedbackVars.push_back(name);
+    feedbackSizes.push_back(size);
 }
 
-std::vector<std::string> FeedbackProgram::getFeedbackVariables() {
-    return feedbackVars;
+std::vector<std::tuple<std::string, int>> FeedbackProgram::getFeedbackVariables() {
+    std::vector<std::tuple<std::string, int>> vars;
+    for(size_t i = 0; i < feedbackVars.size(); ++i){
+        vars.emplace_back(feedbackVars[i], feedbackSizes[i]);
+    }
+    return vars;
 }
 
-void FeedbackProgram::createFeedbackBuffer() {
-    if(feedbackBuffer != 0){
-        glDeleteBuffers(1, &feedbackBuffer);
+void FeedbackProgram::prepareFeedback() {
+    if(feedbackBufferId != 0){
+        glDeleteBuffers(1, &feedbackBufferId);
     }
-    if(transformFeedback != 0){
-        glDeleteTransformFeedbacks(1, &feedbackBuffer);
+    if(feedbackId != 0){
+        glDeleteTransformFeedbacks(1, &feedbackBufferId);
     }
-    glCreateTransformFeedbacks(1, &transformFeedback);
-    glCreateBuffers(1, &feedbackBuffer);
+    if(feedbackVaoId != 0){
+        glDeleteVertexArrays(1, &feedbackVaoId);
+    }
 
-    glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transformFeedback);
+    glCreateVertexArrays(1, &feedbackVaoId);
+    glBindVertexArray(feedbackVaoId);
 
-    glBindBuffer(GL_ARRAY_BUFFER, feedbackBuffer);
-    // Arbitrary large number - in this case I hope I'm not getting over 250MB per planet
-    // 250 MB works out to around 3.5M tris, however I can double that if I would calculate normals in a geom shader
-    auto size = 250'000'000;
-    // Dynamic draw is used since I can change the tessalation level at any time to achieve a higher/lower detail level.
-    // TODO actually change it according to the distance of the object to the camera
-    glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
-    glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, feedbackBuffer);
+    glCreateTransformFeedbacks(1, &feedbackId);
+    glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, feedbackId);
 
+    glCreateBuffers(1, &feedbackBufferId);
+    glBindBuffer(GL_ARRAY_BUFFER, feedbackBufferId);
+
+    glBufferData(GL_ARRAY_BUFFER, feedbackBufferSize, nullptr, GL_DYNAMIC_DRAW);
+    glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, feedbackBufferId);
+
+    auto stride = std::accumulate(feedbackSizes.begin(), feedbackSizes.end(), 0);
+    for(int i = 0; i < feedbackVars.size(); ++i){
+        auto offset = std::accumulate(feedbackSizes.begin(), feedbackSizes.begin() + i, 0);
+        glEnableVertexAttribArray(i);
+        glVertexAttribPointer(i, feedbackSizes[i], GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)(offset * sizeof(float)));
+    }
 }
 
 uint FeedbackProgram::getFeedbackBufferId() const {
-    return feedbackBuffer;
+    return feedbackBufferId;
 }
 
 uint FeedbackProgram::getTransformFeedbackId() const {
-    return transformFeedback;
+    return feedbackId;
+}
+
+uint FeedbackProgram::getFeedbackVaoId() const {
+    return feedbackVaoId;
 }
 
 

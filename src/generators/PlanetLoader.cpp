@@ -27,9 +27,8 @@ std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::O
         assert(!initialized);
     }
     auto planet = std::make_shared<Planet>(name, type);
-
-    planet->setGeneratorProgram(planetGeneratorProgram);
     planet->setProgram(programs[type]);
+    planet->setGeneratorProgram(planetGeneratorProgram);
 
     //planet->setMeshWithLOD(meshes);
     planet->setMesh(meshes[45]);
@@ -58,17 +57,13 @@ void PlanetLoader::init(const std::shared_ptr<AssetLoader> &loader) {
     for (auto &typeName: types) {
         //Load the programs
         auto type = fromStr(typeName);
-        auto frag = loader->getShader("shaders/planets/" + typeName + ".fs.shader", Shader::Type::FRAGMENT);
-        auto vert = loader->getShader("shaders/planets/" + typeName + ".vs.shader", Shader::Type::VERTEX);
-        auto tc = loader->getShader("shaders/planets/planet.tc.shader", Shader::Type::TESSALATION_CTRL);
-        auto te = loader->getShader("shaders/planets/planet.te.shader", Shader::Type::TESSALATION_EVAL);
+        auto fs = loader->getShader("shaders/planets/" + typeName + ".fs.shader", Shader::Type::FRAGMENT);
+        auto vs = loader->getShader("shaders/planets/planet.vs.shader", Shader::Type::VERTEX);
         auto gs = loader->getShader("shaders/planets/planet.gs.shader", Shader::Type::GEOMETRY);
         auto program = std::make_shared<Program>(typeName + " prog");
-        program->addShader(frag);
-        program->addShader(vert);
-        //program->addShader(tc);
-        //program->addShader(te);
-        //program->addShader(gs);
+        program->addShader(vs);
+        program->addShader(fs);
+        program->addShader(gs);
         programs[type] = program;
 
         //Load planet configs
@@ -86,17 +81,21 @@ void PlanetLoader::init(const std::shared_ptr<AssetLoader> &loader) {
 
 
 void PlanetLoader::createPlanetGenerator(const std::shared_ptr<AssetLoader> &loader){
-    auto vs = loader->getShader("shaders/feedback_test/vs.shader", Shader::Type::VERTEX);
-    auto fs = loader->getShader("shaders/feedback_test/fs.shader", Shader::Type::FRAGMENT);
-    auto gs = loader->getShader("shaders/feedback_test/gs.shader", Shader::Type::GEOMETRY);
+    auto vs = loader->getShader("shaders/planets/generation/vertex.shader", Shader::Type::VERTEX);
+    auto fs = loader->getShader("shaders/planets/generation/fragment.shader", Shader::Type::FRAGMENT);
+    auto gs = loader->getShader("shaders/planets/generation/geometry.shader", Shader::Type::GEOMETRY);
+    auto tc = loader->getShader("shaders/planets/generation/tess_control.shader", Shader::Type::TESSALATION_CTRL);
+    auto te = loader->getShader("shaders/planets/generation/tess_eval.shader", Shader::Type::TESSALATION_EVAL);
 
     planetGeneratorProgram = std::make_shared<FeedbackProgram>("planet generator");
     planetGeneratorProgram->addShader(vs);
     planetGeneratorProgram->addShader(fs);
     planetGeneratorProgram->addShader(gs);
+    planetGeneratorProgram->addShader(tc);
+    planetGeneratorProgram->addShader(te);
 
-    planetGeneratorProgram->addFeedbackVariable("gsPosition");
-    planetGeneratorProgram->addFeedbackVariable("gsNormal");
+    planetGeneratorProgram->addFeedbackVariable("gsPosition", 3);
+    planetGeneratorProgram->addFeedbackVariable("gsNoise", 1);
 
 }
 

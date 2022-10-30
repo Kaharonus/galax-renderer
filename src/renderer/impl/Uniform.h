@@ -18,7 +18,7 @@ namespace Galax::Renderer::SceneObjects {
     public:
 
         Uniform(const std::string& name);
-        Uniform(const std::string& name,Type type, const UniformT& value = UniformT());
+        Uniform(const std::string& name, Type type, const UniformT& value = UniformT());
         void setValue(UniformT) override;
         void setType(Type type) override;
 

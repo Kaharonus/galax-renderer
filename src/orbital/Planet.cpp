@@ -17,46 +17,41 @@ Planet::Planet(const std::string &name, Planet::Type type) : Node(name) {
 void Planet::draw() {
     if (shouldGenerate) {
 
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
-
         shouldGenerate = false;
         generatorProgram->bind();
 
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
-
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
-
-        generatorProgram->setUniform(camera->getViewUniform());
-        generatorProgram->setUniform(camera->getProjectionUniform());
-        generatorProgram->setUniform(camera->getPositionUniform());
-        generatorProgram->setUniform(camera->getRotationUniform());
-        generatorProgram->setUniform(this->modelMatrixUniform);
-
-        selectLOD(50);
+        selectLOD(50); //TODO rework to something more sensible
         mesh->bind();
-        if (feedbackSizeQuery == 0) {
-            glGenQueries(1, &feedbackSizeQuery);
-        }
+
+        checkError(true);
         glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generatorProgram->getTransformFeedbackId());
         glBeginTransformFeedback(GL_TRIANGLES);
-        glDrawElements(GL_TRIANGLES, (int) mesh->size(), GL_UNSIGNED_INT, nullptr);
-        glEndTransformFeedback();
-        glEnableVertexAttribArray(0);
-        glFlush();
-        glBindVertexArray(0);
+        checkError(true);
 
+        glDrawElements(GL_TRIANGLES, (int) mesh->size(), GL_UNSIGNED_INT, nullptr);
+        checkError(true);
+
+        glEndTransformFeedback();
+        checkError(true);
+
+        glFlush();
+        checkError(true);
+
+        glBindVertexArray(0);
+        checkError(true);
 
     } else {
         program->bind();
         useCamera();
+        checkError(true);
 
-        //glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-        glBindVertexArray(vao);
+        glBindVertexArray(generatorProgram->getFeedbackVaoId());
+        checkError(true);
+
         glBindBuffer(GL_ARRAY_BUFFER, generatorProgram->getFeedbackBufferId());
         glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generatorProgram->getTransformFeedbackId());
+        checkError(true);
+
         //glDrawTransformFeedback(GL_TRIANGLES, generatorProgram->getTransformFeedbackId());
         glDrawArrays(GL_TRIANGLES, 0, 15360);
 
