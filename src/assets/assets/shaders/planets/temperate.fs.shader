@@ -1,4 +1,4 @@
-#version 430
+#version 430 core
 
 in vec3 gsNormal;
 in vec3 gsPosition;
@@ -20,8 +20,8 @@ vec3 getColor(){
 
 
 void main(){
-    gAlbedo = vec4(getColor(), 1);
-    gPosition = gsPosition;
-    gNormal = gsNormal;
+    gAlbedo = vec4(1);
+    gPosition = vsPosition;
+    gNormal = vsNormal;
     gEmission = vec3(0);
 }

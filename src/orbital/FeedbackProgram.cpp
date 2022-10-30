@@ -71,7 +71,14 @@ void FeedbackProgram::createFeedbackBuffer() {
     if(feedbackBuffer != 0){
         glDeleteBuffers(1, &feedbackBuffer);
     }
+    if(transformFeedback != 0){
+        glDeleteTransformFeedbacks(1, &feedbackBuffer);
+    }
+    glCreateTransformFeedbacks(1, &transformFeedback);
     glCreateBuffers(1, &feedbackBuffer);
+
+    glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transformFeedback);
+
     glBindBuffer(GL_ARRAY_BUFFER, feedbackBuffer);
     // Arbitrary large number - in this case I hope I'm not getting over 250MB per planet
     // 250 MB works out to around 3.5M tris, however I can double that if I would calculate normals in a geom shader
@@ -85,6 +92,10 @@ void FeedbackProgram::createFeedbackBuffer() {
 
 uint FeedbackProgram::getFeedbackBufferId() const {
     return feedbackBuffer;
+}
+
+uint FeedbackProgram::getTransformFeedbackId() const {
+    return transformFeedback;
 }
 
 

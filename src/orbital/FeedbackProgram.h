@@ -24,17 +24,18 @@ namespace Galax::Orbital {
 
         uint getFeedbackBufferId() const;
 
+        uint getTransformFeedbackId() const;
+
         void bind() override;
 
     protected:
         std::vector<std::string> feedbackVars;
         uint feedbackBuffer = 0;
-        uint feedbackQuery = 0;
+        uint transformFeedback = 0;
 
         bool compile() override;
 
         void createFeedbackBuffer();
 
-        void createFeedbackSizeQuery();
     };
 } // Orital

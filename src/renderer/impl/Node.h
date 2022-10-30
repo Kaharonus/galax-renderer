@@ -80,6 +80,7 @@ namespace Galax::Renderer::SceneObjects {
 
         std::shared_ptr<ICamera> camera;
         std::shared_ptr<Uniform> modelMatrixUniform;
+        std::shared_ptr<IProgram> program;
     private:
         void calculateModelMatrix();
 
@@ -94,8 +95,6 @@ namespace Galax::Renderer::SceneObjects {
 
         std::vector<std::shared_ptr<INode>> children;
         std::map<float, std::shared_ptr<IMesh>> meshLODs;
-
-        std::shared_ptr<IProgram> program;
 
 
         glm::vec3 position;

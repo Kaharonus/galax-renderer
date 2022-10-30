@@ -9,17 +9,25 @@
 
 using namespace Galax::Orbital;
 using namespace gl;
-Planet::Planet(const std::string& name, Planet::Type type) : Node(name) {
+
+Planet::Planet(const std::string &name, Planet::Type type) : Node(name) {
     this->type = type;
 }
 
 void Planet::draw() {
-    if(shouldGenerate){
+    if (shouldGenerate) {
 
-        //shouldGenerate = false;
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
+
+        shouldGenerate = false;
         generatorProgram->bind();
-        checkError(true);
-        //useCamera();
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
 
         generatorProgram->setUniform(camera->getViewUniform());
         generatorProgram->setUniform(camera->getProjectionUniform());
@@ -29,31 +37,33 @@ void Planet::draw() {
 
         selectLOD(50);
         mesh->bind();
-        if(feedbackSizeQuery == 0){
+        if (feedbackSizeQuery == 0) {
             glGenQueries(1, &feedbackSizeQuery);
         }
-        glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, feedbackSizeQuery);
-        checkError(true);
-
+        glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generatorProgram->getTransformFeedbackId());
         glBeginTransformFeedback(GL_TRIANGLES);
-        checkError(true);
         glDrawElements(GL_TRIANGLES, (int) mesh->size(), GL_UNSIGNED_INT, nullptr);
         glEndTransformFeedback();
-        glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN);
-
+        glEnableVertexAttribArray(0);
         glFlush();
-        checkError(true);
-        GLuint primitives;
-        glGetQueryObjectuiv(feedbackSizeQuery, GL_QUERY_RESULT, &primitives);
-        std::cout << primitives << std::endl;
-    }else{
+        glBindVertexArray(0);
 
+
+    } else {
+        program->bind();
+        useCamera();
+
+        //glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, generatorProgram->getFeedbackBufferId());
+        glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generatorProgram->getTransformFeedbackId());
+        //glDrawTransformFeedback(GL_TRIANGLES, generatorProgram->getTransformFeedbackId());
+        glDrawArrays(GL_TRIANGLES, 0, 15360);
 
     }
 
 
 }
-
 
 
 std::shared_ptr<Galax::Renderer::IProgram> Planet::getProgram() const {

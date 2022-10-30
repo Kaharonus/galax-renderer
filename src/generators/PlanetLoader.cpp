@@ -66,9 +66,9 @@ void PlanetLoader::init(const std::shared_ptr<AssetLoader> &loader) {
         auto program = std::make_shared<Program>(typeName + " prog");
         program->addShader(frag);
         program->addShader(vert);
-        program->addShader(tc);
-        program->addShader(te);
-        program->addShader(gs);
+        //program->addShader(tc);
+        //program->addShader(te);
+        //program->addShader(gs);
         programs[type] = program;
 
         //Load planet configs
@@ -96,6 +96,7 @@ void PlanetLoader::createPlanetGenerator(const std::shared_ptr<AssetLoader> &loa
     planetGeneratorProgram->addShader(gs);
 
     planetGeneratorProgram->addFeedbackVariable("gsPosition");
+    planetGeneratorProgram->addFeedbackVariable("gsNormal");
 
 }
 
