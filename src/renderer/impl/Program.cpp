@@ -94,78 +94,16 @@ std::shared_ptr<IShader> Program::getShader(IShader::Type type) {
 }
 
 bool Program::compile() {
-    if(id != 0) {
-        glDeleteProgram(id);
-        id = 0;
-    }
-
-    if (this->vertexShader == nullptr) {
-        throw std::runtime_error("Vertex shader is not set");
-    }
-    if (this->fragmentShader == nullptr) {
-        throw std::runtime_error("Fragment shader is not set");
-    }
-
-    //Create the program
-    id = glCreateProgram();
-    if (id == 0) {
-        throw std::runtime_error("Could not create program");
-    }
-
-    //Attach the shaders
-    vertexShader->recompile();
-    vertexShader->linkTo(id);
-    fragmentShader->recompile();
-    fragmentShader->linkTo(id);
-
-
-    if (this->geometryShader != nullptr) {
-        geometryShader->recompile();
-        geometryShader->linkTo(id);
-    }
-    if (this->tessalationControlShader != nullptr) {
-        tessalationControlShader->recompile();
-        tessalationControlShader->linkTo(id);
-    }
-    if (this->tessalationEvaluationShader != nullptr) {
-        tessalationEvaluationShader->recompile();
-        tessalationEvaluationShader->linkTo(id);
-    }
-    if (this->computeShader != nullptr) {
-        computeShader->recompile();
-        computeShader->linkTo(id);
-    }
+    createProgram();
+    compileAndLinkShaders();
     //Link the program
     glLinkProgram(id);
-
-    //Check the link status
-    GLboolean status;
-    glGetProgramiv(id, GL_LINK_STATUS, &status);
-    if (status == GL_FALSE) {
-        GLint length;
-        glGetProgramiv(id, GL_INFO_LOG_LENGTH, &length);
-        std::string log(length, ' ');
-        glGetProgramInfoLog(id, length, &length, &log[0]);
-        glDeleteProgram(id);
-        id = 0;
-        compiled = false;
+    compiled = checkStatus();
+    if(!compiled){
         return false;
     }
-    compiled = true;
-
-    //Read the uniforms
-    GLint count;
-    glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &count);
-    this->uniformLocations.clear();
-    for (GLint i = 0; i < count; i++) {
-        GLint size;
-        GLenum type;
-        GLchar name[256];
-        glGetActiveUniform(id, i, sizeof(name), nullptr, &size, &type, name);
-        this->uniformLocations[std::hash<std::string>{}(name)] = {i};
-    }
+    readUniforms();
     return true;
-
 }
 
 
@@ -308,4 +246,76 @@ void Program::setSSBO(const std::shared_ptr<ISSBO> &ssbo) {
 
     ssbo->bind(location);
 
+}
+
+void Program::compileAndLinkShaders() {
+    //Attach the shaders
+    vertexShader->recompile();
+    vertexShader->linkTo(id);
+    fragmentShader->recompile();
+    fragmentShader->linkTo(id);
+
+
+    if (this->geometryShader != nullptr) {
+        geometryShader->recompile();
+        geometryShader->linkTo(id);
+    }
+    if (this->tessalationControlShader != nullptr) {
+        tessalationControlShader->recompile();
+        tessalationControlShader->linkTo(id);
+    }
+    if (this->tessalationEvaluationShader != nullptr) {
+        tessalationEvaluationShader->recompile();
+        tessalationEvaluationShader->linkTo(id);
+    }
+}
+
+bool Program::checkStatus() {
+    GLboolean status;
+    glGetProgramiv(id, GL_LINK_STATUS, &status);
+
+    if(status == GL_TRUE){
+        return true;
+    }
+    GLint length;
+    glGetProgramiv(id, GL_INFO_LOG_LENGTH, &length);
+    std::string log(length, ' ');
+    glGetProgramInfoLog(id, length, &length, &log[0]);
+    glDeleteProgram(id);
+    id = 0;
+    return false;
+}
+
+void Program::readUniforms() {
+    //Read the uniforms
+    GLint count;
+    glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &count);
+    this->uniformLocations.clear();
+    for (GLint i = 0; i < count; i++) {
+        GLint size;
+        GLenum type;
+        GLchar name[256];
+        glGetActiveUniform(id, i, sizeof(name), nullptr, &size, &type, name);
+        this->uniformLocations[std::hash<std::string>{}(name)] = {i};
+    }
+}
+
+void Program::createProgram() {
+    if(id != 0) {
+        glDeleteProgram(id);
+        id = 0;
+    }
+
+    if (this->vertexShader == nullptr) {
+        throw std::runtime_error("Vertex shader is not set");
+    }
+    if (this->fragmentShader == nullptr) {
+        throw std::runtime_error("Fragment shader is not set");
+    }
+
+    //Create the program
+    id = glCreateProgram();
+    if (id == 0) {
+        throw std::runtime_error("Could not create program");
+    }
 }

@@ -168,7 +168,7 @@ void Node::useCamera() {
     if (camera == nullptr) {
         return;
     }
-    glViewport(0, 0, camera->getWidth(), camera->getHeight());
+    setDrawSize(camera->getWidth(), camera->getHeight());
     program->setUniform(camera->getViewUniform());
     program->setUniform(camera->getProjectionUniform());
     program->setUniform(camera->getPositionUniform());

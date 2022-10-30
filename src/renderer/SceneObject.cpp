@@ -14,12 +14,12 @@ SceneObject::SceneObject() {
     checkName();
 }
 
-SceneObject::SceneObject(const std::string& name) {
+SceneObject::SceneObject(const std::string &name) {
     this->name = name;
     checkName();
 }
 
-void SceneObject::checkName(){
+void SceneObject::checkName() {
     auto hash = getNameHash();
     std::vector<unsigned long> allowedDuplicates = {
             503167521, //model
@@ -28,13 +28,13 @@ void SceneObject::checkName(){
             2530415913, //position uniform (part of model)
     };
 
-    for(auto allowedDuplicate : allowedDuplicates){
-        if(hash == allowedDuplicate){
+    for (auto allowedDuplicate: allowedDuplicates) {
+        if (hash == allowedDuplicate) {
             return;
         }
     }
 
-    if(usedNames.find(hash) != usedNames.end()){
+    if (usedNames.find(hash) != usedNames.end()) {
         throw std::runtime_error("Name " + name + " already in bind");
     }
     usedNames.insert(this->getNameHash());
@@ -54,7 +54,8 @@ void SceneObject::setName(std::string name) {
 
 void SceneObject::setFrameTime(float frameTime) {
     SceneObject::frameTime = frameTime;
-    SceneObject::currentTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    SceneObject::currentTime = std::chrono::duration_cast<std::chrono::microseconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 std::string SceneObject::getNextDefaultName() {
@@ -77,7 +78,7 @@ void SceneObject::checkError(bool shouldThrow) {
     GLenum err;
     bool error = false;
     while ((err = glGetError()) != GL_NO_ERROR) {
-        std::cout << "OpenGL Error: (" << (int) err << ") " << matchError((int)err) << std::endl;
+        std::cout << "OpenGL Error: (" << (int) err << ") " << matchError((int) err) << std::endl;
         error = true;
     }
     if (shouldThrow && error) {
@@ -86,7 +87,7 @@ void SceneObject::checkError(bool shouldThrow) {
 }
 
 std::string SceneObject::matchError(int error) {
-    auto err = (GLenum)error;
+    auto err = (GLenum) error;
     switch (err) {
         case GL_INVALID_ENUM:
             return "GL_INVALID_ENUM";
@@ -117,9 +118,17 @@ void SceneObject::init() {
         return;
     }
     initialized = true;
-    startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    startTime = std::chrono::duration_cast<std::chrono::microseconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 unsigned int SceneObject::getLastFrameBuffer() {
     return lastBoundFrameBuffer;
+}
+
+void SceneObject::setDrawSize(int width, int height) {
+    if (width != drawWidth || height != drawHeight) {
+        glViewport(0, 0, width, height);
+    }
+
 }

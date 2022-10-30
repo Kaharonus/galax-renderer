@@ -13,6 +13,7 @@
 #include "../renderer/impl/Texture.h"
 #include "../assets/PlanetConfig.h"
 #include "../renderer/impl/Mesh.h"
+#include "../orbital/FeedbackProgram.h"
 
 namespace Galax::Generators {
 
@@ -32,13 +33,18 @@ namespace Galax::Generators {
         static std::unordered_map<Planet::Type, std::shared_ptr<Texture>> colorPalette;
         static std::map<float, std::shared_ptr<IMesh>> meshes;
 
+        static std::shared_ptr<FeedbackProgram> planetGeneratorProgram;
+
         static glm::vec3 fromHex(const std::string &hex);
 
         static Planet::Type fromStr(const std::string &str);
 
         static void generatePalette(Planet::Type type);
 
+
         static void generateMesh(const std::shared_ptr<AssetLoader> &loader);
+
+        static void createPlanetGenerator(const std::shared_ptr<AssetLoader> &loader);
     };
 
 }

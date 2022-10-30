@@ -38,6 +38,7 @@ namespace Galax::Renderer {
         inline static unsigned long startTime;
         inline static unsigned long currentTime;
 
+        void setDrawSize(int width, int height);
 
         std::string getNextDefaultName();
 
@@ -55,6 +56,9 @@ namespace Galax::Renderer {
 
         inline static unsigned int defaultNameCounter = 0;
 
+
+        int drawWidth = 0;
+        int drawHeight = 0;
 
         void checkName();
     };

@@ -28,7 +28,7 @@ TextureControl::TextureControl(std::shared_ptr<ITexture> texture, QWidget *paren
 
 void TextureControl::init() {
     this->timer = new QTimer(this);
-    timer->setInterval(1000 / 15);
+    timer->setInterval(1000 / 10);
     connect(timer, &QTimer::timeout, this, &TextureControl::update);
     timer->start();
 
@@ -92,16 +92,25 @@ TextureControl::convertData(std::vector<unsigned char> data, Texture::DataType t
     auto result = std::vector<unsigned char>(size);
     if(type == Texture::FLOAT){
         auto fResult = reinterpret_cast<float*>(data.data());
-        auto fVector = std::vector<float>(fResult, fResult + size / sizeof(float));
-        for (int i = 0; i < fVector.size(); i+=4) {
-            auto r = static_cast<unsigned char>(fVector[i] * 255);
-            auto g = static_cast<unsigned char>(fVector[i + 1] * 255);
-            auto b = static_cast<unsigned char>(fVector[i + 2] * 255);
+        auto fVector = std::vector<float>(fResult, fResult + (size / sizeof(float)));
+        auto step = texture->getFormatSize();
+        for (int i = 0; i < fVector.size(); i+=step) {
+            auto r = fVector[i];
+            auto g = fVector[i + 1];
+            auto b = fVector[i + 2];
             unsigned char a = 255;
-            result[i] = r;
-            result[i + 1] = g;
-            result[i + 2] = b;
-            result[i+3] = a;
+            auto max = std::max({r, g, b});
+
+            r = r < 0 ? 0 : r / max;
+            g = g < 0 ? 0 : g / max;
+            b = b < 0 ? 0 : b / max;
+
+            result[i] = (unsigned char)(r * 255);
+            result[i + 1] = (unsigned char)(g * 255);
+            result[i + 2] = (unsigned char)(b * 255);
+            if(format == Texture::RGBA){
+                result[i + 3] = a;
+            }
         }
     }
     return result;

@@ -82,7 +82,7 @@ void FrameBuffer::resize(int width, int height) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, id);
 
-    glViewport(0, 0, width, height);
+    this->setDrawSize(width, height);
     checkError(true);
 
     std::vector<GLenum> attachments;

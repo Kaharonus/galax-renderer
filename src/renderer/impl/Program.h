@@ -46,7 +46,7 @@ namespace Galax::Renderer::SceneObjects {
         bool compile() override;
         void bind() override;
         void unbind() override;
-    private:
+    protected:
 
         struct IntDefaultedToMinusOne{
             int i = -1;
@@ -71,5 +71,13 @@ namespace Galax::Renderer::SceneObjects {
         std::unordered_map<uint, IntDefaultedToMinusOne> ssboLocations;
 
         bool shadersUpdated();
+
+        void compileAndLinkShaders();
+
+        bool checkStatus();
+
+        void readUniforms();
+
+        void createProgram();
     };
 } // namespace MapGenerator::Renderer::SceneObjects

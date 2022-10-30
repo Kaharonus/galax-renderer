@@ -42,5 +42,7 @@ namespace Galax::Renderer {
         std::vector<std::shared_ptr<ITexture>> outputTextures;
         std::vector<std::shared_ptr<Uniform>> uniforms;
         std::shared_ptr<Uniform> callCountUniform;
+
+        int height, width;
     };
 }

@@ -30,10 +30,6 @@ QRenderer::QRenderer(const QSurfaceFormat &format, QScreen *screen) : QWindow(sc
 
     initializeInput();
     initializeGL(format);
-    SceneObject::init();
-    this->gBuffer = std::make_shared<GBuffer>();
-    this->gBuffer->init();
-
 
     //setVerticalSync(VerticalSync::Disabled);
 
@@ -50,6 +46,13 @@ void QRenderer::initializeGL(const QSurfaceFormat &format) {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
+
+
+    SceneObject::init();
+    this->gBuffer = std::make_shared<GBuffer>();
+    this->gBuffer->init();
+
+    context->doneCurrent();
 }
 
 void QRenderer::resize() {
@@ -72,14 +75,15 @@ void QRenderer::paintGL() {
     SceneObject::setFrameTime(frameTime);
     auto frameStart = std::chrono::high_resolution_clock::now();
 
-    context->makeCurrent(this);
 
+    context->makeCurrent(this);
     if (previousHeight != height() || previousWidth != width()) {
         resize();
         previousHeight = viewportHeight;
         previousWidth = viewportWidth;
-        gl::glViewport(0, 0, viewportWidth, viewportHeight);
     }
+    gl::glViewport(0, 0, viewportWidth, viewportHeight);
+
 
     gl::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     gl::glClear((gl::ClearBufferMask) GL_COLOR_BUFFER_BIT | (gl::ClearBufferMask) GL_DEPTH_BUFFER_BIT);

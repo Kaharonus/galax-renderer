@@ -20,8 +20,9 @@ Bloom::Bloom(const std::string& name) : IPostProcessEffect(name) {
 
 void Bloom::init(){
     //Prep the temporary texture (used for blurring horizontally)
-    auto tmpTexture = std::make_shared<Texture>(Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::NEAREST);
+    auto tmpTexture = std::make_shared<Texture>(Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::Filtering::ANISOTROPIC);
     tmpTexture->setDimensions(1, 1);
+    this->width = this->height = 1;
     textures[0] = tmpTexture;
 
     //The texture will be used by the first buffer as an output, and the second buffer as an input
@@ -39,7 +40,7 @@ void Bloom::init(){
     quad->setFragShader(shader);
     program = quad->getProgram();
 
-    this->currentCall = std::make_shared<Uniform>("currentCall", Uniform::INT, 0);
+    this->directionUniform = std::make_shared<Uniform>("direction", Uniform::VEC2, glm::vec2(0,0));
 
 }
 
@@ -47,18 +48,26 @@ void Bloom::render() {
     if(!program){ //This means that init() has not been called yet
         init();
     }
-
+    glViewport(0, 0, width, height);
     program->bind();
     auto location = program->getTexturePosition(inputTexture);
     auto first = true;
     glActiveTexture(GL_TEXTURE0);
+
+
     for(int i = 0; i < this->passes; i++){
         auto horizontal = i % 2 == 0;
         buffers[horizontal]->bind(true);
         glBindTexture(GL_TEXTURE_2D, first ? inputTexture->getId() : textures[!horizontal]->getId());
         glUniform1i(location, 0);
-        currentCall->setValue(i);
-        program->setUniform(currentCall);
+
+        if(i % 2 == 0){
+            directionUniform->setValue(glm::vec2(1,0));
+        }else{
+            directionUniform->setValue(glm::vec2(0,1));
+        }
+
+        program->setUniform(directionUniform);
         quad->draw();
         first = false;
     }
@@ -71,8 +80,12 @@ void Bloom::resize(int width, int height) {
     if(!program){ //This means that init() has not been called yet
         init();
     }
+    width /= 4;
+    height /= 4;
     buffers[0]->resize(width, height);
     buffers[1]->resize(width, height);
+    this->width = width;
+    this->height = height;
 }
 
 unsigned int Bloom::getId() {

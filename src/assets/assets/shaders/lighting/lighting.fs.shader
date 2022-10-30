@@ -1,7 +1,7 @@
 #version 430 core
 
-out vec4 lightMap;
-out vec4 bloomMap;
+out vec3 lightMap;
+out vec3 bloomMap;
 in vec2 texCoords;
 
 layout(binding = 0) uniform sampler2D gPosition;
@@ -40,12 +40,12 @@ void main() {
     vec3 vColor = texture(gAlbedo, texCoords).rgb;
     vec3 vEmission = texture(gEmission, texCoords).rgb;
     if(vEmission.x > 0 || vEmission.y > 0 || vEmission.z > 0) {
-        lightMap = vec4(vEmission, 1.0);
+        lightMap = vEmission;
         float brightness = dot(lightMap.xyz, vec3(0.2126, 0.7152, 0.0722));
         if(brightness > 1.0){
-            bloomMap = vec4(lightMap.rgb, 1.0);
+            bloomMap = lightMap;
         }else{
-            bloomMap = vec4(0);
+            bloomMap = vec3(0);
         }
         return;
     }
@@ -64,7 +64,7 @@ void main() {
 
 
 
-    lightMap = vec4((ambient + diffuse) * vColor, 1.0);
+    lightMap = (ambient + diffuse) * vColor;
 
     //Calculate the bloom map
 

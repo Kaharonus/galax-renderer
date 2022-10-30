@@ -1,32 +1,31 @@
 #version 430 core
 
-out vec4 bloomResult;
+out vec3 bloomResult;
 
 in vec2 texCoords;
 
-uniform int currentCall;
+uniform vec2 direction;
 uniform sampler2D bloomMap;
-uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
-void main()
-{
-    vec2 tex_offset = 1.0 / textureSize(bloomMap, 0); // gets size of single texel
-    tex_offset *= 2;
-    vec3 result = texture(bloomMap, texCoords).rgb * weight[0]; // current fragment's contribution
-    bool horizontal = bool(currentCall % 2);
-    if(horizontal){
-        for(int i = 1; i < 5; ++i)
-        {
-            result += texture(bloomMap, texCoords + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
-            result += texture(bloomMap, texCoords - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
-        }
-    }
-    else {
-        for(int i = 1; i < 5; ++i)
-        {
-            result += texture(bloomMap, texCoords + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
-            result += texture(bloomMap, texCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
-        }
-    }
-    bloomResult = vec4(result, 1.0);
+vec4 blur13(vec2 resolution) {
+
+    vec4 color = vec4(0.0);
+    vec2 off1 = vec2(1.411764705882353) * direction;
+    vec2 off2 = vec2(4.2941176470588234) * direction;
+    vec2 off3 = vec2(6.176470588235294) * direction;
+    color += texture(bloomMap, texCoords) * 0.1964825501511404;
+    color += texture(bloomMap, texCoords + (off1 / resolution)) * 0.2969069646728344;
+    color += texture(bloomMap, texCoords - (off1 / resolution)) * 0.2969069646728344;
+    color += texture(bloomMap, texCoords + (off2 / resolution)) * 0.09447039785044732;
+    color += texture(bloomMap, texCoords - (off2 / resolution)) * 0.09447039785044732;
+    color += texture(bloomMap, texCoords + (off3 / resolution)) * 0.010381362401148057;
+    color += texture(bloomMap, texCoords - (off3 / resolution)) * 0.010381362401148057;
+    return color;
+}
+
+
+
+void main(){
+    vec2 resolution = textureSize(bloomMap, 0);
+    bloomResult = blur13(resolution).rgb;
 }

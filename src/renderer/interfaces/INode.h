@@ -75,5 +75,9 @@ namespace Galax::Renderer {
 
         [[nodiscard]] virtual DrawTarget getDrawTarget() const = 0;
 
+    private:
+        virtual void init() = 0;
+
+
     };
 }

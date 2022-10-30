@@ -5,11 +5,15 @@
 #pragma once
 
 #include "../renderer/impl/Node.h"
+#include "FeedbackProgram.h"
 
 namespace Galax::Orbital {
 
+    using namespace Galax::Renderer::SceneObjects;
 
     class Planet : public Renderer::SceneObjects::Node {
+
+
     public:
         enum class Type {
             ROCKY,
@@ -20,9 +24,20 @@ namespace Galax::Orbital {
             OCEAN
         };
 
+        void setGeneratorProgram(const std::shared_ptr<FeedbackProgram> &program);
+
         Planet(const std::string& name, Planet::Type type);
 
-    private:
+        void draw() override;
+
+        [[nodiscard]] std::shared_ptr<Renderer::IProgram> getProgram() const override;
+
+    protected:
+
+        std::shared_ptr<FeedbackProgram> generatorProgram;
+
+        uint feedbackSizeQuery = 0;
+        bool shouldGenerate = true;
 
         Type type;
     };

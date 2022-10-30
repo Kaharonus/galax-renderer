@@ -12,6 +12,9 @@ out float noiseY;
 out vec3 gsPosition;
 out float gsNoise;
 
+out vec3 feedbackPosition;
+out vec3 feedbackNormal;
+
 uniform mat4 model;
 uniform mat4 projection;
 uniform mat4 view;

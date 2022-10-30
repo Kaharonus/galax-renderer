@@ -19,6 +19,7 @@ std::unordered_map<Planet::Type, std::shared_ptr<Program>> PlanetLoader::program
 std::unordered_map<Planet::Type, std::shared_ptr<PlanetConfig>> PlanetLoader::configs;
 std::unordered_map<Planet::Type, std::shared_ptr<Texture>> PlanetLoader::colorPalette;
 std::map<float, std::shared_ptr<IMesh>> PlanetLoader::meshes;
+std::shared_ptr<FeedbackProgram> PlanetLoader::planetGeneratorProgram;
 
 
 std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::Orbital::Planet::Type type) {
@@ -26,11 +27,14 @@ std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::O
         assert(!initialized);
     }
     auto planet = std::make_shared<Planet>(name, type);
+
+    planet->setGeneratorProgram(planetGeneratorProgram);
     planet->setProgram(programs[type]);
-    planet->setMeshWithLOD(meshes);
+
+    //planet->setMeshWithLOD(meshes);
+    planet->setMesh(meshes[45]);
     planet->addTexture(colorPalette[type]);
     return planet;
-
 }
 
 
@@ -77,6 +81,22 @@ void PlanetLoader::init(const std::shared_ptr<AssetLoader> &loader) {
 
     //Init the planet mesh generator
     generateMesh(loader);
+    createPlanetGenerator(loader);
+}
+
+
+void PlanetLoader::createPlanetGenerator(const std::shared_ptr<AssetLoader> &loader){
+    auto vs = loader->getShader("shaders/feedback_test/vs.shader", Shader::Type::VERTEX);
+    auto fs = loader->getShader("shaders/feedback_test/fs.shader", Shader::Type::FRAGMENT);
+    auto gs = loader->getShader("shaders/feedback_test/gs.shader", Shader::Type::GEOMETRY);
+
+    planetGeneratorProgram = std::make_shared<FeedbackProgram>("planet generator");
+    planetGeneratorProgram->addShader(vs);
+    planetGeneratorProgram->addShader(fs);
+    planetGeneratorProgram->addShader(gs);
+
+    planetGeneratorProgram->addFeedbackVariable("gsPosition");
+
 }
 
 

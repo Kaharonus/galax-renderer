@@ -45,6 +45,7 @@ void PostProcessEffect::render() {
     if (!initialized) {
         init();
     }
+    setDrawSize(width, height);
     if (frameBuffer) {
         frameBuffer->bind(false);
     }
@@ -79,6 +80,8 @@ void PostProcessEffect::resize(int width, int height) {
     if (frameBuffer) {
         frameBuffer->resize(width, height);
     }
+    this->width = width;
+    this->height = height;
 }
 
 void PostProcessEffect::setShader(std::shared_ptr<Shader> shader) {

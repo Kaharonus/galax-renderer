@@ -70,10 +70,18 @@ namespace Galax::Renderer::SceneObjects {
         [[nodiscard]] std::vector<std::shared_ptr<ITexture>> getTextures() const override;
         [[nodiscard]] DrawTarget getDrawTarget() const override;
         [[nodiscard]] std::vector<std::shared_ptr<IAnimation>> getAnimations() const override;
-    private:
-        void useCamera();
-        void calculateModelMatrix();
+    protected:
+        void init() override;
         void selectLOD(float distance);
+
+        std::shared_ptr<IMesh> mesh;
+
+        void useCamera();
+
+        std::shared_ptr<ICamera> camera;
+        std::shared_ptr<Uniform> modelMatrixUniform;
+    private:
+        void calculateModelMatrix();
 
 
         DrawTarget drawTarget = DrawTarget::SCREEN;
@@ -85,11 +93,9 @@ namespace Galax::Renderer::SceneObjects {
         std::vector<std::shared_ptr<IAnimation>> animations;
 
         std::vector<std::shared_ptr<INode>> children;
-        std::shared_ptr<IMesh> mesh;
         std::map<float, std::shared_ptr<IMesh>> meshLODs;
 
         std::shared_ptr<IProgram> program;
-        std::shared_ptr<ICamera> camera;
 
 
         glm::vec3 position;
@@ -97,10 +103,7 @@ namespace Galax::Renderer::SceneObjects {
         glm::vec3 rotation;
         glm::vec3 scale;
         glm::mat4 modelMatrix;
-        std::shared_ptr<Uniform> modelMatrixUniform;
         std::shared_ptr<Uniform> transposeInverseModelUniform;
-
-        void init();
 
         float getDistance();
 

@@ -39,8 +39,9 @@ namespace Galax::Effects {
             std::array<std::shared_ptr<FrameBuffer>, 2> buffers;
             std::shared_ptr<Quad> quad;
             std::shared_ptr<Program> program;
-            std::shared_ptr<Uniform> currentCall;
+            std::shared_ptr<Uniform> directionUniform;
 
+            int width, height = 0;
             void init();
         };
 
