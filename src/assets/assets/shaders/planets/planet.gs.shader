@@ -37,6 +37,7 @@ void main() {
     vec3 c = mod3 * v3;
 
 
+
     vec3 normal = normalize(cross(b - a, c - a));
 
     gl_Position = mvp * vec4(v1,1);

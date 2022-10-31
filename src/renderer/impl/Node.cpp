@@ -69,6 +69,7 @@ void Node::setScale(const glm::vec3 &scale) {
 
 void Node::setMesh(std::shared_ptr<IMesh> mesh) {
     this->addLodLevel(mesh, 0.0f);
+    this->mesh = mesh;
 }
 
 

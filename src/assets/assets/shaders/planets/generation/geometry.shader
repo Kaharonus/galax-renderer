@@ -2,9 +2,9 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
-in TE_OUT {
-    vec4 position;
-} gs_in[];
+
+
+in vec3 tePosition[];
 
 out vec3 gsPosition;
 out float gsNoise;
@@ -115,9 +115,9 @@ float evaluateNoise(vec3 position){
 void main(){
     float multiplier = 10;
 
-    vec3 v1 = gs_in[0].position.xyz;
-    vec3 v2 = gs_in[1].position.xyz;
-    vec3 v3 = gs_in[2].position.xyz;
+    vec3 v1 = tePosition[0].xyz;
+    vec3 v2 = tePosition[1].xyz;
+    vec3 v3 = tePosition[2].xyz;
 
     float noiseA = evaluateNoise(v1);
     float noiseB = evaluateNoise(v2);

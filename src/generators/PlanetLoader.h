@@ -31,8 +31,7 @@ namespace Galax::Generators {
         static std::unordered_map<Planet::Type, std::shared_ptr<Program>> programs;
         static std::unordered_map<Planet::Type, std::shared_ptr<PlanetConfig>> configs;
         static std::unordered_map<Planet::Type, std::shared_ptr<Texture>> colorPalette;
-        static std::map<float, std::shared_ptr<IMesh>> meshes;
-
+        static std::shared_ptr<Mesh> baseMesh;
         static std::shared_ptr<FeedbackProgram> planetGeneratorProgram;
 
         static glm::vec3 fromHex(const std::string &hex);

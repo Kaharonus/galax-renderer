@@ -88,7 +88,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
     auto camera = std::make_shared<Camera>("freeCam");
     camera->acceptInput(true);
-    camera->setPosition(glm::vec3(-4.5, 0, -6));
+    camera->setPosition(glm::vec3(0, 0, -15));
 
     auto system = std::make_shared<SolarSystem>();
 
@@ -96,8 +96,6 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
     sky->setCamera(camera);
     system->setRoot(sky);
-
-    //TODO generate sun
 
     auto sun = SunLoader::load(assets);
     sun->setCamera(camera);
@@ -111,6 +109,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     //generate planets
     auto planet = PlanetLoader::fromType("EarthLike", Planet::Type::TEMPERATE);
     planet->addAnimation(generatePlanetSpin(5000));
+    //planet->addAnimation(generateRotation(10));
     planet->setCamera(camera);
     sky->addChild(planet);
 

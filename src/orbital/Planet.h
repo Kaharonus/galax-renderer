@@ -30,18 +30,28 @@ namespace Galax::Orbital {
 
         void draw() override;
 
+
         [[nodiscard]] std::vector<std::shared_ptr<Renderer::IProgram>> getPrograms() const override;
 
     protected:
 
-        uint vao;
 
         std::shared_ptr<FeedbackProgram> generatorProgram;
 
         bool shouldGenerate = true;
 
+
         Type type;
         uint prims;
+
+        void generatePlanet();
+
+        void drawPlanet();
+    private:
+        uint sizeQuery = 0;
+
+        void startSizeQuery();
+        int getSizeQueryResult();
     };
 
 }

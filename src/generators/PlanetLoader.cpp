@@ -18,7 +18,7 @@ bool PlanetLoader::initialized = false;
 std::unordered_map<Planet::Type, std::shared_ptr<Program>> PlanetLoader::programs;
 std::unordered_map<Planet::Type, std::shared_ptr<PlanetConfig>> PlanetLoader::configs;
 std::unordered_map<Planet::Type, std::shared_ptr<Texture>> PlanetLoader::colorPalette;
-std::map<float, std::shared_ptr<IMesh>> PlanetLoader::meshes;
+std::shared_ptr<Mesh> PlanetLoader::baseMesh;
 std::shared_ptr<FeedbackProgram> PlanetLoader::planetGeneratorProgram;
 
 
@@ -29,9 +29,7 @@ std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::O
     auto planet = std::make_shared<Planet>(name, type);
     planet->setProgram(programs[type]);
     planet->setGeneratorProgram(planetGeneratorProgram);
-
-    //planet->setMeshWithLOD(meshes);
-    planet->setMesh(meshes[45]);
+    planet->setMesh(baseMesh);
     planet->addTexture(colorPalette[type]);
     return planet;
 }
@@ -198,13 +196,6 @@ glm::vec3 PlanetLoader::fromHex(const std::string &hex) {
 }
 
 void PlanetLoader::generateMesh(const std::shared_ptr<AssetLoader> &loader) {
-    auto result = std::vector<std::shared_ptr<Mesh>>();
-    std::string basePath = "models/planet/";
-    auto levels = 4;
-    for (int i = 0; i < levels; i++) {
-        auto path = basePath + "lod" + std::to_string(i) + ".obj";
-        auto mesh = loader->getMesh(path, "planet lod" + std::to_string(i));
-        auto distance = i * 15.f;
-        meshes[distance] = mesh;
-    }
+    auto planet = loader->getMesh("models/planet.obj", "Base planet");
+    baseMesh = planet;
 }

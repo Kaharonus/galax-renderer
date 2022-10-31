@@ -51,7 +51,7 @@ void ObjReader::parseLine(const std::string& line){
         case 'f':{
             std::stringstream lineStream(line.substr(2));
             std::string point;
-            //Split by space (x/x/x y/y/y z/z/z)
+            //Split by space (x/x/x y/y/y z/z/z w/w/w)
             while(std::getline(lineStream, point, ' ')) {
                 std::stringstream pointStream(point);
                 std::string index;
