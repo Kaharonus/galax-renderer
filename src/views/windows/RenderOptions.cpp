@@ -160,19 +160,19 @@ void RenderOptions::addNode(std::shared_ptr<INode> node, QTreeWidgetItem* parent
     root->setText(1, node->getName().data());
     root->setData(node);
     // Adds program information
-    auto program = node->getProgram();
-    if(program){
-        auto programNode = new QTreeWidgetItem(root);
-        programNode->setText(0, type(*program).c_str());
-        programNode->setText(1, program->getName().data());
-        for (auto shader : program->getShaders()) {
-            auto shaderNode = new QDataTreeItem<IShader>(programNode);
-            shaderNode->setData(shader);
-            shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
-            shaderNode->setText(1, shader->getName().data());
+    for(auto program : node->getPrograms()){
+        if(program){
+            auto programNode = new QTreeWidgetItem(root);
+            programNode->setText(0, type(*program).c_str());
+            programNode->setText(1, program->getName().data());
+            for (auto shader : program->getShaders()) {
+                auto shaderNode = new QDataTreeItem<IShader>(programNode);
+                shaderNode->setData(shader);
+                shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
+                shaderNode->setText(1, shader->getName().data());
+            }
         }
     }
-
 
     //Adds the mesh
     auto mesh = node->getMesh();

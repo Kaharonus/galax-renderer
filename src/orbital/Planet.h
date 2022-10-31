@@ -30,7 +30,7 @@ namespace Galax::Orbital {
 
         void draw() override;
 
-        [[nodiscard]] std::shared_ptr<Renderer::IProgram> getProgram() const override;
+        [[nodiscard]] std::vector<std::shared_ptr<Renderer::IProgram>> getPrograms() const override;
 
     protected:
 
@@ -41,6 +41,7 @@ namespace Galax::Orbital {
         bool shouldGenerate = true;
 
         Type type;
+        uint prims;
     };
 
 }

@@ -19,7 +19,6 @@ struct OutputPatch{
     vec3 WorldPos120;
     vec3 WorldPos111;
 
-
     vec3 WorldPos[3];
 };
 
@@ -74,7 +73,7 @@ void CalcPositions(){
 
 
 void main(){
-    float tessLevel = 1.0;
+    float tessLevel = 4.0;
     // Set the control points of the output patch
     for (int i = 0; i < 3; i++) {
         tcData.WorldPos[i] = vPosition[i];

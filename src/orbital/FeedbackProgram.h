@@ -33,7 +33,7 @@ namespace Galax::Orbital {
     protected:
         // The size of the feedback buffer. The buffer is allocated per planet. The size is around 2M vertices, which is
         // enough for testing purposes, HOWEVER it definitely needs to be properly tested and changed in the future.
-        uint feedbackBufferSize = 250'000'000;
+        uint feedbackBufferSize = 500'000'000;
 
         std::vector<std::string> feedbackVars;
         std::vector<int> feedbackSizes;

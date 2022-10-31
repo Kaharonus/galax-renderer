@@ -50,13 +50,14 @@ void Scene::buildNode(const INode &node) {
     if (node.getMesh() != nullptr) {
         addMesh(node.getMesh());
     }
-    if (node.getProgram() != nullptr) {
-        auto program = node.getProgram();
-        for (auto& shader: program->getShaders()) {
-            addShader(shader);
+    auto programs = node.getPrograms();
+    if (!programs.empty()) {
+        for(auto p: programs) {
+            for (auto& shader: p->getShaders()) {
+                addShader(shader);
+            }
+            addProgram(p);
         }
-        addProgram(program);
-        addProgram(node.getProgram());
     }
 
     if (node.getCamera() != nullptr) {

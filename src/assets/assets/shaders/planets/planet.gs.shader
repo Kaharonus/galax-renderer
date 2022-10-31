@@ -14,10 +14,9 @@ out vec3 gsNormal;
 out float gsNoise;
 out float gsPositionNoise;
 
-
 uniform mat4 model;
-uniform mat4 projection;
 uniform mat4 view;
+uniform mat4 projection;
 
 
 void main() {
@@ -27,27 +26,34 @@ void main() {
     float v3Y = gs_in[2].position.y;
 
     mat4 mvp = projection * view * model;
-    vec4 v1 = (mvp * vec4(gs_in[0].position, 1.0));
-    vec4 v2 = (mvp * vec4(gs_in[1].position, 1.0));
-    vec4 v3 = (mvp * vec4(gs_in[2].position, 1.0));
+    mat3 mod3 = mat3(model);
 
-    vec3 normal = normalize(cross(v2.xyz - v1.xyz, v3.xyz - v1.xyz));
+    vec3 v1 = gs_in[0].position;
+    vec3 v2 = gs_in[1].position;
+    vec3 v3 = gs_in[2].position;
 
-    gl_Position = v1;
+    vec3 a = mod3 * v1;
+    vec3 b = mod3 * v2;
+    vec3 c = mod3 * v3;
+
+
+    vec3 normal = normalize(cross(b - a, c - a));
+
+    gl_Position = mvp * vec4(v1,1);
     gsPosition = v1.xyz;
     gsNormal = normal;
     gsNoise = gs_in[0].noise;
     gsPositionNoise = v1Y;
     EmitVertex();
 
-    gl_Position = v2;
+    gl_Position = mvp * vec4(v2,1);
     gsPosition = v2.xyz;
     gsNormal = normal;
     gsNoise = gs_in[1].noise;
     gsPositionNoise = v2Y;
     EmitVertex();
 
-    gl_Position = v3;
+    gl_Position = mvp * vec4(v3,1);
     gsPosition = v3.xyz;
     gsNormal = normal;
     gsNoise = gs_in[2].noise;

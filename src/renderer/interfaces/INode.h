@@ -61,7 +61,7 @@ namespace Galax::Renderer {
 
         [[nodiscard]] virtual std::shared_ptr<IMesh> getMesh() const = 0;
 
-        [[nodiscard]] virtual std::shared_ptr<IProgram> getProgram() const = 0;
+        [[nodiscard]] virtual std::vector<std::shared_ptr<IProgram>> getPrograms() const = 0;
 
         [[nodiscard]] virtual std::shared_ptr<ICamera> getCamera() const = 0;
 

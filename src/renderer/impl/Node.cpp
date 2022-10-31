@@ -109,10 +109,6 @@ std::shared_ptr<IMesh> Node::getMesh() const {
 }
 
 
-std::shared_ptr<IProgram> Node::getProgram() const {
-    return program;
-}
-
 std::shared_ptr<ICamera> Node::getCamera() const {
     return camera;
 }
@@ -286,4 +282,8 @@ std::vector<std::shared_ptr<IAnimation>> Node::getAnimations() const {
 
 std::shared_ptr<IUniform> Node::getPositionUniform() {
     return positionUniform;
+}
+
+std::vector<std::shared_ptr<IProgram>> Node::getPrograms() const {
+    return {program};
 }
