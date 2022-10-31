@@ -32,30 +32,31 @@ void main() {
     vec3 v2 = gs_in[1].position;
     vec3 v3 = gs_in[2].position;
 
-    vec3 a = mod3 * v1;
-    vec3 b = mod3 * v2;
-    vec3 c = mod3 * v3;
+    vec3 worldV1 = (model * vec4(v1,1)).xyz;
+    vec3 worldV2 = (model * vec4(v2,1)).xyz;
+    vec3 worldV3 = (model * vec4(v3,1)).xyz;
+
+    mat3 normalMatrix = transpose(inverse(mat3(model)));
 
 
-
-    vec3 normal = normalize(cross(b - a, c - a));
+    vec3 normal = normalMatrix * normalize(cross(v2 - v1, v3 - v1));
 
     gl_Position = mvp * vec4(v1,1);
-    gsPosition = v1.xyz;
+    gsPosition = worldV1;
     gsNormal = normal;
     gsNoise = gs_in[0].noise;
     gsPositionNoise = v1Y;
     EmitVertex();
 
     gl_Position = mvp * vec4(v2,1);
-    gsPosition = v2.xyz;
+    gsPosition = worldV2;
     gsNormal = normal;
     gsNoise = gs_in[1].noise;
     gsPositionNoise = v2Y;
     EmitVertex();
 
     gl_Position = mvp * vec4(v3,1);
-    gsPosition = v3.xyz;
+    gsPosition = worldV3;
     gsNormal = normal;
     gsNoise = gs_in[2].noise;
     gsPositionNoise = v3Y;

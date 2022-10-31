@@ -25,19 +25,20 @@ std::shared_ptr<Animation> SolarSystemLoader::generatePlanetSpin(int spinLength)
 }
 
 
-std::shared_ptr<Animation> SolarSystemLoader::generateRotation(float distance){
+std::shared_ptr<Animation> SolarSystemLoader::generateRotation(float distance, std::shared_ptr<IUniform> sunPosition){
     auto animation = std::make_shared<Animation>("Orbit (" + std::to_string(distance) + ")");
-    auto length = 1000 * distance;
+    auto length = 2000 * distance;
     animation->setLength(length);
     animation->setRepeat(Animation::Repeat::LOOP);
     animation->setEase(Animation::Ease::LINEAR);
     animation->setTarget(IAnimation::Target::POSITION);
     animation->addKeyFrame(0, glm::vec3(distance));
     animation->addKeyFrame(length, glm::vec3(distance));
-    animation->setUpdateFunction([](const IAnimation& animation, IUniform::UniformT value, float time){
+    animation->setUpdateFunction([sunPosition](const IAnimation& animation, IUniform::UniformT value, float time){
+        auto center = std::get<glm::vec3>(sunPosition->getValue());
         constexpr auto pi2 = 2 * glm::pi<float>();
-        auto x = std::sin(time * pi2);
-        auto y = std::cos(time * pi2);
+        auto x = std::sin(time * pi2) + center.x;
+        auto y = std::cos(time * pi2) + center.z;
         return glm::vec3(x, 0, y) * std::get<glm::vec3>(value);
     });
 
@@ -108,8 +109,9 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
     //generate planets
     auto planet = PlanetLoader::fromType("EarthLike", Planet::Type::TEMPERATE);
-    planet->addAnimation(generatePlanetSpin(5000));
-    //planet->addAnimation(generateRotation(10));
+    planet->addAnimation(generatePlanetSpin(2500));
+    planet->addAnimation(generateRotation(10, sun->getPositionUniform()));
+    planet->setScale(glm::vec3(0.25));
     planet->setCamera(camera);
     sky->addChild(planet);
 

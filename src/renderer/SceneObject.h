@@ -30,6 +30,8 @@ namespace Galax::Renderer {
         inline static bool initialized = false;
         virtual uint getId() = 0;
 
+        static float getFrameTime();
+
     protected:
 
         std::string name;

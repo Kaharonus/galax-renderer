@@ -84,8 +84,11 @@ void RenderOptions::prepareCodeEditor() {
             std::stringstream ss(currentShader->getInfoLog());
             std::string to;
             std::string result;
-            while(std::getline(ss, to, '\n')) {
+            int count = 0;
+            int max = 5;
+            while(std::getline(ss, to, '\n') && count < max) {
                 result += to + "\n";
+                count++;
             }
             errorLabel->setText(result.c_str());
         }
@@ -227,6 +230,14 @@ void RenderOptions::setScene(std::shared_ptr<Galax::Renderer::Scene> scene,
     addNode(scene->getRoot(), nullptr);
     addLighting(lighting);
     addEffects(effects);
+
+    fpsTimer = new QTimer(this);
+    fpsTimer->setInterval(33);
+    connect(fpsTimer, &QTimer::timeout, this, [this]() {
+        ui->statusbar->showMessage(QString("FPS: ") + QString::number(1000 / SceneObject::getFrameTime()));
+    });
+    fpsTimer->start();
+
 }
 
 void RenderOptions::addLighting(std::shared_ptr<Galax::Renderer::LightingModel> model) {

@@ -5,6 +5,7 @@
 // You may need to build the project (run Qt uic code generator) to get "ui_MainWindow.h" resolved
 #include "../../assets/AssetLoader.h"
 #include "../../generators/SolarSystemLoader.h"
+
 #include "ui_MainWindow.h"
 #include "MainWindow.h"
 
@@ -30,7 +31,6 @@ void MainWindow::setupRenderer(const QSurfaceFormat &format){
     auto layout = this->findChild<QGridLayout*>("baseGridLayout");
     layout->addWidget(widget);
     show();
-
     renderOptionsWindow = new RenderOptions(this);
     renderOptionsWindow->show();
 }

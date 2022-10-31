@@ -132,3 +132,7 @@ void SceneObject::setDrawSize(int width, int height) {
     }
 
 }
+
+float SceneObject::getFrameTime() {
+    return frameTime;
+}

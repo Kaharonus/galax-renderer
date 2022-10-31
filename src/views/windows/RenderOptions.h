@@ -47,6 +47,8 @@ private:
     QCodeEditor* codeEditor;
     QLabel* errorLabel;
     QTimer* timer;
+
+    QTimer* fpsTimer;
     // Renderer* renderer;
     QLayout* baseGridLayout;
     QTreeWidget* nodeView;

@@ -35,7 +35,6 @@ namespace Galax::Generators{
 
         std::shared_ptr<Animation> generatePlanetSpin(int spinLength);
 
-        std::shared_ptr<Animation> generateRotation(float distance);
 
         std::shared_ptr<Node> generateSkybox(std::shared_ptr<AssetLoader> assets);
 
@@ -43,10 +42,10 @@ namespace Galax::Generators{
         std::shared_ptr<PostProcessEffect>
         generateHDR(std::shared_ptr<Texture> lightMap, std::shared_ptr<ITexture> bloomTexture);
 
-        std::shared_ptr<Galax::Effects::Bloom> generateBloom(std::shared_ptr<Texture> light);
-
         std::shared_ptr<Effects::Bloom>
         generateBloom(std::shared_ptr<AssetLoader> assets, std::shared_ptr<Texture> bloomMap);
+
+        std::shared_ptr<Animation> generateRotation(float distance, std::shared_ptr<IUniform> sunPosition);
     };
 }
 

@@ -24,6 +24,6 @@ vec3 getColor(){
 void main(){
     gAlbedo = vec4(getColor(), 1);
     gPosition = gsPosition;
-    gNormal = gsNormal;
+    gNormal = normalize(gsNormal);
     gEmission = vec3(0);
 }
