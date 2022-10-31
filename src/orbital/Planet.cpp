@@ -16,7 +16,8 @@ Planet::Planet(const std::string &name, Planet::Type type) : Node(name) {
 }
 
 void Planet::draw() {
-    if (shouldGenerate) {
+
+    if (shouldGenerate || generatorProgram->shadersUpdated()) {
 
         shouldGenerate = false;
         generatorProgram->bind();
@@ -24,6 +25,8 @@ void Planet::draw() {
         selectLOD(50); //TODO rework to something more sensible
         mesh->bind();
 
+
+        glEnable(GL_RASTERIZER_DISCARD);
         uint query = 0;
         glGenQueries(1, &query);
         glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, query);
@@ -49,7 +52,10 @@ void Planet::draw() {
         std::cout << "Generated " << result << " vertices" << std::endl;
         this->prims = result;
 
+        glDeleteQueries(1, &query);
         glBindVertexArray(0);
+
+        glDisable(GL_RASTERIZER_DISCARD);
 
     } else {
         program->bind();
@@ -71,7 +77,16 @@ void Planet::draw() {
 
         glBindBuffer(GL_ARRAY_BUFFER, generatorProgram->getFeedbackBufferId());
         //glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generatorProgram->getTransformFeedbackId());
+
+        if(wireframe){
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+
         glDrawArrays(GL_TRIANGLES, 0, prims*3);
+
+        if(wireframe){
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
         checkError(true);
 
         //glDrawTransformFeedback(GL_TRIANGLES, generatorProgram->getTransformFeedbackId());

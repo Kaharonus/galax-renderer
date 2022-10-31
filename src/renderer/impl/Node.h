@@ -98,7 +98,11 @@ namespace Galax::Renderer::SceneObjects {
 
         [[nodiscard]] std::vector<std::shared_ptr<IAnimation>> getAnimations() const override;
 
+        void drawAsWireframe(bool enabled) override;
+
     protected:
+
+
         void init() override;
 
         void selectLOD(float distance);
@@ -129,6 +133,7 @@ namespace Galax::Renderer::SceneObjects {
         glm::vec3 scale;
         glm::mat4 modelMatrix;
         std::shared_ptr<Uniform> transposeInverseModelUniform;
+        bool wireframe = false;
 
     };
 

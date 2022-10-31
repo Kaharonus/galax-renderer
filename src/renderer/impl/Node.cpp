@@ -239,7 +239,15 @@ void Node::draw() {
         glPatchParameteri(GL_PATCH_VERTICES, 3);
         drawMode = GL_PATCHES;
     }
+    if(wireframe){
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+
     glDrawElements(drawMode, (int) mesh->size(), GL_UNSIGNED_INT, 0);
+
+    if(wireframe){
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
     if(drawTarget == DrawTarget::TEXTURE){
         frameBuffer->unbind();
     }
@@ -286,4 +294,8 @@ std::shared_ptr<IUniform> Node::getPositionUniform() {
 
 std::vector<std::shared_ptr<IProgram>> Node::getPrograms() const {
     return {program};
+}
+
+void Node::drawAsWireframe(bool enabled) {
+    wireframe = enabled;
 }

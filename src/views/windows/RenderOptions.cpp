@@ -19,6 +19,7 @@
 #include <QStyleFactory>
 #include <memory>
 #include <cxxabi.h>
+#include <sstream>
 
 #include "ui_RenderOptions.h"
 #include "RenderOptions.h"
@@ -80,7 +81,13 @@ void RenderOptions::prepareCodeEditor() {
     timer->setInterval(33);
     connect(timer, &QTimer::timeout, this, [this]() {
         if(errorLabel && currentShader){
-            errorLabel->setText(currentShader->getInfoLog().c_str());
+            std::stringstream ss(currentShader->getInfoLog());
+            std::string to;
+            std::string result;
+            while(std::getline(ss, to, '\n')) {
+                result += to + "\n";
+            }
+            errorLabel->setText(result.c_str());
         }
     });
     timer->start();

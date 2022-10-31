@@ -332,7 +332,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="positionControl">
+    <layout class="QHBoxLayout" name="scaleControl">
      <property name="bottomMargin">
       <number>10</number>
      </property>
@@ -464,6 +464,25 @@
       </spacer>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="optionsText">
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Options:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="wireframe">
+     <property name="text">
+      <string>Draw as wireframe</string>
+     </property>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer_2">

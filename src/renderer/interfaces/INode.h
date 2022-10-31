@@ -59,6 +59,8 @@ namespace Galax::Renderer {
 
         virtual void setDrawTexture(std::shared_ptr<ITexture> texture) = 0;
 
+        virtual void drawAsWireframe(bool enabled) = 0;
+
         [[nodiscard]] virtual std::shared_ptr<IMesh> getMesh() const = 0;
 
         [[nodiscard]] virtual std::vector<std::shared_ptr<IProgram>> getPrograms() const = 0;

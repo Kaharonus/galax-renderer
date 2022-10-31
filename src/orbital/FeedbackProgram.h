@@ -28,6 +28,8 @@ namespace Galax::Orbital {
 
         uint getFeedbackVaoId() const;
 
+        bool shadersUpdated();
+
         void bind() override;
 
     protected:

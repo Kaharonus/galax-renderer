@@ -66,6 +66,8 @@ void NodeControl::update(){
     }
     node->setScale(glm::vec3(ui->xScale->text().toFloat(), ui->yScale->text().toFloat(), ui->zScale->text().toFloat()));
 
+    node->drawAsWireframe(ui->wireframe->isChecked());
+
 }
 
 NodeControl::~NodeControl() {

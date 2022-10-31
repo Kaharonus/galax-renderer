@@ -117,5 +117,9 @@ uint FeedbackProgram::getFeedbackVaoId() const {
     return feedbackVaoId;
 }
 
+bool FeedbackProgram::shadersUpdated() {
+    return Program::shadersUpdated();
+}
+
 
 
