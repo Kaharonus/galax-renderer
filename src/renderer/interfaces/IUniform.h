@@ -21,7 +21,8 @@ namespace Galax::Renderer {
 
         IUniform() : SceneObject() {};
 
-        IUniform(const std::string &name) : SceneObject(name) {};
+        IUniform(const std::string &name) : SceneObject(name, true) {};
+
 
         virtual ~IUniform() = default;
 

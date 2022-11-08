@@ -4,8 +4,9 @@
 #include <glbinding/gl/gl.h>
 
 #include <iostream>
-#include "Bloom.h"
-#include "../renderer/impl/Shader.h"
+#include <effects/Bloom.h>
+#include <renderer/impl/Shader.h>
+
 
 using namespace gl;
 using namespace Galax::Renderer;

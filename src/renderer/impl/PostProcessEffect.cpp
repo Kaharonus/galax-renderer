@@ -4,8 +4,8 @@
 #include <glbinding/gl/gl.h>
 
 
-#include "PostProcessEffect.h"
-#include "../../Extensions.h"
+#include <renderer/impl/PostProcessEffect.h>
+#include <Extensions.h>
 
 using namespace gl;
 using namespace Galax::Renderer;

@@ -11,7 +11,7 @@
 using namespace Galax::Orbital;
 using namespace gl;
 
-Planet::Planet(const std::string &name, Planet::Type type) : Node(name) {
+Planet::Planet(const std::string &name, Planet::Type type) : Physics::PhysicalNode(name) {
     this->type = type;
 }
 
@@ -19,7 +19,9 @@ void Planet::generatePlanet(){
     generatorProgram->bind();
 
     mesh->bind();
-
+    for(auto &uniform: uniforms){
+        generatorProgram->setUniform(uniform);
+    }
 
     startSizeQuery();
 

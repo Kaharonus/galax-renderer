@@ -1,15 +1,19 @@
 
 #pragma once
-#include "../../renderer/QRenderer.h"
-#include "RenderOptions.h"
+#include <renderer/QRenderer.h>
+#include <views/windows/RenderOptions.h>
 #include <QMainWindow>
 #include <QSurfaceFormat>
+#include <physics/PhysicsEngine.h>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class MainWindow;
 }
 QT_END_NAMESPACE
+
+using namespace Galax::Physics;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -25,9 +29,10 @@ private:
 
     RenderOptions* renderOptionsWindow;
     Galax::Renderer::QRenderer* renderer;
+    Galax::Physics::PhysicsEngine* physicsEngine;
 
 
-    //std::shared_ptr<MapGenerator::Renderer::Scene> createScene();
-    //void createSpheres(std::shared_ptr<MapGenerator::Renderer::SceneObjects::Node>& root, std::shared_ptr<MapGenerator::Renderer::SceneObjects::Camera>& camera);
     Ui::MainWindow* ui;
+
+    void setupPhysics();
 };

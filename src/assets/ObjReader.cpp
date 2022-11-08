@@ -2,7 +2,7 @@
 // Created by tomas on 31.8.22.
 //
 
-#include "ObjReader.h"
+#include <assets/ObjReader.h>
 #include <memory>
 #include <thread>
 #include <array>

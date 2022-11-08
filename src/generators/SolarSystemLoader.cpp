@@ -2,10 +2,10 @@
 // Created by tomas on 3.9.22.
 //
 
-#include "SolarSystemLoader.h"
-#include "PlanetLoader.h"
-#include "SunLoader.h"
-#include "../effects/Bloom.h"
+#include <generators/SolarSystemLoader.h>
+#include <generators/PlanetLoader.h>
+#include <generators/SunLoader.h>
+#include <effects/Bloom.h>
 
 using namespace Galax::Generators;
 using namespace Galax::Assets;
@@ -14,7 +14,7 @@ using namespace Galax::Renderer;
 
 
 std::shared_ptr<Animation> SolarSystemLoader::generatePlanetSpin(int spinLength) {
-    auto animation = std::make_shared<Animation>("Planet spin");
+    auto animation = std::make_shared<Animation>();
     animation->setLength(spinLength);
     animation->setRepeat(Animation::Repeat::LOOP);
     animation->setEase(Animation::Ease::LINEAR);
@@ -108,14 +108,20 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     sunLight->setPositionUniform(sun->getPositionUniform());
 
     //generate planets
-    auto planet = PlanetLoader::fromType("EarthLike", Planet::Type::TEMPERATE);
-    planet->addAnimation(generatePlanetSpin(2500));
-    planet->addAnimation(generateRotation(10, sun->getPositionUniform()));
-    planet->setScale(glm::vec3(0.25));
-    planet->setCamera(camera);
-    sky->addChild(planet);
+    for(int i = 0; i < 5; i++){
+        std::string name = "Planet " + std::to_string(i);
+        auto planet = PlanetLoader::fromType(name, Planet::Type::TEMPERATE);
+        planet->addAnimation(generatePlanetSpin(10000));
+        //planet->addAnimation(generateRotation(10, sun->getPositionUniform()));
+        planet->setScale(glm::vec3(0.25 * (i + 1)));
+        planet->setCamera(camera);
+        planet->addUniform(std::make_shared<Uniform>("inputSeed", Uniform::FLOAT, 50.0f*((float)i+1)));
+        planet->setPosition(glm::vec3(10 * (i + 1), 0, 0));
+        planet->setBodyMass(5);
+        planet->addForce(glm::vec3(0, 0, 0.1f));
+        sky->addChild(planet);
 
-
+    }
 
     //Create the lighting model
     auto lightingModel = std::make_shared<LightingModel>();

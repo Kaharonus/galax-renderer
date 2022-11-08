@@ -4,8 +4,9 @@
 
 // You may need to build the project (run Qt uic code generator) to get "ui_NodeControl.h" resolved
 
-#include "NodeControl.h"
+#include <views/controls/NodeControl.h>
 #include "ui_NodeControl.h"
+#include <views/controls/QDraggableDoubleSpinBox.h>
 
 
 NodeControl::NodeControl(QWidget *parent) : QWidget(parent), ui(new Ui::NodeControl) {
@@ -22,49 +23,50 @@ NodeControl::NodeControl(std::shared_ptr<INode> node, QWidget *parent) : QWidget
 
 
 void NodeControl::update(){
-    auto x = QString::number(this->node->getPosition().x);
-    auto y = QString::number(this->node->getPosition().y);
-    auto z = QString::number(this->node->getPosition().z);
+    auto x = this->node->getPosition().x;
+    auto y = this->node->getPosition().y;
+    auto z = this->node->getPosition().z;
     if (!ui->x->hasFocus()) {
-        ui->x->setText(x);
+        ui->x->setValue(x);
     }
     if (!ui->y->hasFocus()) {
-        ui->y->setText(y);
+        ui->y->setValue(y);
     }
     if (!ui->z->hasFocus()) {
-        ui->z->setText(z);
+        ui->z->setValue(z);
     }
-    node->setPosition(glm::vec3(ui->x->text().toFloat(), ui->y->text().toFloat(), ui->z->text().toFloat()));
+    node->setPosition(glm::vec3(ui->x->value(), ui->y->value(), ui->z->value()));
 
-    x = QString::number(this->node->getRotation().x);
-    y = QString::number(this->node->getRotation().y);
-    z = QString::number(this->node->getRotation().z);
+    x = this->node->getRotation().x;
+    y = this->node->getRotation().y;
+    z = this->node->getRotation().z;
 
     if (!ui->xRotation->hasFocus()) {
-        ui->xRotation->setText(x);
+        ui->xRotation->setValue(x);
     }
     if (!ui->yRotation->hasFocus()) {
-        ui->yRotation->setText(y);
+        ui->yRotation->setValue(y);
     }
     if (!ui->zRotation->hasFocus()) {
-        ui->zRotation->setText(z);
+        ui->zRotation->setValue(z);
     }
-    node->setRotation(glm::vec3(ui->xRotation->text().toFloat(), ui->yRotation->text().toFloat(), ui->zRotation->text().toFloat()));
+    node->setRotation(glm::vec3(ui->xRotation->value(), ui->yRotation->value(), ui->zRotation->value()));
 
-    x = QString::number(this->node->getScale().x);
-    y = QString::number(this->node->getScale().y);
-    z = QString::number(this->node->getScale().z);
+    x = this->node->getScale().x;
+    y = this->node->getScale().y;
+    z = this->node->getScale().z;
+
 
     if (!ui->xScale->hasFocus()) {
-        ui->xScale->setText(x);
+        ui->xScale->setValue(x);
     }
     if (!ui->yScale->hasFocus()) {
-        ui->yScale->setText(y);
+        ui->yScale->setValue(y);
     }
     if (!ui->zScale->hasFocus()) {
-        ui->zScale->setText(z);
+        ui->zScale->setValue(z);
     }
-    node->setScale(glm::vec3(ui->xScale->text().toFloat(), ui->yScale->text().toFloat(), ui->zScale->text().toFloat()));
+    node->setScale(glm::vec3(ui->xScale->value(), ui->yScale->value(), ui->zScale->value()));
 
     node->drawAsWireframe(ui->wireframe->isChecked());
 

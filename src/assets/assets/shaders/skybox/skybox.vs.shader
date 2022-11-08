@@ -12,7 +12,7 @@ uniform vec3 cameraPosition;
 void main()
 {
     texCoords = aPos;
-    vec4 pos = projection * view * vec4((aPos * 50) + cameraPosition, 1.0);
+    vec4 pos = projection * view * vec4((aPos * 500) + cameraPosition, 1.0);
     position = pos.xyz;
     gl_Position = pos;
 }

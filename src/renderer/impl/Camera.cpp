@@ -30,7 +30,7 @@ void Camera::init(){
     pitch = 0.0f;
     movementSpeed = 0.01;
     mouseSensitivity = 0.1;
-    setPerspective(60.0f, 0.1f, 100.f);
+    setPerspective(60.0f, 0.1f, 1000.f);
     setDimensions(1.0f, 1.0f);
 
 }

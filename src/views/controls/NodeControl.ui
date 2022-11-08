@@ -67,7 +67,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="x">
+      <widget class="QDraggableDoubleSpinBox" name="x">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -79,6 +79,15 @@
          <width>100</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="minimum">
+        <double>-5000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>5000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
        </property>
       </widget>
      </item>
@@ -105,7 +114,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="y">
+      <widget class="QDraggableDoubleSpinBox" name="y">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -117,6 +126,15 @@
          <width>100</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="minimum">
+        <double>-5000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>5000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
        </property>
       </widget>
      </item>
@@ -143,7 +161,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="z">
+      <widget class="QDraggableDoubleSpinBox" name="z">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -155,6 +173,15 @@
          <width>100</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="minimum">
+        <double>-5000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>5000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
        </property>
       </widget>
      </item>
@@ -213,7 +240,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="xRotation">
+      <widget class="QDraggableDoubleSpinBox" name="xRotation">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -225,6 +252,15 @@
          <width>100</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="minimum">
+        <double>-5000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>5000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
        </property>
       </widget>
      </item>
@@ -251,7 +287,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="yRotation">
+      <widget class="QDraggableDoubleSpinBox" name="yRotation">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -263,6 +299,15 @@
          <width>100</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="minimum">
+        <double>-5000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>5000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
        </property>
       </widget>
      </item>
@@ -289,7 +334,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="zRotation">
+      <widget class="QDraggableDoubleSpinBox" name="zRotation">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -301,6 +346,15 @@
          <width>100</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="minimum">
+        <double>-5000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>5000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
        </property>
       </widget>
      </item>
@@ -359,7 +413,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="xScale">
+      <widget class="QDraggableDoubleSpinBox" name="xScale">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -371,6 +425,15 @@
          <width>100</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="minimum">
+        <double>-5000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>5000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
        </property>
       </widget>
      </item>
@@ -397,7 +460,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="yScale">
+      <widget class="QDraggableDoubleSpinBox" name="yScale">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -409,6 +472,15 @@
          <width>100</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="minimum">
+        <double>-5000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>5000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
        </property>
       </widget>
      </item>
@@ -435,7 +507,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="zScale">
+      <widget class="QDraggableDoubleSpinBox" name="zScale">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -447,6 +519,15 @@
          <width>100</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="minimum">
+        <double>-5000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>5000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
        </property>
       </widget>
      </item>
@@ -499,6 +580,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QDraggableDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header location="global">views/controls/QDraggableDoubleSpinBox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

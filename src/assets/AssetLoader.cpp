@@ -2,10 +2,10 @@
 // Created by tomas on 27.8.22.
 //
 
-#include "AssetLoader.h"
-#include "ObjReader.h"
-#include "PngReader.h"
-#include "../Extensions.h"
+#include <assets/AssetLoader.h>
+#include <assets/ObjReader.h>
+#include <assets/PngReader.h>
+#include <Extensions.h>
 
 
 #include <physfs.h>

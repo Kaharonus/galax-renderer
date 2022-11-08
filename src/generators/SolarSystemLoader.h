@@ -4,13 +4,13 @@
 
 
 #pragma once
-#include "../orbital/Planet.h"
-#include "../orbital/SolarSystem.h"
-#include "../renderer/LightingModel.h"
-#include "../renderer/impl/PostProcessEffect.h"
+#include <orbital/Planet.h>
+#include <orbital/SolarSystem.h>
+#include <renderer/LightingModel.h>
+#include <renderer/impl/PostProcessEffect.h>
 
-#include "../assets/AssetLoader.h"
-#include "../effects/Bloom.h"
+#include <assets/AssetLoader.h>
+#include <effects/Bloom.h>
 
 #include <memory>
 

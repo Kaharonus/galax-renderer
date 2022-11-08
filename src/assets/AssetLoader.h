@@ -4,9 +4,9 @@
 
 
 #pragma once
-#include "../renderer/impl/Shader.h"
-#include "../renderer/impl/Mesh.h"
-#include "../renderer/impl/Texture.h"
+#include <renderer/impl/Shader.h>
+#include <renderer/impl/Mesh.h>
+#include <renderer/impl/Texture.h>
 
 
 #include <nlohmann/json.hpp>

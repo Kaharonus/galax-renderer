@@ -11,6 +11,8 @@
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
 #include <thread>
+#include <glm/vec3.hpp>
+#include <glm/geometric.hpp>
 
 using namespace Galax::Renderer;
 
@@ -99,15 +101,12 @@ TextureControl::convertData(std::vector<unsigned char> data, Texture::DataType t
             auto g = fVector[i + 1];
             auto b = fVector[i + 2];
             unsigned char a = 255;
-            auto max = std::max({r, g, b});
+            glm::vec3 color = {r, g, b};
+            color = glm::normalize(color);
 
-            r = r < 0 ? 0 : r / max;
-            g = g < 0 ? 0 : g / max;
-            b = b < 0 ? 0 : b / max;
-
-            result[i] = (unsigned char)(r * 255);
-            result[i + 1] = (unsigned char)(g * 255);
-            result[i + 2] = (unsigned char)(b * 255);
+            result[i] = (unsigned char)(color.r * 255);
+            result[i + 1] = (unsigned char)(color.g * 255);
+            result[i + 2] = (unsigned char)(color.b * 255);
             if(format == Texture::RGBA){
                 result[i + 3] = a;
             }

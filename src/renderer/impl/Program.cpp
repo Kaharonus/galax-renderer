@@ -151,7 +151,6 @@ void Program::setTexture(const std::shared_ptr<ITexture>& texture, int unit) {
     }
     texture->bind(unit);
     glUniform1i(location, unit);
-    //checkError();
 }
 
 std::vector<std::shared_ptr<IShader>> Program::getShaders() {

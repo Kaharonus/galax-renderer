@@ -15,7 +15,7 @@ namespace Galax::Renderer {
         static void init();
 
         SceneObject();
-        SceneObject(const std::string &name);
+        SceneObject(const std::string &name, bool enableUnsafeNaming = false);
         ~SceneObject();
         //virtual void render() = 0;
         std::string getName();

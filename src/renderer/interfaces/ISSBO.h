@@ -5,7 +5,7 @@
 #pragma once
 
 #include <vector>
-#include "../SceneObject.h"
+#include <renderer/SceneObject.h>
 
 namespace Galax::Renderer{
     class ISSBO : public SceneObject {

@@ -42,13 +42,24 @@ endif()
 
 include(${CPM_DOWNLOAD_LOCATION})
 
+# --------------------------------------------------------------------------------
+# CPM packages
+
 CPMAddPackage(
         NAME QCodeEditor
         GITHUB_REPOSITORY Kaharonus/QCodeEditor
         GIT_TAG b6840de235de3b2fcce2182f5aed46aca0c1fc54
 )
 
-set(CPM_LIBS ${CPM_LIBS} QCodeEditor)
+
+CPMAddPackage(
+        NAME reactphysics3d
+        GITHUB_REPOSITORY DanielChappuis/reactphysics3d
+        GIT_TAG v0.9.0
+)
+
+
+set(CPM_LIBS ${CPM_LIBS} QCodeEditor reactphysics3d)
 
 
 # --------------------------------------------------------------------------------
@@ -65,4 +76,6 @@ add_custom_target(assets
 
 add_executable(${BINARY} ${SOURCES})
 add_dependencies(${BINARY} ${ASSET_TARGET})
+target_include_directories(${BINARY} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_link_libraries(${BINARY}  Qt6::Widgets Qt6::OpenGLWidgets ${CONAN_LIBS} ${CPM_LIBS})

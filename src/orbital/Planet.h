@@ -4,14 +4,15 @@
 
 #pragma once
 
-#include "../renderer/impl/Node.h"
-#include "FeedbackProgram.h"
+#include <physics/impl/PhysicalNode.h>
+#include <orbital/FeedbackProgram.h>
 
 namespace Galax::Orbital {
 
     using namespace Galax::Renderer::SceneObjects;
 
-    class Planet : public Renderer::SceneObjects::Node {
+
+class Planet : public Physics::PhysicalNode {
 
 
     public:
@@ -30,8 +31,7 @@ namespace Galax::Orbital {
 
         void draw() override;
 
-
-        [[nodiscard]] std::vector<std::shared_ptr<Renderer::IProgram>> getPrograms() const override;
+    [[nodiscard]] std::vector<std::shared_ptr<Renderer::IProgram>> getPrograms() const override;
 
     protected:
 

@@ -10,7 +10,7 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
-#include "JsonHelper.h"
+#include <assets/JsonHelper.h>
 
 namespace Galax::Assets {
     using nlohmann::json;

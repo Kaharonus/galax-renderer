@@ -2,12 +2,12 @@
 // Created by tomas on 7.9.22.
 //
 
-#include "PlanetLoader.h"
+#include <generators/PlanetLoader.h>
+#include <Extensions.h>
 #include <memory>
 #include <map>
 #include <unordered_map>
 #include <glm/gtx/hash.hpp>
-#include "../Extensions.h"
 
 using namespace Galax::Orbital;
 
@@ -19,8 +19,7 @@ std::unordered_map<Planet::Type, std::shared_ptr<Program>> PlanetLoader::program
 std::unordered_map<Planet::Type, std::shared_ptr<PlanetConfig>> PlanetLoader::configs;
 std::unordered_map<Planet::Type, std::shared_ptr<Texture>> PlanetLoader::colorPalette;
 std::shared_ptr<Mesh> PlanetLoader::baseMesh;
-std::shared_ptr<FeedbackProgram> PlanetLoader::planetGeneratorProgram;
-
+std::array<std::shared_ptr<Shader>, 5> PlanetLoader::generatorShaders;
 
 std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::Orbital::Planet::Type type) {
     if (!initialized) {
@@ -28,7 +27,7 @@ std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::O
     }
     auto planet = std::make_shared<Planet>(name, type);
     planet->setProgram(programs[type]);
-    planet->setGeneratorProgram(planetGeneratorProgram);
+    planet->setGeneratorProgram(createPlanetGenerator());
     planet->setMesh(baseMesh);
     planet->addTexture(colorPalette[type]);
     return planet;
@@ -74,27 +73,30 @@ void PlanetLoader::init(const std::shared_ptr<AssetLoader> &loader) {
 
     //Init the planet mesh generator
     generateMesh(loader);
-    createPlanetGenerator(loader);
+    std::vector<std::string> paths = {
+            "shaders/planets/generation/vertex.shader",
+            "shaders/planets/generation/fragment.shader",
+            "shaders/planets/generation/geometry.shader",
+            "shaders/planets/generation/tess_control.shader",
+            "shaders/planets/generation/tess_eval.shader",
+    };
+    std::vector<Shader::Type> pathTypes = { Shader::Type::VERTEX, Shader::Type::FRAGMENT, Shader::Type::GEOMETRY,
+                       Shader::Type::TESSALATION_CTRL, Shader::Type::TESSALATION_EVAL};
+
+    for(int i = 0; i < paths.size(); i++) {
+        generatorShaders[i] = loader->getShader(paths[i], pathTypes[i]);
+    }
 }
 
 
-void PlanetLoader::createPlanetGenerator(const std::shared_ptr<AssetLoader> &loader){
-    auto vs = loader->getShader("shaders/planets/generation/vertex.shader", Shader::Type::VERTEX);
-    auto fs = loader->getShader("shaders/planets/generation/fragment.shader", Shader::Type::FRAGMENT);
-    auto gs = loader->getShader("shaders/planets/generation/geometry.shader", Shader::Type::GEOMETRY);
-    auto tc = loader->getShader("shaders/planets/generation/tess_control.shader", Shader::Type::TESSALATION_CTRL);
-    auto te = loader->getShader("shaders/planets/generation/tess_eval.shader", Shader::Type::TESSALATION_EVAL);
-
-    planetGeneratorProgram = std::make_shared<FeedbackProgram>("planet generator");
-    planetGeneratorProgram->addShader(vs);
-    planetGeneratorProgram->addShader(fs);
-    planetGeneratorProgram->addShader(gs);
-    planetGeneratorProgram->addShader(tc);
-    planetGeneratorProgram->addShader(te);
-
+std::shared_ptr<FeedbackProgram> PlanetLoader::createPlanetGenerator(){
+    auto planetGeneratorProgram = std::make_shared<FeedbackProgram>();
+    for(auto &shader : generatorShaders) {
+        planetGeneratorProgram->addShader(shader);
+    }
     planetGeneratorProgram->addFeedbackVariable("gsPosition", 3);
     planetGeneratorProgram->addFeedbackVariable("gsNoise", 1);
-
+    return planetGeneratorProgram;
 }
 
 

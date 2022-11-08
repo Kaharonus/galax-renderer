@@ -5,13 +5,15 @@
 
 #pragma once
 
-#include "../renderer/interfaces/IPostProcessEffect.h"
-#include "../renderer/SceneObject.h"
-#include "../renderer/interfaces/IShader.h"
-#include "../renderer/interfaces/ITexture.h"
-#include "../renderer/impl/FrameBuffer.h"
-#include "../renderer/impl/Shader.h"
-#include "../renderer/impl/Quad.h"
+#include <renderer/interfaces/IPostProcessEffect.h>
+#include <renderer/SceneObject.h>
+#include <renderer/interfaces/IShader.h>
+#include <renderer/interfaces/ITexture.h>
+#include <renderer/impl/FrameBuffer.h>
+#include <renderer/impl/Shader.h>
+#include <renderer/impl/Quad.h>
+
+
 namespace Galax::Effects {
         using namespace Galax::Renderer;
         using namespace Galax::Renderer::SceneObjects;

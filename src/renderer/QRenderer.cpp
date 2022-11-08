@@ -124,7 +124,7 @@ void QRenderer::timerEvent(QTimerEvent *event) {
 }
 
 QRenderer::~QRenderer() {
-
+    context->deleteLater();
 }
 
 ProcAddress QRenderer::getProcAddress(const char *name) {

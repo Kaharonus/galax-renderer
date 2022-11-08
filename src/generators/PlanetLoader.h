@@ -6,14 +6,14 @@
 
 #include <memory>
 #include <unordered_map>
-#include "../orbital/Planet.h"
-#include "../assets/AssetLoader.h"
-#include "../renderer/impl/Shader.h"
-#include "../renderer/impl/Program.h"
-#include "../renderer/impl/Texture.h"
-#include "../assets/PlanetConfig.h"
-#include "../renderer/impl/Mesh.h"
-#include "../orbital/FeedbackProgram.h"
+#include <orbital/Planet.h>
+#include <assets/AssetLoader.h>
+#include <renderer/impl/Shader.h>
+#include <renderer/impl/Program.h>
+#include <renderer/impl/Texture.h>
+#include <assets/PlanetConfig.h>
+#include <renderer/impl/Mesh.h>
+#include <orbital/FeedbackProgram.h>
 
 namespace Galax::Generators {
 
@@ -32,7 +32,8 @@ namespace Galax::Generators {
         static std::unordered_map<Planet::Type, std::shared_ptr<PlanetConfig>> configs;
         static std::unordered_map<Planet::Type, std::shared_ptr<Texture>> colorPalette;
         static std::shared_ptr<Mesh> baseMesh;
-        static std::shared_ptr<FeedbackProgram> planetGeneratorProgram;
+
+        static std::array<std::shared_ptr<Shader>, 5> generatorShaders;
 
         static glm::vec3 fromHex(const std::string &hex);
 
@@ -43,7 +44,7 @@ namespace Galax::Generators {
 
         static void generateMesh(const std::shared_ptr<AssetLoader> &loader);
 
-        static void createPlanetGenerator(const std::shared_ptr<AssetLoader> &loader);
+        static std::shared_ptr<FeedbackProgram> createPlanetGenerator();
     };
 
 }

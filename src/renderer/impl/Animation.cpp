@@ -2,7 +2,7 @@
 // Created by tomas on 3.9.22.
 //
 
-#include "Animation.h"
+#include <renderer/impl/Animation.h>
 #include <iostream>
 
 using namespace Galax::Renderer::SceneObjects;

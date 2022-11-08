@@ -1,6 +1,6 @@
 #include <glbinding/gl/gl.h>
 
-#include "Scene.h"
+#include <renderer/Scene.h>
 
 using namespace gl;
 using namespace Galax::Renderer;

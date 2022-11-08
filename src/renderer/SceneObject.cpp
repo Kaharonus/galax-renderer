@@ -1,7 +1,7 @@
 
 #include <glbinding/glbinding.h>
 #include <glbinding/gl/gl.h>
-#include "SceneObject.h"
+#include <renderer/SceneObject.h>
 #include <iostream>
 
 using namespace Galax::Renderer;
@@ -14,19 +14,18 @@ SceneObject::SceneObject() {
     checkName();
 }
 
-SceneObject::SceneObject(const std::string &name) {
+SceneObject::SceneObject(const std::string &name, bool enableUnsafeNaming) {
     this->name = name;
-    checkName();
+    if(!enableUnsafeNaming) {
+        checkName();
+    }
 }
 
 void SceneObject::checkName() {
     auto hash = getNameHash();
-    std::vector<unsigned long> allowedDuplicates = {
-            503167521, //model
-            3463620694, //transposeInverseModel
-            1688038832, //currentCall (post processing needs this)
-            2530415913, //position uniform (part of model)
-    };
+
+    std::vector<uint> allowedDuplicates = {};
+
 
     for (auto allowedDuplicate: allowedDuplicates) {
         if (hash == allowedDuplicate) {

@@ -2,7 +2,7 @@
 // Created by tomas on 20.9.22.
 //
 
-#include "SunLoader.h"
+#include <generators/SunLoader.h>
 
 using namespace Galax::Renderer::SceneObjects;
 using namespace Galax::Generators;

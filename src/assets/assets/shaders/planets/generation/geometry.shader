@@ -6,9 +6,12 @@ layout (triangle_strip, max_vertices = 3) out;
 
 in vec3 tePosition[];
 
+uniform float inputSeed;
+
 out vec3 gsPosition;
 out float gsNoise;
 
+//uniform float inputSeed;
 
 struct Noise{
     float roughness;
@@ -90,24 +93,18 @@ float snoise(vec3 v){
 }
 
 float noise(vec3 position, float roughness, float strength){
-    float seed = 5;
-    float noise = (strength * snoise((position + seed) * roughness));
-    return (noise);
+    float noise = (strength * snoise((position + inputSeed) * roughness));
+    return noise;
 }
 
 float evaluateNoise(vec3 position){
-    //Noise settings[] = {{1, .05}};
     Noise settings[] = {{0.1, .06} , {1, 0.04}, {3, 0.025}, {10, 0.01}, {20, 0.005}, {50, 0.005},  {100, 0.001}, {200, 0.001}};
-    //Noise settings[] = {{1, .1} , {5, 0.01}, {10, 0.01}, {20, 0.01}, {60, 0.005}, {1000, 0.001}};
     float noiseValue = 0;
     for(int i = 0; i < settings.length(); i++){
         Noise n = settings[i];
         noiseValue += noise(position, n.roughness, n.strength);
     }
-    //return 0;
     return max(0.009, noiseValue);
-    return noiseValue;
-    //return clamp(noiseValue, 0.0, 0.0001);
 }
 
 

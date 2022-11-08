@@ -2,8 +2,8 @@
 // Created by tomas on 14.9.22.
 //
 
-#include "Light.h"
-#include "Uniform.h"
+#include <renderer/impl/Light.h>
+#include <renderer/impl/Uniform.h>
 
 using namespace Galax::Renderer;
 using namespace Galax::Renderer::SceneObjects;

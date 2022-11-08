@@ -5,16 +5,16 @@
 
 #pragma once
 
-#include "SceneObject.h"
-#include "impl/Shader.h"
-#include "impl/Texture.h"
-#include "impl/Camera.h"
-#include "impl/Light.h"
-#include "impl/Program.h"
-#include "impl/Quad.h"
-#include "impl/SSBO.h"
+#include <renderer/SceneObject.h>
+#include <renderer/impl/Shader.h>
+#include <renderer/impl/Texture.h>
+#include <renderer/impl/Camera.h>
+#include <renderer/impl/Light.h>
+#include <renderer/impl/Program.h>
+#include <renderer/impl/Quad.h>
+#include <renderer/impl/SSBO.h>
 
-#include "GBuffer.h"
+#include <renderer/GBuffer.h>
 
 #include <array>
 #include <memory>
