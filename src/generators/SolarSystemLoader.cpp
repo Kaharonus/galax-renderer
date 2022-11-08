@@ -6,6 +6,7 @@
 #include <generators/PlanetLoader.h>
 #include <generators/SunLoader.h>
 #include <effects/Bloom.h>
+#include <orbital/Gravity.h>
 
 using namespace Galax::Generators;
 using namespace Galax::Assets;
@@ -107,8 +108,9 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     sunLight->setIntensity(1);
     sunLight->setPositionUniform(sun->getPositionUniform());
 
+
     //generate planets
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < 1; i++){
         std::string name = "Planet " + std::to_string(i);
         auto planet = PlanetLoader::fromType(name, Planet::Type::TEMPERATE);
         planet->addAnimation(generatePlanetSpin(10000));
@@ -117,8 +119,15 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
         planet->setCamera(camera);
         planet->addUniform(std::make_shared<Uniform>("inputSeed", Uniform::FLOAT, 50.0f*((float)i+1)));
         planet->setPosition(glm::vec3(10 * (i + 1), 0, 0));
-        planet->setBodyMass(5);
-        planet->addForce(glm::vec3(0, 0, 0.1f));
+
+
+        /*auto gravity = std::make_shared<Gravity>();
+        gravity->setCenter(sun->getPositionUniform());
+        gravity->setCenterMass(200000);
+        gravity->setMass(100000);
+        gravity->setPosition(planet->getPositionUniform());
+        planet->addForce(gravity);*/
+
         sky->addChild(planet);
 
     }

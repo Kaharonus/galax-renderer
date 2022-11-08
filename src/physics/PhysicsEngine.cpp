@@ -8,8 +8,10 @@ using namespace Galax::Physics;
 
 PhysicsEngine::PhysicsEngine(float step, QObject* parent) : QObject(parent), step(step) {
     world = PhysicsObject::createWorld();
+    world->setIsGravityEnabled(false);
+    world->enableSleeping(false);
     timer = std::make_shared<QTimer>();
-    timer->setInterval(this->step * 1000);
+    timer->setInterval(10);
     connect(timer.get(), &QTimer::timeout, this, &PhysicsEngine::update);
     timer->start();
 }
@@ -21,7 +23,7 @@ void PhysicsEngine::addRigidBody(std::shared_ptr<IRigidBody> rigidBody) {
     body->setMass(rigidBody->getBodyMass());
     body->setTransform(IRigidBody::toRp3dTransform(rigidBody->getBodyPosition(), rigidBody->getBodyRotation()));
     for(auto& force : rigidBody->getForces()){
-        body->applyLocalForceAtCenterOfMass(force);
+        body->applyLocalForceAtCenterOfMass(force->getDirection());
     }
 
 
@@ -32,7 +34,7 @@ void PhysicsEngine::addRigidBody(std::shared_ptr<IRigidBody> rigidBody) {
 
 
 void PhysicsEngine::update() {
-    world->update(step);
+    world->update(1.0/100.0);
     for (auto &body : bodies) {
         body->update();
     }

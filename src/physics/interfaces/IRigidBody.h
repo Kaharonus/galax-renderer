@@ -9,6 +9,7 @@
 #include <renderer/interfaces/INode.h>
 #include <physics/PhysicsObject.h>
 #include <physics/interfaces/ICollider.h>
+#include <physics/interfaces/IForce.h>
 
 namespace Galax::Physics {
     using namespace Galax::Renderer;
@@ -25,7 +26,7 @@ namespace Galax::Physics {
 
         virtual void setBodyRotation(const glm::vec3 &rotation) = 0;
 
-        virtual void addForce(const glm::vec3 &force) = 0;
+        virtual void addForce(std::shared_ptr<IForce> force) = 0;
 
         virtual void setBodyAngularVelocity(const glm::vec3 &velocity) = 0;
 
@@ -39,12 +40,13 @@ namespace Galax::Physics {
 
         virtual glm::vec3 getBodyRotation() const = 0;
 
-        [[nodiscard]] virtual std::vector<rp3d::Vector3> getForces() const = 0;
+        [[nodiscard]] virtual std::vector<std::shared_ptr<IForce>> getForces() const = 0;
 
         virtual glm::vec3 getBodyAngularVelocity() const = 0;
 
-
         virtual float getBodyMass() const = 0;
+
+        [[nodiscard]] virtual glm::vec3 getResultingForce() const = 0;
 
     protected:
         [[nodiscard]] static rp3d::Transform toRp3dTransform(const glm::vec3 &position, const glm::vec3 &rotation) {

@@ -4,6 +4,7 @@
 #pragma once
 #include <variant>
 #include <glm/glm.hpp>
+#include <renderer/SceneObject.h>
 namespace Galax::Renderer {
     class IUniform : public Galax::Renderer::SceneObject {
     public:
@@ -22,7 +23,6 @@ namespace Galax::Renderer {
         IUniform() : SceneObject() {};
 
         IUniform(const std::string &name) : SceneObject(name, true) {};
-
 
         virtual ~IUniform() = default;
 

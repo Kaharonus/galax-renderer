@@ -32,7 +32,8 @@ void PhysicalNode::setRotation(const glm::vec3 &rotation) {
 
 void PhysicalNode::update() {
     RigidBody::update();
+    auto pos = RigidBody::getBodyPosition();
+    Node::setPosition(pos);
     Node::setRotation(this->getBodyRotation());
-    Node::setPosition(this->getBodyPosition());
 }
 

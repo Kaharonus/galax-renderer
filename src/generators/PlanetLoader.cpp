@@ -29,6 +29,7 @@ std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::O
     planet->setProgram(programs[type]);
     planet->setGeneratorProgram(createPlanetGenerator());
     planet->setMesh(baseMesh);
+    planet->setBodyMass(5);
     planet->addTexture(colorPalette[type]);
     return planet;
 }

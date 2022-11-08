@@ -6,6 +6,7 @@
 
 #include <physics/impl/PhysicalNode.h>
 #include <orbital/FeedbackProgram.h>
+#include <physics/impl/Force.h>
 
 namespace Galax::Orbital {
 
@@ -31,6 +32,7 @@ class Planet : public Physics::PhysicalNode {
 
         void draw() override;
 
+
     [[nodiscard]] std::vector<std::shared_ptr<Renderer::IProgram>> getPrograms() const override;
 
     protected:
@@ -48,6 +50,8 @@ class Planet : public Physics::PhysicalNode {
 
         void drawPlanet();
     private:
+        std::shared_ptr<Physics::Force> theOtherForce;
+
         uint sizeQuery = 0;
 
         void startSizeQuery();
