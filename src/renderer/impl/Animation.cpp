@@ -159,8 +159,6 @@ void Animation::updateTime(){
 
 void Animation::update() {
     if(Galax::Renderer::SceneObjects::Animation::currentTime == this->previousTime){
-        std::cout << getName() << std::endl;
-
         return; //Already calculated at this time.
     }
     updateTime();

@@ -28,7 +28,7 @@ MainWindow::MainWindow(const QSurfaceFormat &format, QWidget *parent, Qt::Window
 
 void MainWindow::setupRenderer(const QSurfaceFormat &format){
     renderer = new QRenderer(format);
-    renderer->setVerticalSync(Galax::Renderer::QRenderer::Disabled);
+    //renderer->setVerticalSync(Galax::Renderer::QRenderer::Disabled);
     QWidget * widget = QWidget::createWindowContainer(renderer);
     widget->setMinimumSize(1,1);
     widget->setAutoFillBackground(false); // Important for overdraw, not occluding the scene.

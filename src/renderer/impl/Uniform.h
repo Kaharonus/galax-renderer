@@ -28,6 +28,11 @@ namespace Galax::Renderer::SceneObjects {
             return std::get<T>(value);
         };
 
+        operator UniformT() override;
+
+        glm::vec3 v3() override;
+        float f() override;
+
         Type getType() const override;
         ~Uniform() override;
 

@@ -78,6 +78,8 @@ namespace Galax::Renderer::SceneObjects {
 
         std::shared_ptr<IUniform> getPositionUniform();
 
+        std::shared_ptr<IUniform> getScaleUniform();
+
         glm::vec3 &getRotation() override;
 
         glm::vec3 &getScale() override;
@@ -129,12 +131,12 @@ namespace Galax::Renderer::SceneObjects {
         std::map<float, std::shared_ptr<IMesh>> meshLODs;
         glm::vec3 position;
         std::shared_ptr<Uniform> positionUniform;
+        std::shared_ptr<Uniform> scaleUniform;
         glm::vec3 rotation;
         glm::vec3 scale;
         glm::mat4 modelMatrix;
         std::shared_ptr<Uniform> transposeInverseModelUniform;
         bool wireframe = false;
-
     };
 
 } // namespace MapGenerator::Renderer::SceneObjects

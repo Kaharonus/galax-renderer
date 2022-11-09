@@ -8,6 +8,7 @@
 #include <orbital/SolarSystem.h>
 #include <renderer/LightingModel.h>
 #include <renderer/impl/PostProcessEffect.h>
+#include <orbital/OrbitAnimation.h>
 
 #include <assets/AssetLoader.h>
 #include <effects/Bloom.h>
@@ -45,7 +46,7 @@ namespace Galax::Generators{
         std::shared_ptr<Effects::Bloom>
         generateBloom(std::shared_ptr<AssetLoader> assets, std::shared_ptr<Texture> bloomMap);
 
-        std::shared_ptr<Animation> generateRotation(float distance, std::shared_ptr<IUniform> sunPosition);
+        std::shared_ptr<OrbitAnimation> generateRotation(std::shared_ptr<Planet> planet, std::shared_ptr<IUniform> sunPosition);
     };
 }
 

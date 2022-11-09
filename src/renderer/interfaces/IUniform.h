@@ -24,6 +24,11 @@ namespace Galax::Renderer {
 
         IUniform(const std::string &name) : SceneObject(name, true) {};
 
+        virtual operator UniformT() = 0;
+
+        virtual glm::vec3 v3() = 0;
+        virtual float f() = 0;
+
         virtual ~IUniform() = default;
 
         virtual void setValue(UniformT) = 0;

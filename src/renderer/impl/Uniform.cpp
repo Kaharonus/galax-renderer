@@ -34,3 +34,15 @@ void Uniform::setValue(UniformT v) {
 Uniform::UniformT Uniform::getValue() const {
     return value;
 }
+
+Uniform::operator UniformT() {
+    return value;
+}
+
+glm::vec3 Uniform::v3() {
+    return std::get<glm::vec3>(value);
+}
+
+float Uniform::f() {
+    return std::get<float>(value);
+}

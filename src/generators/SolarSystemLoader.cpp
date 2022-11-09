@@ -6,7 +6,6 @@
 #include <generators/PlanetLoader.h>
 #include <generators/SunLoader.h>
 #include <effects/Bloom.h>
-#include <orbital/Gravity.h>
 
 using namespace Galax::Generators;
 using namespace Galax::Assets;
@@ -26,22 +25,11 @@ std::shared_ptr<Animation> SolarSystemLoader::generatePlanetSpin(int spinLength)
 }
 
 
-std::shared_ptr<Animation> SolarSystemLoader::generateRotation(float distance, std::shared_ptr<IUniform> sunPosition){
-    auto animation = std::make_shared<Animation>("Orbit (" + std::to_string(distance) + ")");
-    auto length = 2000 * distance;
-    animation->setLength(length);
-    animation->setRepeat(Animation::Repeat::LOOP);
-    animation->setEase(Animation::Ease::LINEAR);
-    animation->setTarget(IAnimation::Target::POSITION);
-    animation->addKeyFrame(0, glm::vec3(distance));
-    animation->addKeyFrame(length, glm::vec3(distance));
-    animation->setUpdateFunction([sunPosition](const IAnimation& animation, IUniform::UniformT value, float time){
-        auto center = std::get<glm::vec3>(sunPosition->getValue());
-        constexpr auto pi2 = 2 * glm::pi<float>();
-        auto x = std::sin(time * pi2) + center.x;
-        auto y = std::cos(time * pi2) + center.z;
-        return glm::vec3(x, 0, y) * std::get<glm::vec3>(value);
-    });
+std::shared_ptr<OrbitAnimation> SolarSystemLoader::generateRotation(std::shared_ptr<Planet> planet, std::shared_ptr<IUniform> sunPosition){
+    auto animation = std::make_shared<OrbitAnimation>();
+    animation->setPlanetRadius(planet->getScaleUniform());
+    animation->setSunPosition(sunPosition);
+    animation->setInitialPosition(planet->getPosition());
 
     return animation;
 }
@@ -90,7 +78,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
     auto camera = std::make_shared<Camera>("freeCam");
     camera->acceptInput(true);
-    camera->setPosition(glm::vec3(0, 0, -15));
+    camera->setPosition(glm::vec3(0, 0, -150));
 
     auto system = std::make_shared<SolarSystem>();
 
@@ -101,6 +89,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
     auto sun = SunLoader::load(assets);
     sun->setCamera(camera);
+    sun->setScale(glm::vec3(3));
     sky->addChild(sun);
 
     auto sunLight = std::make_shared<Light>();
@@ -110,24 +99,18 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
 
     //generate planets
-    for(int i = 0; i < 1; i++){
+    for(int i = 0; i < 5; i++){
         std::string name = "Planet " + std::to_string(i);
         auto planet = PlanetLoader::fromType(name, Planet::Type::TEMPERATE);
-        planet->addAnimation(generatePlanetSpin(10000));
-        //planet->addAnimation(generateRotation(10, sun->getPositionUniform()));
-        planet->setScale(glm::vec3(0.25 * (i + 1)));
+        auto scale = 0.5 + (0.25 * i);
+        planet->setScale(glm::vec3(scale));
         planet->setCamera(camera);
         planet->addUniform(std::make_shared<Uniform>("inputSeed", Uniform::FLOAT, 50.0f*((float)i+1)));
-        planet->setPosition(glm::vec3(10 * (i + 1), 0, 0));
+        auto orbit = 10 * ((i + 1)*2);
+        planet->setPosition(glm::vec3(orbit, orbit, 0));
 
-
-        /*auto gravity = std::make_shared<Gravity>();
-        gravity->setCenter(sun->getPositionUniform());
-        gravity->setCenterMass(200000);
-        gravity->setMass(100000);
-        gravity->setPosition(planet->getPositionUniform());
-        planet->addForce(gravity);*/
-
+        planet->addAnimation(generatePlanetSpin(10000));
+        planet->addAnimation(generateRotation(planet, sun->getPositionUniform()));
         sky->addChild(planet);
 
     }

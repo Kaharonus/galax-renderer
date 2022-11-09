@@ -22,6 +22,7 @@ void Node::init() {
     transposeInverseModelUniform = std::make_shared<Uniform>("transposeInverseModel", Uniform::Type::MAT4,
                                                              glm::mat4(1.0));
     this->positionUniform = std::make_shared<Uniform>("position", Uniform::Type::VEC3, glm::vec3(0.0f));
+    this->scaleUniform = std::make_shared<Uniform>("scale", Uniform::Type::VEC3, glm::vec3(1.0f));
     setPosition(glm::vec3(0.0f));
     setRotation(glm::vec3(0.0f));
     setScale(glm::vec3(1.0f));
@@ -64,6 +65,7 @@ void Node::setRotation(const glm::vec3 &rotation) {
 
 void Node::setScale(const glm::vec3 &scale) {
     this->scale = scale;
+    this->scaleUniform->setValue(scale);
     calculateModelMatrix();
 }
 
@@ -299,4 +301,8 @@ std::vector<std::shared_ptr<IProgram>> Node::getPrograms() const {
 
 void Node::drawAsWireframe(bool enabled) {
     wireframe = enabled;
+}
+
+std::shared_ptr<IUniform> Node::getScaleUniform() {
+    return scaleUniform;
 }
