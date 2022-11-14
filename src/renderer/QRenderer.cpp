@@ -5,7 +5,7 @@
 #include <glbinding/gl/gl.h>
 
 #include "QRenderer.h"
-#include "../Extensions.h"
+#include <Extensions.h>
 #include <chrono>
 #include <chrono>
 #include <thread>
@@ -51,6 +51,7 @@ void QRenderer::initializeGL(const QSurfaceFormat &format) {
     this->gBuffer = std::make_shared<GBuffer>();
     this->gBuffer->init();
 
+
     context->doneCurrent();
 }
 
@@ -69,13 +70,9 @@ void QRenderer::resize() {
 }
 
 
-void QRenderer::paintGL() {
+void QRenderer::prepareRender() {
     static int previousHeight = 0;
     static int previousWidth = 0;
-
-
-    SceneObject::setFrameTime(frameTime);
-    auto frameStart = std::chrono::high_resolution_clock::now();
 
     context->makeCurrent(this);
     if (previousHeight != height() || previousWidth != width()) {
@@ -84,37 +81,56 @@ void QRenderer::paintGL() {
         previousWidth = viewportWidth;
     }
     gl::glViewport(0, 0, viewportWidth, viewportHeight);
-
-
     gl::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     gl::glClear((gl::ClearBufferMask) GL_COLOR_BUFFER_BIT | (gl::ClearBufferMask) GL_DEPTH_BUFFER_BIT);
+}
 
-    if (scene) {
-        scene->draw();
-    }
+void QRenderer::drawGeometry() {
+    GL_DEBUG("Geometry pass", {
+        if (scene) {
+            scene->draw();
+        }
+    })
+}
 
-    lightingModel->draw();
+void QRenderer::drawLighting() {
+    GL_DEBUG("Deferred lighting", {
+        lightingModel->draw();
+    })
+}
 
-#ifdef DEBUG
-    glPushDebugGroup((gl::GLenum) GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Post processing");
-#endif
-    for (auto [i, effect]: enumerate(postProcesses)) {
-#ifdef DEBUG
-        glPushDebugGroup((gl::GLenum) GL_DEBUG_SOURCE_APPLICATION, 0, -1, effect->getName().c_str());
-#endif
-        //Drawing here
-        effect->render();
-#ifdef DEBUG
-        glPopDebugGroup();
-#endif
-    }
-#ifdef DEBUG
-    glPopDebugGroup();
-#endif
+void QRenderer::drawPostProcess() {
+    GL_DEBUG("Post processing", {
+        for (auto [i, effect]: enumerate(postProcesses)) {
+            GL_DEBUG(effect->getName().c_str(), {
+                effect->draw();
+            })
+        }
+    })
+}
 
-
+void QRenderer::finishRender() {
     context->swapBuffers(this);
     context->doneCurrent();
+
+}
+
+void QRenderer::paintGL() {
+    //Set stuff for all objects
+    SceneObject::setFrameTime(frameTime);
+    auto frameStart = std::chrono::high_resolution_clock::now();
+
+    prepareRender();
+
+    drawGeometry();
+
+    drawLighting();
+
+    drawPostProcess();
+
+    finishRender();
+
+
     auto frameEnd = std::chrono::high_resolution_clock::now();
     frameTime = (double) std::chrono::duration_cast<std::chrono::nanoseconds>(frameEnd - frameStart).count() /
                 1000000.0;
@@ -204,6 +220,22 @@ void QRenderer::setLightingModel(std::shared_ptr<LightingModel> lightingModel) {
 
 void QRenderer::addPostProcess(std::shared_ptr<IPostProcessEffect> postProcess) {
     this->postProcesses.push_back(postProcess);
+    auto requested = (int)postProcess->getRequestedGBufferTextures();
+    if(requested & (int)IPostProcessEffect::GBufferTexture::ALBEDO) {
+        postProcess->addInputTexture(gBuffer->getAlbedoTexture());
+    }
+    if(requested & (int)IPostProcessEffect::GBufferTexture::NORMAL) {
+        postProcess->addInputTexture(gBuffer->getNormalTexture());
+    }
+    if(requested & (int)IPostProcessEffect::GBufferTexture::POSITION) {
+        postProcess->addInputTexture(gBuffer->getPositionTexture());
+    }
+    if(requested & (int)IPostProcessEffect::GBufferTexture::EMISSION) {
+        postProcess->addInputTexture(gBuffer->getEmissionTexture());
+    }
+    if(requested & (int)IPostProcessEffect::GBufferTexture::METADATA) {
+        postProcess->addInputTexture(gBuffer->getMetadataTexture());
+    }
 }
 
 

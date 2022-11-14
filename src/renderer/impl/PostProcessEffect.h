@@ -20,18 +20,22 @@ namespace Galax::Renderer {
         explicit PostProcessEffect(const std::string& name);
 
         unsigned int getId() override;
-        void render() override;
+        void draw() override;
         [[nodiscard]] std::vector<std::shared_ptr<ITexture>> getOutputTextures() const override;
         [[nodiscard]] std::vector<std::shared_ptr<ITexture>> getInputTextures() const override;
         [[nodiscard]] std::shared_ptr<IShader> getShader() const;
-        void addInputTexture(std::shared_ptr<ITexture> texture);
-        void addOutputTexture(std::shared_ptr <ITexture> texture);
+        void addInputTexture(std::shared_ptr<ITexture> texture) override;
+        void addOutputTexture(std::shared_ptr <ITexture> texture) override;
         void setShader(std::shared_ptr<Shader> shader);
         void resize(int width, int height) override;
         void addUniform(std::shared_ptr<Uniform> uniform);
         [[nodiscard]] std::shared_ptr<FrameBuffer> getFrameBuffer() const;
 
-    private:
+        void requestGBufferTextures(GBufferTexture texture) override;
+
+        GBufferTexture getRequestedGBufferTextures() override;
+
+    protected:
         void init();
 
         bool initialized = false;
@@ -42,6 +46,7 @@ namespace Galax::Renderer {
         std::vector<std::shared_ptr<ITexture>> outputTextures;
         std::vector<std::shared_ptr<Uniform>> uniforms;
         std::shared_ptr<Uniform> callCountUniform;
+        int requestedGBufferTextures = 0;
 
         int height, width;
     };

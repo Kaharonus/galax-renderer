@@ -90,6 +90,15 @@ namespace Galax::Renderer {
 
         void resize();
 
+        void prepareRender();
+
+        void drawGeometry();
+
+        void drawLighting();
+
+        void drawPostProcess();
+
+        void finishRender();
     };
 
 } // namespace MapGenerator::Renderer

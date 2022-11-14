@@ -6,9 +6,20 @@
 #include <vector>
 #include <tuple>
 
+// ----------------- 1. -----------------
+// Cute lil macro that will wrap any code in opengl's debug groups for that sweet renderdoc goodness
+#ifdef DEBUG
+#define GL_DEBUG(name, fn) \
+    glPushDebugGroup((gl::GLenum) GL_DEBUG_SOURCE_APPLICATION, 0, -1, name); \
+    fn \
+    glPopDebugGroup();
+#else
+#define GL_DEBUG(fn, name) \
+    fn
+#endif
 
 
-// ----------------- 1 -----------------
+// ----------------- 2. -----------------
 // Used to enumarete over a list of types and get an index with the value
 
 // Wrapper class
@@ -74,7 +85,7 @@ enumerate_impl<T> enumerate(T &t) {
     return enumerate_impl<T>(t);
 }
 
-// ----------------- 2 -----------------
+// ----------------- 3. -----------------
 // Used to check if a collection contains a value
 
 template<typename T>

@@ -13,6 +13,9 @@ namespace Galax::Effects{
     public:
 
         Outline();
+
+        void draw() override;
+
         explicit Outline(const std::string& name);
 
     private:

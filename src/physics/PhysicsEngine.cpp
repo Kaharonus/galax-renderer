@@ -38,7 +38,8 @@ void PhysicsEngine::update() {
 
     world->update(1.0 / 100.0);
 
-   auto ray = createRayFromMousePosition();
+    auto ray = createRayFromMousePosition();
+    auto hits = std::vector<std::shared_ptr<IRigidBody>>();
 
     for (auto &body: bodies) {
         for (auto &collider: body->getColliders()) {
@@ -47,12 +48,25 @@ void PhysicsEngine::update() {
             }
             RaycastInfo info;
             auto hit = collider->getRP3DCollider()->raycast(ray, info);
-            body->setIsMouseOver(hit);
             if (hit) {
+                hits.push_back(body);
                 break;
             }
         }
         body->update();
+    }
+    auto cameraPosition = camera->getPosition();
+    auto min = std::numeric_limits<float>::max();
+    std::shared_ptr<IRigidBody> closestBody = nullptr;
+    for(const auto& hit: hits){
+        auto distance = glm::distance(cameraPosition, hit->getBodyPosition());
+        if(distance < min){
+            min = distance;
+            closestBody = hit;
+        }
+    }
+    for(const auto& body : bodies){
+        body->setIsMouseOver(body == closestBody);
     }
 }
 

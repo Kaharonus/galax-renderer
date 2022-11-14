@@ -27,9 +27,9 @@ vec3 getColor(){
 
 
 void main(){
-    gAlbedo = vec4(getColor() * colorOffset, 1);
+    gAlbedo = vec4(getColor(), 1);
     gPosition = gsPosition;
     gNormal = normalize(gsNormal);
     gEmission = vec3(0);
-    gMetadata = vec4(objectId,0,0,0);
+    gMetadata = vec4(objectId,colorOffset,0,0);
 }

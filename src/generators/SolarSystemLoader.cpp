@@ -63,8 +63,8 @@ std::shared_ptr<Galax::Effects::Bloom> SolarSystemLoader::generateBloom(std::sha
     auto bloom = std::make_shared<Galax::Effects::Bloom>("Bloom");
     auto result = std::make_shared<Texture>("bloomResult", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::LINEAR);
     bloom->setPasses(3);
-    bloom->setInputTexture(bloomMap);
-    bloom->setOutputTexture(result);
+    bloom->addInputTexture(bloomMap);
+    bloom->addOutputTexture(result);
 
     bloom->setShader(assets->getShader("shaders/effects/bloom.fs.shader", Shader::FRAGMENT, "Bloom shader"));
     return bloom;
@@ -76,6 +76,8 @@ std::shared_ptr<Galax::Effects::Outline> SolarSystemLoader::generateOutline(std:
     auto shader = assets->getShader("shaders/effects/outline.fs.shader", Shader::FRAGMENT, "Outline shader");
 
     auto result = std::make_shared<Texture>("outlineResult", Texture::TYPE_2D, Texture::RGB, Texture::UNSIGNED_BYTE, Texture::Wrap::REPEAT, Texture::NEAREST);
+    outline->addOutputTexture(result);
+    outline->requestGBufferTextures(IPostProcessEffect::GBufferTexture::METADATA);
 
     outline->setShader(shader);
 
@@ -146,7 +148,11 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     effects.push_back(bloom);
     auto bloomMap = *bloom->getOutputTextures().rbegin();
 
+    auto outline = generateOutline(assets);
+    effects.push_back(outline);
+
     auto hdr = generateHDR(lightTexture, bloomMap);
+    hdr->addInputTexture(outline->getOutputTextures().at(0));
     effects.push_back(hdr);
     return {system, lightingModel, effects};
 }

@@ -41,7 +41,7 @@ unsigned int PostProcessEffect::getId() {
     return this->getNameHash();
 }
 
-void PostProcessEffect::render() {
+void PostProcessEffect::draw() {
     if (!initialized) {
         init();
     }
@@ -110,4 +110,12 @@ std::shared_ptr<FrameBuffer> PostProcessEffect::getFrameBuffer() const {
 
 void PostProcessEffect::addUniform(std::shared_ptr<Uniform> uniform) {
     uniforms.push_back(uniform);
+}
+
+void PostProcessEffect::requestGBufferTextures(IPostProcessEffect::GBufferTexture texture) {
+    requestedGBufferTextures |= (int)texture;
+}
+
+IPostProcessEffect::GBufferTexture PostProcessEffect::getRequestedGBufferTextures() {
+    return (IPostProcessEffect::GBufferTexture)requestedGBufferTextures;
 }

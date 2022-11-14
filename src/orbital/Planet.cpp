@@ -14,13 +14,13 @@ using namespace gl;
 
 Planet::Planet(const std::string &name, Planet::Type type) : Physics::PhysicalNode(name) {
     this->type = type;
-    this->colorOffsetUniform = std::make_shared<Uniform>("colorOffset", Uniform::FLOAT, 1.0f);
+    this->colorOffsetUniform = std::make_shared<Uniform>("colorOffset", Uniform::FLOAT, 0.0f);
 
     this->lightenAnimation = std::make_shared<Animation>("Lighten planet", Animation::Target::CUSTOM,
                                                          Animation::Repeat::ONCE);
     this->lightenAnimation->setLength(300);
-    this->lightenAnimation->addKeyFrame(0, 1.0f);
-    this->lightenAnimation->addKeyFrame(300, 1.5f);
+    this->lightenAnimation->addKeyFrame(0, 0.f);
+    this->lightenAnimation->addKeyFrame(300, 1.f);
     this->lightenAnimation->setStartType(Animation::StartType::MANUAL);
     this->lightenAnimation->setEase(Animation::Ease::QUADRATIC_IN);
     this->lightenAnimation->setCustomTarget(this->colorOffsetUniform);
@@ -29,8 +29,8 @@ Planet::Planet(const std::string &name, Planet::Type type) : Physics::PhysicalNo
     this->darkenAnimation = std::make_shared<Animation>("Darken planet", Animation::Target::CUSTOM,
                                                         Animation::Repeat::ONCE);
     this->darkenAnimation->setLength(300);
-    this->darkenAnimation->addKeyFrame(0, 1.5f);
-    this->darkenAnimation->addKeyFrame(300, 1.0f);
+    this->darkenAnimation->addKeyFrame(0, 1.0f);
+    this->darkenAnimation->addKeyFrame(300, 0.f);
     this->darkenAnimation->setStartType(Animation::StartType::MANUAL);
     this->darkenAnimation->setEase(Animation::Ease::QUADRATIC_IN);
     this->darkenAnimation->setCustomTarget(this->colorOffsetUniform);

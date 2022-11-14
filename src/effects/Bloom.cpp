@@ -45,7 +45,7 @@ void Bloom::init(){
 
 }
 
-void Bloom::render() {
+void Bloom::draw() {
     if(!program){ //This means that init() has not been called yet
         init();
     }
@@ -105,11 +105,11 @@ std::shared_ptr<IShader> Bloom::getShader() const {
     return shader;
 }
 
-void Bloom::setInputTexture(std::shared_ptr<ITexture> texture) {
+void Bloom::addInputTexture(std::shared_ptr<ITexture> texture) {
     inputTexture = texture;
 }
 
-void Bloom::setOutputTexture(std::shared_ptr<ITexture> texture) {
+void Bloom::addOutputTexture(std::shared_ptr<ITexture> texture) {
     outputTexture = texture;
     textures[1] = texture;
 }
@@ -125,5 +125,13 @@ void Bloom::setPasses(int passes) {
 
 int Bloom::getPasses() const {
     return this->passes / 2;
+}
+
+void Bloom::requestGBufferTextures(IPostProcessEffect::GBufferTexture texture) {
+    //This effect does not need any textures from the GBuffer
+}
+
+IPostProcessEffect::GBufferTexture Bloom::getRequestedGBufferTextures() {
+    return GBufferTexture::NONE;
 }
 

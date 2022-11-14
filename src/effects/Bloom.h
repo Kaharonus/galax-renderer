@@ -21,17 +21,22 @@ namespace Galax::Effects {
         public:
             Bloom();
             explicit Bloom(const std::string& name);
-            void render() override;
+            void draw() override;
             void resize(int width, int height) override;
             unsigned int getId() override;
-            void setInputTexture(std::shared_ptr<ITexture> texture);
-            void setOutputTexture(std::shared_ptr<ITexture> texture);
+            void addInputTexture(std::shared_ptr<ITexture> texture) override;
+            void addOutputTexture(std::shared_ptr<ITexture> texture) override;
             void setShader(std::shared_ptr<IShader> shader);
             void setPasses(int passes);
             int getPasses() const;
             [[nodiscard]] std::vector<std::shared_ptr<ITexture>> getInputTextures() const override;
             [[nodiscard]] std::vector<std::shared_ptr<ITexture>> getOutputTextures() const override;
             [[nodiscard]] std::shared_ptr<IShader> getShader() const override;
+
+            void requestGBufferTextures(GBufferTexture texture) override;
+
+            GBufferTexture getRequestedGBufferTextures() override;
+
         private:
             int passes = 2;
             std::shared_ptr<IShader> shader;
