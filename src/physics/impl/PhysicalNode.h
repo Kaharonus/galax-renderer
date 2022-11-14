@@ -25,6 +25,11 @@ namespace Galax::Physics{
 
         void update() override;
 
+        void setIsMouseOver(bool isMouseOver) override;
+
+    protected:
+        std::shared_ptr<IUniform> mouseOverUniform;
+
     };
 
 }

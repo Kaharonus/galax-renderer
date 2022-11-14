@@ -72,12 +72,12 @@ bool InputHandler::isMouseButtonUp(MouseButton button) {
     return !mouseButtons[button];
 }
 
-std::tuple<float, float> InputHandler::getPositionDelta() {
-    return std::make_tuple(deltaX, deltaY);
+glm::vec2 InputHandler::getPositionDelta() {
+    return glm::vec2(deltaX, deltaY);
 }
 
-std::tuple<float, float> InputHandler::getAbsolutePosition() {
-    return std::make_tuple(absoluteX, absoluteY);
+glm::vec2 InputHandler::getAbsolutePosition() {
+    return {absoluteX, absoluteY};
 }
 
 InputHandler::Key InputHandler::fromQtKey(int key) {
@@ -99,4 +99,13 @@ InputHandler::Key InputHandler::fromQtKey(int key) {
     }
 
     return KEY_UNKNOWN;
+}
+
+glm::vec2 InputHandler::getRendererPosition() {
+    return {absoluteX / rendererWidth, absoluteY / rendererHeight};
+}
+
+void InputHandler::setRendererSize(int width, int height) {
+    rendererWidth = width;
+    rendererHeight = height;
 }

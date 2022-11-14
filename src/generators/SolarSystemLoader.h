@@ -12,6 +12,7 @@
 
 #include <assets/AssetLoader.h>
 #include <effects/Bloom.h>
+#include <effects/Outline.h>
 
 #include <memory>
 
@@ -47,6 +48,8 @@ namespace Galax::Generators{
         generateBloom(std::shared_ptr<AssetLoader> assets, std::shared_ptr<Texture> bloomMap);
 
         std::shared_ptr<OrbitAnimation> generateRotation(std::shared_ptr<Planet> planet, std::shared_ptr<IUniform> sunPosition);
+
+        std::shared_ptr<Galax::Effects::Outline> generateOutline(std::shared_ptr<AssetLoader> assets);
     };
 }
 

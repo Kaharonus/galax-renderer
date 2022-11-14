@@ -18,7 +18,9 @@ namespace Galax::Physics {
 
     public:
 
-        IRigidBody() = default;
+        IRigidBody() : PhysicsObject() {};
+
+        IRigidBody(const std::string name) : PhysicsObject(name) {}
 
         virtual void update() = 0;
 
@@ -48,6 +50,14 @@ namespace Galax::Physics {
 
         [[nodiscard]] virtual glm::vec3 getResultingForce() const = 0;
 
+        virtual void clearColliders() = 0;
+
+        virtual std::vector<std::shared_ptr<ICollider>> getColliders() const = 0;
+
+        virtual void setIsMouseOver(bool isMouseOver) = 0;
+
+        virtual bool getIsMouseOver() const = 0;
+
     protected:
         [[nodiscard]] static rp3d::Transform toRp3dTransform(const glm::vec3 &position, const glm::vec3 &rotation) {
             return {
@@ -75,5 +85,7 @@ namespace Galax::Physics {
         rp3d::RigidBody *body = nullptr;
 
     };
+
+
 
 }

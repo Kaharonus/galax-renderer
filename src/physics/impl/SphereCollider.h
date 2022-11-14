@@ -12,6 +12,7 @@ namespace Galax::Physics {
     public:
         explicit SphereCollider(float radius);
         ~SphereCollider();
+
         rp3d::CollisionShape* getRP3DCollisionShape() override;
 
     private:

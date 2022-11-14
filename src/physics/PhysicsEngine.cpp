@@ -6,7 +6,8 @@
 
 using namespace Galax::Physics;
 
-PhysicsEngine::PhysicsEngine(float step, QObject* parent) : QObject(parent), step(step) {
+PhysicsEngine::PhysicsEngine(std::shared_ptr<InputHandler> handler, float step, QObject *parent) : QObject(parent),
+                                                                                                   step(step) {
     world = PhysicsObject::createWorld();
     world->setIsGravityEnabled(false);
     world->enableSleeping(false);
@@ -14,15 +15,16 @@ PhysicsEngine::PhysicsEngine(float step, QObject* parent) : QObject(parent), ste
     timer->setInterval(10);
     connect(timer.get(), &QTimer::timeout, this, &PhysicsEngine::update);
     timer->start();
+    this->inputHandler = handler;
 }
 
 void PhysicsEngine::addRigidBody(std::shared_ptr<IRigidBody> rigidBody) {
     bodies.push_back(rigidBody);
-    rp3d::RigidBody* body = world->createRigidBody(rp3d::Transform());
+    rp3d::RigidBody *body = world->createRigidBody(rp3d::Transform());
     body->setType(rp3d::BodyType::DYNAMIC);
     body->setMass(rigidBody->getBodyMass());
     body->setTransform(IRigidBody::toRp3dTransform(rigidBody->getBodyPosition(), rigidBody->getBodyRotation()));
-    for(auto& force : rigidBody->getForces()){
+    for (auto &force: rigidBody->getForces()) {
         body->applyLocalForceAtCenterOfMass(force->getDirection());
     }
 
@@ -31,15 +33,47 @@ void PhysicsEngine::addRigidBody(std::shared_ptr<IRigidBody> rigidBody) {
 }
 
 
-
-
 void PhysicsEngine::update() {
-    world->update(1.0/100.0);
-    for (auto &body : bodies) {
+    assert(camera != nullptr);
+
+    world->update(1.0 / 100.0);
+
+   auto ray = createRayFromMousePosition();
+
+    for (auto &body: bodies) {
+        for (auto &collider: body->getColliders()) {
+            if (collider->getRP3DCollider() == nullptr) {
+                continue;
+            }
+            RaycastInfo info;
+            auto hit = collider->getRP3DCollider()->raycast(ray, info);
+            body->setIsMouseOver(hit);
+            if (hit) {
+                break;
+            }
+        }
         body->update();
     }
 }
 
-void PhysicsEngine::addCollider(std::shared_ptr<ICollider> collider, std::shared_ptr<IRigidBody> rigidBody) {
-    auto* body = rigidBody->getRP3DBody();
+void PhysicsEngine::setCamera(std::shared_ptr<ICamera> camera) {
+    this->camera = camera;
+}
+
+Ray PhysicsEngine::createRayFromMousePosition() {
+    auto mousePosition = inputHandler->getAbsolutePosition();
+
+    glm::vec4 rayClip = glm::vec4((2.0f * mousePosition.x) / camera->getWidth() - 1.0f,
+                                  1.0f - (2.0f * mousePosition.y) / camera->getHeight(),
+                                  -1.0,
+                                  1.0);
+    glm::vec4 rayEye = glm::inverse(camera->getProjectionMatrix()) * rayClip;
+    rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0, 0.0);
+    glm::vec3 rayWorld = glm::vec3(glm::inverse(camera->getViewMatrix()) * rayEye);
+    rayWorld = glm::normalize(rayWorld);
+
+    auto start = camera->getPosition();
+    auto end = start + rayWorld * 1000.0f;
+    Ray ray = Ray(rp3d::Vector3(start.x, start.y, start.z), rp3d::Vector3(end.x, end.y, end.z));
+    return ray;
 }

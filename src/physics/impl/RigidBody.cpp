@@ -3,12 +3,18 @@
 //
 
 #include <physics/impl/RigidBody.h>
+#include "reactphysics3d/mathematics/Transform.h"
 
 using namespace Galax::Physics;
 
 RigidBody::RigidBody() {
 
 }
+
+RigidBody::RigidBody(const std::string &name) : IRigidBody(name) {
+
+}
+
 
 void RigidBody::setBodyPosition(const glm::vec3 &position) {
     this->position = position;
@@ -43,8 +49,9 @@ void RigidBody::setBodyMass(float mass) {
 
 void RigidBody::createCollider(std::shared_ptr<ICollider> collider) {
     auto body = this->getRP3DBody();
-    auto coll = body->addCollider(collider->getRP3DCollisionShape(), transform);
-
+    auto shape = collider->getRP3DCollisionShape();
+    auto coll = body->addCollider(shape, reactphysics3d::Transform::identity());
+    collider->setRP3DCollider(coll);
 }
 
 
@@ -52,7 +59,6 @@ void RigidBody::addBodyCollider(std::shared_ptr<ICollider> collider) {
     colliders.push_back(collider);
     if (this->getRP3DBody() != nullptr) {
         createCollider(collider);
-
     }
 }
 
@@ -82,6 +88,12 @@ void RigidBody::update() {
         return;
     }
 
+    for(const auto& collider : colliders) {
+        if(collider->getRP3DCollider() == nullptr) {
+            createCollider(collider);
+        }
+    }
+
     auto resultingForce = rp3d::Vector3(0, 0, 0);
     for (const auto &force: forces) {
         resultingForce += force->getDirection();
@@ -108,4 +120,27 @@ glm::vec3 RigidBody::getResultingForce() const {
     return resultingForce;
 }
 
+void RigidBody::clearColliders() {
+    if(this->getRP3DBody() == nullptr) {
+        return;
+    }
 
+    for (auto i = 0; i <  this->getRP3DBody()->getNbColliders(); i++) {
+        auto collider = this->getRP3DBody()->getCollider(i);
+        this->getRP3DBody()->removeCollider(collider);
+    }
+    colliders.clear();
+
+}
+
+void RigidBody::setIsMouseOver(bool isMouseOver) {
+    this->isMouseOver = isMouseOver;
+}
+
+bool RigidBody::getIsMouseOver() const {
+    return isMouseOver;
+}
+
+std::vector<std::shared_ptr<ICollider>> RigidBody::getColliders() const {
+    return colliders;
+}

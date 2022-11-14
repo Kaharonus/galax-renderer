@@ -17,6 +17,8 @@ namespace Galax::Physics {
     public:
         RigidBody();
 
+        explicit RigidBody(const std::string& name);
+
         void setBodyPosition(const glm::vec3 &position) override;
 
         void setBodyRotation(const glm::vec3 &rotation) override;
@@ -45,8 +47,19 @@ namespace Galax::Physics {
 
         [[nodiscard]] glm::vec3 getResultingForce() const override;
 
+        void clearColliders() override;
+
+        void setIsMouseOver(bool isMouseOver) override;
+
+        bool getIsMouseOver() const override;
+
+        std::vector<std::shared_ptr<ICollider>> getColliders() const override;
+
     protected:
         void createCollider(std::shared_ptr<ICollider> collider);
+
+        bool isMouseOver = false;
+        bool isBodyVisible = true;
 
         rp3d::Transform transform;
         glm::vec3 position;

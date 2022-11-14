@@ -93,6 +93,15 @@ void OrbitAnimation::setOffset(glm::vec3 offset) {
     this->offset = offset;
 }
 
+void OrbitAnimation::start() {
+    //Empty - this animation always runs
+}
+
+void OrbitAnimation::stop() {
+    //Empty - this animation always runs
+
+}
+
 
 
 

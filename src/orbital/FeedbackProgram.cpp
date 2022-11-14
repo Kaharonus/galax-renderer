@@ -94,7 +94,7 @@ void FeedbackProgram::prepareFeedback() {
     glCreateBuffers(1, &feedbackBufferId);
     glBindBuffer(GL_ARRAY_BUFFER, feedbackBufferId);
 
-    glBufferData(GL_ARRAY_BUFFER, feedbackBufferSize, nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, feedbackBufferSize, nullptr, GL_DYNAMIC_COPY);
     glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, feedbackBufferId);
 
     auto stride = std::accumulate(feedbackSizes.begin(), feedbackSizes.end(), 0);

@@ -13,7 +13,7 @@ namespace Galax::Orbital {
     using namespace Galax::Renderer::SceneObjects;
 
 
-class Planet : public Physics::PhysicalNode {
+    class Planet : public Physics::PhysicalNode {
 
 
     public:
@@ -26,36 +26,40 @@ class Planet : public Physics::PhysicalNode {
             OCEAN
         };
 
-        void setGeneratorProgram(const std::shared_ptr<FeedbackProgram> &program);
+        Planet(const std::string &name, Planet::Type type);
 
-        Planet(const std::string& name, Planet::Type type);
+        void setGeneratorProgram(const std::shared_ptr<FeedbackProgram> &program);
 
         void draw() override;
 
+        void setScale(const glm::vec3 &scale) override;
 
-    [[nodiscard]] std::vector<std::shared_ptr<Renderer::IProgram>> getPrograms() const override;
+        void setIsMouseOver(bool isMouseOver) override;
+
+        [[nodiscard]] std::vector<std::shared_ptr<Renderer::IProgram>> getPrograms() const override;
 
     protected:
-
-
         std::shared_ptr<FeedbackProgram> generatorProgram;
-
         bool shouldGenerate = true;
-
-
+        bool previousMouseOver = false;
         Type type;
         uint prims;
 
         void generatePlanet();
 
         void drawPlanet();
+
     private:
-        std::shared_ptr<Physics::Force> theOtherForce;
+        std::shared_ptr<Uniform> colorOffsetUniform;
+        std::shared_ptr<Animation> lightenAnimation;
+        std::shared_ptr<Animation> darkenAnimation;
 
         uint sizeQuery = 0;
 
         void startSizeQuery();
+
         int getSizeQueryResult();
+
     };
 
 }

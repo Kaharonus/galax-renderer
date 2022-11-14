@@ -6,13 +6,36 @@
 #include <iostream>
 
 #include "Planet.h"
-#include "../Extensions.h"
+#include <Extensions.h>
+#include <physics/impl/SphereCollider.h>
 
 using namespace Galax::Orbital;
 using namespace gl;
 
 Planet::Planet(const std::string &name, Planet::Type type) : Physics::PhysicalNode(name) {
     this->type = type;
+    this->colorOffsetUniform = std::make_shared<Uniform>("colorOffset", Uniform::FLOAT, 1.0f);
+
+    this->lightenAnimation = std::make_shared<Animation>("Lighten planet", Animation::Target::CUSTOM,
+                                                         Animation::Repeat::ONCE);
+    this->lightenAnimation->setLength(300);
+    this->lightenAnimation->addKeyFrame(0, 1.0f);
+    this->lightenAnimation->addKeyFrame(300, 1.5f);
+    this->lightenAnimation->setStartType(Animation::StartType::MANUAL);
+    this->lightenAnimation->setEase(Animation::Ease::QUADRATIC_IN);
+    this->lightenAnimation->setCustomTarget(this->colorOffsetUniform);
+    this->addAnimation(this->lightenAnimation);
+
+    this->darkenAnimation = std::make_shared<Animation>("Darken planet", Animation::Target::CUSTOM,
+                                                        Animation::Repeat::ONCE);
+    this->darkenAnimation->setLength(300);
+    this->darkenAnimation->addKeyFrame(0, 1.5f);
+    this->darkenAnimation->addKeyFrame(300, 1.0f);
+    this->darkenAnimation->setStartType(Animation::StartType::MANUAL);
+    this->darkenAnimation->setEase(Animation::Ease::QUADRATIC_IN);
+    this->darkenAnimation->setCustomTarget(this->colorOffsetUniform);
+    this->addAnimation(this->darkenAnimation);
+
 }
 
 void Planet::generatePlanet(){
@@ -55,6 +78,8 @@ void Planet::drawPlanet(){
     for(auto &uniform: uniforms){
         program->setUniform(uniform);
     }
+    program->setUniform(mouseOverUniform);
+
 
     auto texCount = program->getTextureCount();
     for (auto [i, texture]: enumerate(textures)) {
@@ -63,7 +88,7 @@ void Planet::drawPlanet(){
     updateAnimations();
 
 
-    useCamera();
+    useDefaultUniforms();
     glBindVertexArray(generatorProgram->getFeedbackVaoId());
     glBindBuffer(GL_ARRAY_BUFFER, generatorProgram->getFeedbackBufferId());
     glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generatorProgram->getTransformFeedbackId());
@@ -111,5 +136,32 @@ int Planet::getSizeQueryResult() {
     GLuint64 result = 0;
     glGetQueryObjectui64v(sizeQuery, GL_QUERY_RESULT, &result);
     return result;
+
+}
+
+void Planet::setScale(const glm::vec3 &scale) {
+    Node::setScale(scale);
+
+    auto radius = scale.x;
+    auto collider = std::make_shared<Physics::SphereCollider>(radius);
+    Physics::RigidBody::clearColliders();
+    Physics::RigidBody::addBodyCollider(collider);
+}
+
+void Planet::setIsMouseOver(bool isMouseOver) {
+    PhysicalNode::setIsMouseOver(isMouseOver);
+
+    if(previousMouseOver == isMouseOver){
+        return;
+    }
+    previousMouseOver = isMouseOver;
+
+    if(isMouseOver){
+        darkenAnimation->stop();
+        lightenAnimation->start();
+    }else{
+        lightenAnimation->stop();
+        darkenAnimation->start();
+    }
 
 }

@@ -34,7 +34,13 @@ void GBuffer::init() {
 
     this->emission = std::make_shared<Texture>("gEmission", Texture::TYPE_2D, Texture::RGBA, Texture::FLOAT,
                                                Texture::REPEAT, Texture::NEAREST);
+
     this->frameBuffer->addOutputTexture(emission);
+
+    this->metadata = std::make_shared<Texture>("gMetadata", Texture::TYPE_2D, Texture::RGBA, Texture::FLOAT,
+                                               Texture::REPEAT, Texture::NEAREST);
+    this->frameBuffer->addOutputTexture(metadata);
+
 
     frameBuffer->resize(width, height);
 
@@ -74,4 +80,8 @@ std::shared_ptr<Texture> GBuffer::getAlbedoTexture() {
 
 std::shared_ptr<Texture> GBuffer::getEmissionTexture() {
     return emission;
+}
+
+std::shared_ptr<Texture> GBuffer::getMetadataTexture() {
+    return metadata;
 }

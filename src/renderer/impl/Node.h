@@ -109,7 +109,7 @@ namespace Galax::Renderer::SceneObjects {
 
         void selectLOD(float distance);
 
-        void useCamera();
+        void useDefaultUniforms();
 
         void calculateModelMatrix();
 
@@ -121,6 +121,7 @@ namespace Galax::Renderer::SceneObjects {
         std::shared_ptr<IMesh> mesh;
         std::shared_ptr<ICamera> camera;
         std::shared_ptr<Uniform> modelMatrixUniform;
+        std::shared_ptr<Uniform> objectIdUniform;
         std::shared_ptr<IProgram> program;
         std::vector<std::shared_ptr<IUniform>> uniforms;
         std::vector<std::shared_ptr<ITexture>> textures;

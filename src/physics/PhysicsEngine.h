@@ -17,21 +17,23 @@ namespace Galax::Physics {
         Q_OBJECT
 
     public:
-        PhysicsEngine(float step = 1.0f / 60.0f, QObject *parent = nullptr);
+        PhysicsEngine(std::shared_ptr<InputHandler> inputHandler, float step = 1.0f / 60.0f, QObject *parent = nullptr);
 
         void addRigidBody(std::shared_ptr<IRigidBody> rigidBody);
 
-        void addCollider(std::shared_ptr<ICollider> collider, std::shared_ptr<IRigidBody> rigidBody);
-
-        void setSimulationStep(float step);
+        void setCamera(std::shared_ptr<ICamera> camera);
 
     private:
 
         void update();
 
+        Ray createRayFromMousePosition();
+
         float step;
+        std::shared_ptr<InputHandler> inputHandler;
         std::shared_ptr<QTimer> timer;
         std::vector<std::shared_ptr<IRigidBody>> bodies;
+        std::shared_ptr<ICamera> camera;
         PhysicsWorld *world;
 
     };

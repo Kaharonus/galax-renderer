@@ -23,7 +23,7 @@ void Animation::setLength(float length) {
 }
 
 void Animation::setStartType(StartType start) {
-    this->start = start;
+    this->startType = start;
 }
 
 void Animation::setStartTime(float startTime) {
@@ -135,6 +135,9 @@ float Animation::easeFunction(float time){
 
 void Animation::updateTime(){
 
+    if(this->startType == StartType::MANUAL && !shouldAnimate){
+        return;
+    }
     animationTime += frameTime;
     this->previousTime = currentTime;
 
@@ -194,6 +197,16 @@ void Animation::update() {
         setValue(currentKeyFrame->second, nextKeyFrame->second, t);
     }
 
+}
+
+void Animation::start() {
+    animationTime = 0;
+    keyFrameIterator = keyFrames.begin();
+    shouldAnimate = true;
+}
+
+void Animation::stop() {
+    shouldAnimate = false;
 }
 
 

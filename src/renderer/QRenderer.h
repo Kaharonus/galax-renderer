@@ -38,7 +38,7 @@ namespace Galax::Renderer {
         };
 
 
-        explicit QRenderer(const QSurfaceFormat& format, QScreen* screen = nullptr);
+        explicit QRenderer(std::shared_ptr<InputHandler> inputHandler,const QSurfaceFormat& format, QScreen* screen = nullptr);
 
         void setVerticalSync(VerticalSync sync);
 
@@ -86,7 +86,7 @@ namespace Galax::Renderer {
         static ProcAddress getProcAddress(const char *name);
         std::shared_ptr<InputHandler> input;
 
-        void initializeInput();
+        void connectInput();
 
         void resize();
 

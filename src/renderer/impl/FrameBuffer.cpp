@@ -119,6 +119,7 @@ void FrameBuffer::resize(int width, int height) {
     auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Framebuffer not complete!" << std::endl;
+
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

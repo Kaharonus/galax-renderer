@@ -21,13 +21,15 @@ using namespace Galax::Physics;
 MainWindow::MainWindow(const QSurfaceFormat &format, QWidget *parent, Qt::WindowFlags flags) :
         QMainWindow(parent, flags), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+
+    this->inputHandler = std::make_shared<InputHandler>();
     setupRenderer(format);
     setupPhysics();
     loadScene();
 }
 
 void MainWindow::setupRenderer(const QSurfaceFormat &format){
-    renderer = new QRenderer(format);
+    renderer = new QRenderer(inputHandler, format);
     //renderer->setVerticalSync(Galax::Renderer::QRenderer::Disabled);
     QWidget * widget = QWidget::createWindowContainer(renderer);
     widget->setMinimumSize(1,1);
@@ -41,7 +43,7 @@ void MainWindow::setupRenderer(const QSurfaceFormat &format){
 }
 
 void MainWindow::setupPhysics(){
-    physicsEngine = new PhysicsEngine(1/60.f,this);
+    physicsEngine = new PhysicsEngine(inputHandler, 1/60.f, this);
 
 }
 
@@ -57,6 +59,8 @@ void MainWindow::loadScene() {
         renderer->addPostProcess(effect);
     }
     renderOptionsWindow->setScene(system, lighting, effects);
+
+    physicsEngine->setCamera(system->getRoot()->getCamera());
 
     auto planets = system->getPlanets();
     for(auto& planet : planets){

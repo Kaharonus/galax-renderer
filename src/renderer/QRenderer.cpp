@@ -19,8 +19,8 @@ using namespace Galax::Renderer;
 QRenderer *QRenderer::getProcAddressHelper = nullptr;
 
 
-QRenderer::QRenderer(const QSurfaceFormat &format, QScreen *screen) : QWindow(screen), context(new QOpenGLContext),
-                                                                      repaintTimer(new QBasicTimer) {
+QRenderer::QRenderer(std::shared_ptr<InputHandler> inputHandler, const QSurfaceFormat &format, QScreen *screen) :
+        QWindow(screen), context(new QOpenGLContext), repaintTimer(new QBasicTimer) {
     if (!getProcAddressHelper) {
         getProcAddressHelper = this;
     }
@@ -28,10 +28,9 @@ QRenderer::QRenderer(const QSurfaceFormat &format, QScreen *screen) : QWindow(sc
     setSurfaceType(OpenGLSurface);
     create();
 
-    initializeInput();
+    input = inputHandler;
+    connectInput();
     initializeGL(format);
-
-    //setVerticalSync(VerticalSync::Disabled);
 
 }
 
@@ -58,6 +57,9 @@ void QRenderer::initializeGL(const QSurfaceFormat &format) {
 void QRenderer::resize() {
     viewportWidth = width();
     viewportHeight = height();
+
+    input->setRendererSize(viewportWidth, viewportHeight);
+
     gBuffer->resize(viewportWidth, viewportHeight);
     lightingModel->resize(viewportWidth, viewportHeight);
     for (auto &effect: postProcesses) {
@@ -74,7 +76,6 @@ void QRenderer::paintGL() {
 
     SceneObject::setFrameTime(frameTime);
     auto frameStart = std::chrono::high_resolution_clock::now();
-
 
     context->makeCurrent(this);
     if (previousHeight != height() || previousWidth != width()) {
@@ -95,11 +96,11 @@ void QRenderer::paintGL() {
     lightingModel->draw();
 
 #ifdef DEBUG
-    glPushDebugGroup((gl::GLenum)GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Post processing");
+    glPushDebugGroup((gl::GLenum) GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Post processing");
 #endif
-    for(auto [i,effect] : enumerate(postProcesses)) {
+    for (auto [i, effect]: enumerate(postProcesses)) {
 #ifdef DEBUG
-        glPushDebugGroup((gl::GLenum)GL_DEBUG_SOURCE_APPLICATION, 0, -1, effect->getName().c_str());
+        glPushDebugGroup((gl::GLenum) GL_DEBUG_SOURCE_APPLICATION, 0, -1, effect->getName().c_str());
 #endif
         //Drawing here
         effect->render();
@@ -162,10 +163,10 @@ void QRenderer::setScene(std::shared_ptr<Scene> scene) {
     scene->setDimensions(width(), height());
 }
 
-void QRenderer::initializeInput() {
-    input = std::make_shared<InputHandler>();
+void QRenderer::connectInput() {
     connect(this, &QRenderer::mouseMoveEvent, [this](QMouseEvent *event) {
         this->input->mouseMove(event->position().x(), event->position().y());
+
     });
 
     connect(this, &QRenderer::mousePressEvent, [this](QMouseEvent *event) {
@@ -199,7 +200,6 @@ void QRenderer::setLightingModel(std::shared_ptr<LightingModel> lightingModel) {
     this->lightingModel->addTexture(gBuffer->getNormalTexture());
     this->lightingModel->addTexture(gBuffer->getPositionTexture());
     this->lightingModel->addTexture(gBuffer->getEmissionTexture());
-
 }
 
 void QRenderer::addPostProcess(std::shared_ptr<IPostProcessEffect> postProcess) {

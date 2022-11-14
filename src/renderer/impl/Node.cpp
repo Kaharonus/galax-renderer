@@ -23,9 +23,11 @@ void Node::init() {
                                                              glm::mat4(1.0));
     this->positionUniform = std::make_shared<Uniform>("position", Uniform::Type::VEC3, glm::vec3(0.0f));
     this->scaleUniform = std::make_shared<Uniform>("scale", Uniform::Type::VEC3, glm::vec3(1.0f));
+    this->objectIdUniform = std::make_shared<Uniform>("objectId", Uniform::Type::INT, (int)this->getId());
     setPosition(glm::vec3(0.0f));
     setRotation(glm::vec3(0.0f));
     setScale(glm::vec3(1.0f));
+
 }
 
 
@@ -163,7 +165,7 @@ void Node::selectLOD(float distance) {
 }
 
 
-void Node::useCamera() {
+void Node::useDefaultUniforms() {
     if (camera == nullptr) {
         return;
     }
@@ -174,7 +176,7 @@ void Node::useCamera() {
     program->setUniform(camera->getRotationUniform());
     program->setUniform(modelMatrixUniform);
     program->setUniform(transposeInverseModelUniform);
-
+    program->setUniform(objectIdUniform);
 }
 
 
@@ -225,7 +227,7 @@ void Node::draw() {
         program->setUniform(uniform);
     }
 
-    useCamera();
+    useDefaultUniforms();
     auto i = program->getTextureCount();
     for (auto &texture: textures) {
         //texture->bind(i);

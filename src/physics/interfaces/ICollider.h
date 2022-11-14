@@ -14,8 +14,6 @@ namespace Galax::Physics {
     public:
         virtual rp3d::CollisionShape* getRP3DCollisionShape() = 0;
 
-        virtual void update() = 0;
-
         void setRP3DCollider(rp3d::Collider *c) {
             this->collider = c;
         };

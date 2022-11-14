@@ -1,6 +1,8 @@
 #pragma once
 
 #include <tuple>
+#include <glm/vec2.hpp>
+
 namespace Galax::Renderer {
     class InputHandler {
     public:
@@ -84,8 +86,11 @@ namespace Galax::Renderer {
         bool isKeyUp(Key key);
         bool isMouseButtonPressed(MouseButton button);
         bool isMouseButtonUp(MouseButton button);
-        std::tuple<float, float> getPositionDelta();
-        std::tuple<float, float> getAbsolutePosition();
+        glm::vec2 getPositionDelta();
+        glm::vec2 getAbsolutePosition();
+        glm::vec2 getRendererPosition();
+
+        void setRendererSize(int width, int height);
 
         static Key fromQtKey(int key);
 
@@ -96,5 +101,8 @@ namespace Galax::Renderer {
         float deltaY = 0;
         float absoluteX = 0;
         float absoluteY = 0;
+
+        float rendererHeight;
+        float rendererWidth;
     };
 } // namespace MapGenerator::Renderer

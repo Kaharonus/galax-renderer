@@ -145,6 +145,7 @@ uint Texture::toInternal() {
     GLenum result;
     switch (format) {
         case Format::RED:
+
             switch (dataType) {
                 case DataType::UNSIGNED_BYTE:
                 case DataType::BYTE:
@@ -220,8 +221,10 @@ uint Texture::toInternal() {
                     result = GL_RGBA16;
                     break;
                 case DataType::UNSIGNED_INT:
+                    result = GL_RGBA;
+                    break;
                 case DataType::INT:
-                    result = GL_RGBA32I;
+                    result = GL_RGBA;
                     break;
                 case DataType::FLOAT:
                     result = GL_RGBA32F;
@@ -252,6 +255,7 @@ void Texture::upload() {
         case TYPE_2D:
             // glTextureStorage2D(id, 1, glInternal, w, h);
             glTexImage2D(glTarget, 0, glInternal, w, h, 0, (GLenum) format, (GLenum) dataType, data[0].data());
+            checkError(true);
             break;
         case TYPE_ARRAY: { // Thanks for the redundant braces, C++
             auto flat = std::vector<unsigned char>(w * h * data.size());

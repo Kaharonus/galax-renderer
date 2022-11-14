@@ -25,7 +25,8 @@ namespace Galax::Renderer::SceneObjects {
 
         enum StartType {
             IMMEDIATE,
-            SCHEDULED
+            SCHEDULED,
+            MANUAL
         };
 
         enum Ease {
@@ -68,13 +69,17 @@ namespace Galax::Renderer::SceneObjects {
 
         void setUpdateFunction(AnimationUpdateFunction updateFunction);
 
+        void start() override;
+
+        void stop() override;
+
         //UniformT getValue(float time);
         [[nodiscard]] float getLength() const {
             return length;
         };
 
         [[nodiscard]] StartType getStartType() const {
-            return start;
+            return startType;
         };
 
         [[nodiscard]]float getStartTime() const {
@@ -115,7 +120,7 @@ namespace Galax::Renderer::SceneObjects {
         float animationTime = 0;
         unsigned long previousTime = 0;
         float length;
-        StartType start = IMMEDIATE;
+        StartType startType = IMMEDIATE;
         float startTimeDelta = 0;
         Target target;
         glm::vec3 value;
@@ -123,7 +128,7 @@ namespace Galax::Renderer::SceneObjects {
         std::map<float, IUniform::UniformT> keyFrames;
         Repeat repeat = ONCE;
         Ease ease = LINEAR;
-        bool shouldAnimate = true;
+        bool shouldAnimate = false;
         std::map<float, IUniform::UniformT>::iterator keyFrameIterator;
         AnimationUpdateFunction updateFunction;
         bool updateFunctionSet = false;

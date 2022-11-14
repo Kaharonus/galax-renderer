@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "../SceneObject.h"
+#include "../interfaces/ICamera.h"
 
 #include <tuple>
 #include <iostream>
@@ -88,19 +89,19 @@ void Camera::update() {
 
     auto [deltaX, deltaY] = std::make_tuple(0.0, 0.0);
     if (input->isMouseButtonPressed(InputHandler::MOUSE_LEFT)) {
-        if (std::get<0>(previousPoint) == 0.0 && std::get<1>(previousPoint) == 0.0) {
+        if (previousPoint.x == 0.0 && previousPoint.y == 0.0) {
             viewMatrix = glm::lookAt(position, position + front, up);
             viewUniform->setValue(viewMatrix);
             previousPoint = input->getAbsolutePosition();
             return;
         }
-        auto [x, y] = input->getAbsolutePosition();
-        deltaX = x - std::get<0>(previousPoint);
-        deltaY = y - std::get<1>(previousPoint);
+        auto absolute = input->getAbsolutePosition();
+        deltaX = absolute.x - previousPoint.x;
+        deltaY = absolute.y - previousPoint.y;
         previousPoint = input->getAbsolutePosition();
 
     } else {
-        previousPoint = std::make_tuple(0, 0);
+        previousPoint = {0,0};
     }
     // This can be moved inside the if statement, but the frametime is more consistent if it is here
 
@@ -203,3 +204,6 @@ std::shared_ptr<Galax::Renderer::IUniform> Camera::getRotationUniform() const {
     return cameraRotationUniform;
 }
 
+glm::vec3 Camera::getDirection() const {
+    return front;
+}

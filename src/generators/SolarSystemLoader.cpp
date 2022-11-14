@@ -70,6 +70,18 @@ std::shared_ptr<Galax::Effects::Bloom> SolarSystemLoader::generateBloom(std::sha
     return bloom;
 }
 
+
+std::shared_ptr<Galax::Effects::Outline> SolarSystemLoader::generateOutline(std::shared_ptr<AssetLoader> assets) {
+    auto outline = std::make_shared<Galax::Effects::Outline>("Outline");
+    auto shader = assets->getShader("shaders/effects/outline.fs.shader", Shader::FRAGMENT, "Outline shader");
+
+    auto result = std::make_shared<Texture>("outlineResult", Texture::TYPE_2D, Texture::RGB, Texture::UNSIGNED_BYTE, Texture::Wrap::REPEAT, Texture::NEAREST);
+
+    outline->setShader(shader);
+
+    return outline;
+}
+
 Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSystem() {
 
     assets = std::make_shared<AssetLoader>();
@@ -78,7 +90,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
     auto camera = std::make_shared<Camera>("freeCam");
     camera->acceptInput(true);
-    camera->setPosition(glm::vec3(0, 0, -150));
+    camera->setPosition(glm::vec3(20, 2, 18.5));
 
     auto system = std::make_shared<SolarSystem>();
 
@@ -107,10 +119,10 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
         planet->setCamera(camera);
         planet->addUniform(std::make_shared<Uniform>("inputSeed", Uniform::FLOAT, 50.0f*((float)i+1)));
         auto orbit = 10 * ((i + 1)*2);
-        planet->setPosition(glm::vec3(orbit, orbit, 0));
+        planet->setPosition(glm::vec3(orbit, 2, orbit));
 
         planet->addAnimation(generatePlanetSpin(10000));
-        planet->addAnimation(generateRotation(planet, sun->getPositionUniform()));
+        //planet->addAnimation(generateRotation(planet, sun->getPositionUniform()));
         sky->addChild(planet);
 
     }
@@ -133,6 +145,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     auto bloom = generateBloom(assets, bloomTexture);
     effects.push_back(bloom);
     auto bloomMap = *bloom->getOutputTextures().rbegin();
+
     auto hdr = generateHDR(lightTexture, bloomMap);
     effects.push_back(hdr);
     return {system, lightingModel, effects};

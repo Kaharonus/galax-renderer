@@ -6,8 +6,9 @@
 
 using namespace Galax::Physics;
 
-SphereCollider::SphereCollider(float radius) {
+SphereCollider::SphereCollider(float radius) : ICollider() {
     this->radius = radius;
+    this->collisionShape = nullptr;
 }
 
 

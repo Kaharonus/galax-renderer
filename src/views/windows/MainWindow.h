@@ -30,6 +30,7 @@ private:
     RenderOptions* renderOptionsWindow;
     Galax::Renderer::QRenderer* renderer;
     Galax::Physics::PhysicsEngine* physicsEngine;
+    std::shared_ptr<InputHandler> inputHandler;
 
 
     Ui::MainWindow* ui;

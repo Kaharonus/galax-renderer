@@ -6,8 +6,8 @@
 
 using namespace Galax::Physics;
 
-PhysicalNode::PhysicalNode(const std::string name) : Node(name), RigidBody() {
-
+PhysicalNode::PhysicalNode(const std::string name) : Node(name), RigidBody(name) {
+    mouseOverUniform = std::make_shared<Uniform>("isMouseOver", Uniform::BOOL ,false);
 }
 
 void PhysicalNode::setBodyPosition(const glm::vec3 &position) {
@@ -35,5 +35,10 @@ void PhysicalNode::update() {
     auto pos = RigidBody::getBodyPosition();
     Node::setPosition(pos);
     Node::setRotation(this->getBodyRotation());
+}
+
+void PhysicalNode::setIsMouseOver(bool isMouseOver) {
+    mouseOverUniform->setValue(isMouseOver);
+    RigidBody::setIsMouseOver(isMouseOver);
 }
 

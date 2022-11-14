@@ -49,6 +49,7 @@ namespace Galax::Renderer {
 
         [[nodiscard]]virtual std::shared_ptr<IUniform> getRotationUniform() const = 0;
 
+        [[nodiscard]] virtual glm::vec3 getDirection() const = 0;
 
         [[nodiscard]]virtual glm::vec3 getPosition() const = 0;
 

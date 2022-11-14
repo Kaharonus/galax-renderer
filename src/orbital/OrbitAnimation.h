@@ -21,6 +21,10 @@ namespace Galax::Orbital {
 
         void update() override;
 
+        void start() override;
+
+        void stop() override;
+
         void setTarget(Target target) override;
 
 
