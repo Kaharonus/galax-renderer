@@ -37,8 +37,7 @@ namespace Galax::Renderer {
         std::string name;
         inline static unsigned int lastBoundFrameBuffer = 0;
         inline static float frameTime = 0.0f;
-        inline static unsigned long startTime;
-        inline static unsigned long currentTime;
+        inline static float currentTime;
 
         void setDrawSize(int width, int height);
 
@@ -47,6 +46,8 @@ namespace Galax::Renderer {
         void checkError(bool shouldThrow);
 
     private:
+		inline static unsigned long startTime;
+
 
         static std::unordered_set<unsigned int> usedNames;
 

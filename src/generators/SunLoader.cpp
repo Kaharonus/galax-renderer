@@ -4,12 +4,13 @@
 
 #include <generators/SunLoader.h>
 
+
 using namespace Galax::Renderer::SceneObjects;
 using namespace Galax::Generators;
 using namespace Galax::Assets;
 
-std::shared_ptr<Node> SunLoader::load(std::shared_ptr<AssetLoader> &loader) {
-    auto sun = std::make_shared<Node>("Sun");
+std::shared_ptr<Sun> SunLoader::load(std::shared_ptr<AssetLoader> &loader) {
+    auto sun = std::make_shared<Sun>("Sun");
     sun->setMesh(loader->getMesh("models/sun.obj", "sun"));
     auto vShader = loader->getShader("shaders/sun/sun.vs.shader", Shader::Type::VERTEX, "sun vs");
     auto fShader = loader->getShader("shaders/sun/sun.fs.shader", Shader::Type::FRAGMENT, "sun fs");

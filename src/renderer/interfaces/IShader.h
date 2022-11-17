@@ -5,6 +5,7 @@
 #pragma once
 
 #include <string>
+#include <renderer/SceneObject.h>
 
 namespace Galax::Renderer {
     class IShader : public Galax::Renderer::SceneObject {

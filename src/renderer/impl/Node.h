@@ -132,6 +132,8 @@ namespace Galax::Renderer::SceneObjects {
         std::map<float, std::shared_ptr<IMesh>> meshLODs;
         glm::vec3 position;
         std::shared_ptr<Uniform> positionUniform;
+		std::shared_ptr<Uniform> currentTimeUniform;
+		std::shared_ptr<Uniform> frameTimeUniform;
         std::shared_ptr<Uniform> scaleUniform;
         glm::vec3 rotation;
         glm::vec3 scale;

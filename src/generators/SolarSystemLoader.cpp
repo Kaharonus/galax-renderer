@@ -92,7 +92,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
     auto camera = std::make_shared<Camera>("freeCam");
     camera->acceptInput(true);
-    camera->setPosition(glm::vec3(20, 2, 18.5));
+    camera->setPosition(glm::vec3(0, 0, -8));
 
     auto system = std::make_shared<SolarSystem>();
 

@@ -116,7 +116,8 @@ namespace Galax::Renderer::SceneObjects {
         glm::vec3 getValue() override;
 
 
-    private:
+    protected:
+		float startTime = 0;
         float animationTime = 0;
         unsigned long previousTime = 0;
         float length;

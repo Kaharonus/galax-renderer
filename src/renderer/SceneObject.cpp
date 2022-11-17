@@ -53,8 +53,11 @@ void SceneObject::setName(std::string name) {
 
 void SceneObject::setFrameTime(float frameTime) {
     SceneObject::frameTime = frameTime;
-    SceneObject::currentTime = std::chrono::duration_cast<std::chrono::microseconds>(
-            std::chrono::system_clock::now().time_since_epoch()).count();
+	auto current = std::chrono::duration_cast<std::chrono::microseconds>(
+			std::chrono::system_clock::now().time_since_epoch()).count();
+	currentTime = (current - startTime) / 1000000.0f;
+
+
 }
 
 std::string SceneObject::getNextDefaultName() {

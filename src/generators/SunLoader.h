@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <unordered_map>
-
+#include <orbital/Sun.h>
 #include "../assets/AssetLoader.h"
 #include "../renderer/impl/Shader.h"
 #include "../renderer/impl/Program.h"
@@ -20,10 +20,12 @@ namespace Galax::Generators {
 
     using namespace Galax::Renderer::SceneObjects;
     using namespace Galax::Assets;
+	using namespace Galax::Orbital;
 
     class SunLoader {
     public:
-        static std::shared_ptr<Node> load(std::shared_ptr<AssetLoader> &loader);
+
+		static std::shared_ptr<Sun> load(std::shared_ptr<AssetLoader> &loader);
 
     };
 }

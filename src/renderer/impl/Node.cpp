@@ -24,6 +24,8 @@ void Node::init() {
     this->positionUniform = std::make_shared<Uniform>("position", Uniform::Type::VEC3, glm::vec3(0.0f));
     this->scaleUniform = std::make_shared<Uniform>("scale", Uniform::Type::VEC3, glm::vec3(1.0f));
     this->objectIdUniform = std::make_shared<Uniform>("objectId", Uniform::Type::INT, (int)this->getId());
+	this->currentTimeUniform = std::make_shared<Uniform>("currentTime", Uniform::Type::FLOAT, 0.0f);
+	this->frameTimeUniform = std::make_shared<Uniform>("frameTime", Uniform::Type::FLOAT, 0.0f);
     setPosition(glm::vec3(0.0f));
     setRotation(glm::vec3(0.0f));
     setScale(glm::vec3(1.0f));
@@ -177,6 +179,10 @@ void Node::useDefaultUniforms() {
     program->setUniform(modelMatrixUniform);
     program->setUniform(transposeInverseModelUniform);
     program->setUniform(objectIdUniform);
+	currentTimeUniform->setValue((float)currentTime);
+	program->setUniform(currentTimeUniform);
+	frameTimeUniform->setValue((float)frameTime);
+	program->setUniform(frameTimeUniform);
 }
 
 
