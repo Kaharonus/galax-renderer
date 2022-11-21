@@ -176,6 +176,7 @@ void Node::useDefaultUniforms() {
     program->setUniform(camera->getProjectionUniform());
     program->setUniform(camera->getPositionUniform());
     program->setUniform(camera->getRotationUniform());
+	program->setUniform(camera->getResolutionUniform());
     program->setUniform(modelMatrixUniform);
     program->setUniform(transposeInverseModelUniform);
     program->setUniform(objectIdUniform);

@@ -65,5 +65,7 @@ private:
     }
 
 
-	void addTab(QWidget *widget, const std::string &name);
+	std::vector<std::tuple<std::shared_ptr<SceneObject>, QWidget*>> tabs;
+
+	void addTab(QWidget *widget, std::shared_ptr<SceneObject> object);
 };

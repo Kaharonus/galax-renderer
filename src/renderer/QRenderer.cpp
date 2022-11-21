@@ -59,7 +59,7 @@ void QRenderer::resize() {
     viewportWidth = width();
     viewportHeight = height();
 
-    input->setRendererSize(viewportWidth, viewportHeight);
+	input->setRendererSize(viewportWidth, viewportHeight);
 
     gBuffer->resize(viewportWidth, viewportHeight);
     lightingModel->resize(viewportWidth, viewportHeight);

@@ -113,7 +113,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 
 
     //generate planets
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < 1; i++){
         std::string name = "Planet " + std::to_string(i);
         auto planet = PlanetLoader::fromType(name, Planet::Type::TEMPERATE);
         auto scale = 0.5 + (0.25 * i);

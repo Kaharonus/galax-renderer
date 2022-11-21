@@ -5,6 +5,7 @@
 #include <chrono>
 #include <string>
 #include <unordered_set>
+#include <glm/vec2.hpp>
 
 
 namespace Galax::Renderer {
@@ -25,6 +26,7 @@ namespace Galax::Renderer {
 
         static void setFrameTime(float frameTime);
 
+
         static unsigned int getLastFrameBuffer();
 
         inline static bool initialized = false;
@@ -38,12 +40,16 @@ namespace Galax::Renderer {
         inline static unsigned int lastBoundFrameBuffer = 0;
         inline static float frameTime = 0.0f;
         inline static float currentTime;
+		inline static glm::vec2 screenSize;
 
         void setDrawSize(int width, int height);
 
         std::string getNextDefaultName();
 
         void checkError(bool shouldThrow);
+
+		int drawWidth = 0;
+		int drawHeight = 0;
 
     private:
 		inline static unsigned long startTime;
@@ -58,10 +64,6 @@ namespace Galax::Renderer {
         virtual void ignorethisshitrighthere(){}; // A hack to make the compiler happy :)
 
         inline static unsigned int defaultNameCounter = 0;
-
-
-        int drawWidth = 0;
-        int drawHeight = 0;
 
         void checkName();
     };

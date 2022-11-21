@@ -33,7 +33,7 @@ namespace Galax::Renderer {
 
         virtual void setPerspective(float fov, float near, float far) = 0;
 
-        virtual void setDimensions(float width, float height) = 0;
+        virtual void setResolution(float width, float height) = 0;
 
         virtual void setWorldUp(const glm::vec3 &worldUp) = 0;
 
@@ -48,6 +48,8 @@ namespace Galax::Renderer {
         [[nodiscard]]virtual std::shared_ptr<IUniform> getPositionUniform() const = 0;
 
         [[nodiscard]]virtual std::shared_ptr<IUniform> getRotationUniform() const = 0;
+
+		[[nodiscard]]virtual std::shared_ptr<IUniform> getResolutionUniform() const = 0;
 
         [[nodiscard]] virtual glm::vec3 getDirection() const = 0;
 

@@ -6,7 +6,7 @@ in vec3 vPosition;
 layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec4 gAlbedo;
-layout (location = 3) out vec3 gEmission;
+layout (location = 3) out vec4 gEmission;
 
 uniform float currentTime;
 
@@ -35,7 +35,7 @@ float snoise(vec3 uv, float res)// by trisomie21
 
 void main(){
 
-    vec2 iResolution = vec2(1900, 1000);
+    vec2 iResolution = vec2(1500, 500);
     vec2 fragCoord = gl_FragCoord.xy;
     float iTime = currentTime;
 
@@ -61,49 +61,30 @@ void main(){
     vec3 coord = vec3(angle, dist, time * 0.1);
 
     float newTime1 = abs(snoise(coord + vec3(0.0, -time * (0.35), time * 0.015), 15.0));
-    float newTime2 = abs(snoise(coord + vec3(0.0, -time * (0.15), time * 0.015), 45.0));
-    for (int i=1; i<=7; i++){
+    float newTime2 = abs(snoise(coord + vec3(0.0, -time * (0.15), time * 0.015), 10.0));
+    for (int i=1; i<=1; i++){
         float power = pow(2.0, float(i + 1));
         fVal1 += (0.5 / power) * snoise(coord + vec3(0.0, -time, time * 0.2), (power * (10.0) * (newTime1 + 1.0)));
         fVal2 += (0.5 / power) * snoise(coord + vec3(0.0, -time, time * 0.2), (power * (25.0) * (newTime2 + 1.0)));
     }
 
-    float corona = pow(fVal1 * max(1.1 - fade, 0.0), 2.0) * 50.0;
-    corona += pow(fVal2 * max(1.1 - fade, 0.0), 2.0) * 50.0;
-    corona *= 1.2 - newTime1;
-    vec3 sphereNormal = vec3(0.0, 0.0, 1.0);
-    vec3 dir = vec3(0.0);
-    vec3 center = vec3(0.5, 0.5, 1.0);
-    vec3 starSphere = vec3(0.0);
+    float corona = pow(fVal1 * max(1.1 - fade, 0.0), 2.0) * 100.0;
+    corona += pow(fVal2 * max(1.1 - fade, 0.0), 2.0) * 100.0;
+    corona *= 1.5 - newTime1;
 
     vec2 sp = -1.0 + 2.0 * uv;
     sp.x *= aspect;
     sp *= (2.0);
     float r = dot(sp, sp);
     float f = (1.0-sqrt(abs(1.0-r)))/(r);
-    if (dist < radius){
-        corona *= pow(dist * invRadius, 24.0);
-        vec2 newUv;
-        newUv.x = sp.x*f;
-        newUv.y = sp.y*f;
-        newUv += vec2(time, 0.0);
-        vec3 texSample = vec3(0);
-        float uOff = (texSample.g + time);
-        vec2 starUV = newUv + vec2(uOff, 0.0);
-        starSphere = vec3(0);
-    }
-
-    float starGlow = min(max(1.0 - dist * (1.0), 0.0), 1.0);
-    gAlbedo.rgb = vec3(f * (0.75) * orange) + corona * orange * orangeRed;;
+    gAlbedo.rgb = vec3(f * (0.75) * orange) + corona  * orange * orangeRed;
     gAlbedo.a = 1.0;
 
     double discardConst = 0;
-    if(gAlbedo.r <= discardConst || gAlbedo.g <= discardConst || gAlbedo.b <= discardConst){
+    if(gAlbedo.r <= discardConst && gAlbedo.g <= discardConst && gAlbedo.b <= discardConst){
         discard;
     }
-
-    //gAlbedo = vec4(0.97, 0.84, 0.09, 1);
     gPosition = vPosition;
     gNormal = vNormal;
-    gEmission = vec3(4.1) * gAlbedo.rgb;
+    gEmission = vec4(1.) * gAlbedo.rgba;
 }

@@ -8,14 +8,17 @@
 #include "ui_CodeEditor.h"
 #include <views/controls/CodeEditor.h>
 #include <QGLSLCompleter>
+#include <QLayout>
 #include <QGLSLHighlighter>
 #include <QSyntaxStyle>
 #include <QLayout>
+#include <QWidget>
 #include <sstream>
 
 
 CodeEditor::CodeEditor(std::shared_ptr<IShader> shader, QWidget *parent) : QWidget(parent), ui(new Ui::CodeEditor) {
 	ui->setupUi(this);
+
 	this->shader = shader;
 	codeEditor = new QCodeEditor(this);
 	codeEditor->setAutoIndentation(true);
@@ -23,7 +26,9 @@ CodeEditor::CodeEditor(std::shared_ptr<IShader> shader, QWidget *parent) : QWidg
 	codeEditor->setCompleter(new QGLSLCompleter(this));
 	codeEditor->setHighlighter(new QGLSLHighlighter());
 	codeEditor->setTabReplaceSize(4);
-	this->layout()->addWidget(codeEditor);
+
+	codeEditor->setText(shader->getSource().c_str());
+	this->ui->layout->addWidget(codeEditor);
 
 	auto qStyleString = QString(styleString.data());
 
@@ -32,7 +37,7 @@ CodeEditor::CodeEditor(std::shared_ptr<IShader> shader, QWidget *parent) : QWidg
 
 	errorLabel = new QLabel(this);
 	errorLabel->setStyleSheet("QLabel { color : red; }");
-	this->layout()->addWidget(errorLabel);
+	this->ui->layout->addWidget(errorLabel);
 
 	timer = new QTimer(this);
 	timer->setInterval(33);

@@ -1,6 +1,7 @@
 #include <glbinding/gl/gl.h>
 
 #include <renderer/Scene.h>
+#include <Extensions.h>
 
 using namespace gl;
 using namespace Galax::Renderer;
@@ -75,7 +76,9 @@ void Scene::build() {
 }
 
 void Scene::drawNode(INode &node) {
-    node.draw();
+	GL_DEBUG(node.getName().c_str(), {
+		node.draw();
+	})
     for (auto& child: node.getChildren()) {
         drawNode(*child);
     }
@@ -88,23 +91,16 @@ void Scene::draw() {
         camera->update();
     }
 
-#ifdef DEBUG
-    glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Geometry pass");
-#endif
-
     gBuffer->bind();
     drawNode(*root);
     gBuffer->unbind();
-#ifdef DEBUG
-    glPopDebugGroup();
-#endif
 }
 
 void Scene::setDimensions(int w, int h) {
     this->width = w;
     this->height = h;
     for (const auto &camera: this->cameras) {
-        camera->setDimensions(width, height);
+		camera->setResolution(width, height);
     }
 }
 

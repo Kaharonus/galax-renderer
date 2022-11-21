@@ -135,7 +135,7 @@ namespace Galax::Renderer::SceneObjects {
 		std::shared_ptr<Uniform> currentTimeUniform;
 		std::shared_ptr<Uniform> frameTimeUniform;
         std::shared_ptr<Uniform> scaleUniform;
-        glm::vec3 rotation;
+		glm::vec3 rotation;
         glm::vec3 scale;
         glm::mat4 modelMatrix;
         std::shared_ptr<Uniform> transposeInverseModelUniform;

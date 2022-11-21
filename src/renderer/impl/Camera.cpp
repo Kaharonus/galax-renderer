@@ -21,6 +21,7 @@ void Camera::init(){
     projectionUniform = std::make_shared<Uniform>("projection",Uniform::Type::MAT4,  glm::mat4(1.0f));
     cameraPositionUniform = std::make_shared<Uniform>("cameraPosition", Uniform::Type::VEC3, glm::vec3(0.0f));
     cameraRotationUniform = std::make_shared<Uniform>("cameraRotation", Uniform::Type::VEC2, glm::vec2(0.0f));
+	resolutionUniform = std::make_shared<Uniform>("cameraResolution", Uniform::Type::VEC2, glm::vec2(0.0f));
 
     position = glm::vec3(0.0f, 0.0f, 0.0f);
     front = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -32,7 +33,7 @@ void Camera::init(){
     movementSpeed = 0.01;
     mouseSensitivity = 0.1;
     setPerspective(60.0f, 0.1f, 1000.f);
-    setDimensions(1.0f, 1.0f);
+	setResolution(1.0f, 1.0f);
 
 }
 
@@ -123,12 +124,13 @@ void Camera::update() {
     viewUniform->setValue(viewMatrix);
 }
 
-void Camera::setDimensions(float width, float height) {
+void Camera::setResolution(float width, float height) {
     this->width = width;
     this->height = height;
     this->aspect = width / height;
     this->projectionMatrix = glm::perspective(glm::radians(fov), aspect, near, far);
     projectionUniform->setValue(projectionMatrix);
+	resolutionUniform->setValue(glm::vec2(width, height));
 
 }
 
@@ -206,4 +208,8 @@ std::shared_ptr<Galax::Renderer::IUniform> Camera::getRotationUniform() const {
 
 glm::vec3 Camera::getDirection() const {
     return front;
+}
+
+std::shared_ptr<Galax::Renderer::IUniform> Camera::getResolutionUniform() const {
+	return resolutionUniform;
 }

@@ -34,7 +34,7 @@ namespace Galax::Renderer::SceneObjects {
 
         void setPerspective(float fov, float near, float far) override;
 
-        void setDimensions(float width, float height) override;
+        void setResolution(float width, float height) override;
 
         void setWorldUp(const glm::vec3 &worldUp) override;
 
@@ -51,9 +51,13 @@ namespace Galax::Renderer::SceneObjects {
 
         [[nodiscard]] std::shared_ptr<IUniform> getRotationUniform() const override;
 
+		[[nodiscard]]
+
         [[nodiscard]] glm::vec3 getDirection() const override;
 
-        [[nodiscard]] glm::vec3 getPosition() const override;
+		std::shared_ptr<IUniform> getResolutionUniform() const override;
+
+		[[nodiscard]] glm::vec3 getPosition() const override;
 
         [[nodiscard]] std::tuple<float, float> getRotation() const override;
 
@@ -92,7 +96,8 @@ namespace Galax::Renderer::SceneObjects {
         std::shared_ptr<Uniform> projectionUniform;
         std::shared_ptr<Uniform> cameraPositionUniform;
         std::shared_ptr<Uniform> cameraRotationUniform;
-        glm::vec3 position;
+		std::shared_ptr<Uniform> resolutionUniform;
+		glm::vec3 position;
         glm::vec3 front;
         glm::vec3 up;
         glm::vec3 right;
@@ -111,7 +116,7 @@ namespace Galax::Renderer::SceneObjects {
 
         void init();
 
-    };
+	};
 }
 
 

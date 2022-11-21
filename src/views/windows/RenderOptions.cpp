@@ -44,6 +44,7 @@ RenderOptions::RenderOptions(QWidget *parent) : QMainWindow(parent), ui(new Ui::
 	defaultText->setAlignment(Qt::AlignCenter);
 	defaultText->setFixedWidth(500);
 	dataView->addTab(defaultText, "Welcome");
+	tabs.emplace_back(nullptr, defaultText);
 }
 
 
@@ -52,8 +53,15 @@ RenderOptions::~RenderOptions() {
 }
 
 
-void RenderOptions::addTab(QWidget *widget, const std::string &name) {
-	dataView->addTab(widget, name.c_str());
+void RenderOptions::addTab(QWidget *widget, std::shared_ptr<SceneObject> object){
+	for(auto& [o, w] : tabs){
+		if(o == object){
+			dataView->setCurrentWidget(w);
+			return;
+		}
+	}
+	dataView->addTab(widget, object->getName().c_str());
+	tabs.emplace_back(object, widget);
 	dataView->setCurrentWidget(widget);
 }
 
@@ -62,27 +70,27 @@ void RenderOptions::onItemClicked() {
 	auto shader = dynamic_cast<QDataTreeItem<IShader> *>(nodeView->currentItem());
 	if (shader) {
 		auto editor = new CodeEditor(shader->getData(), this);
-		addTab(editor, shader->getData()->getName());
+		addTab(editor, shader->getData());
 		return;
 	}
 	auto camera = dynamic_cast<QDataTreeItem<ICamera> *>(nodeView->currentItem());
 	if (camera) {
 		auto cam = new CameraControl(camera->getData(), this);
-		addTab(cam, camera->getData()->getName());
+		addTab(cam, camera->getData());
 
 		return;
 	}
 	auto node = dynamic_cast<QDataTreeItem<INode> *>(nodeView->currentItem());
 	if (node) {
 		auto nodeControl = new NodeControl(node->getData(), this);
-		addTab(nodeControl, node->getData()->getName());
+		addTab(nodeControl, node->getData());
 		return;
 	}
 
 	auto texture = dynamic_cast<QDataTreeItem<ITexture> *>(nodeView->currentItem());
 	if (texture) {
 		auto tex = new TextureControl(texture->getData(), this);
-		addTab(tex, texture->getData()->getName());
+		addTab(tex, texture->getData());
 		return;
 	}
 }
@@ -242,5 +250,8 @@ std::string RenderOptions::demangle(const char *name) {
 
 void RenderOptions::onTabCloseRequest(int index) {
 	ui->dataView->removeTab(index);
+	auto [_, widget] = tabs.at(index);
+	widget->deleteLater();
+	tabs.erase(tabs.begin() + index);
 }
 
