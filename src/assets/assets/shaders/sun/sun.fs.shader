@@ -1,6 +1,6 @@
 #version 430
 
-in vec3 vNormal;
+in vec2 uv;
 in vec3 vPosition;
 
 layout (location = 0) out vec3 gPosition;
@@ -35,7 +35,6 @@ float snoise(vec3 uv, float res)// by trisomie21
 
 void main(){
 
-    vec2 iResolution = vec2(1500, 500);
     vec2 fragCoord = gl_FragCoord.xy;
     float iTime = currentTime;
 
@@ -47,10 +46,8 @@ void main(){
     vec3 orange = vec3(0.8, 0.65, 0.3);
     vec3 orangeRed = vec3(0.8, 0.35, 0.1);
     float time = iTime * 0.1;
-    float aspect = iResolution.x/iResolution.y;
-    vec2 uv = gl_FragCoord.xy / iResolution;
-    vec2 p = -0.5 + uv;
-    p.x *= aspect;
+
+    vec2 p = uv - 0.5;
 
     float fade = pow(length(2.0 * p), 0.5);
     float fVal1 = 1.0 - fade;
@@ -73,18 +70,16 @@ void main(){
     corona *= 1.5 - newTime1;
 
     vec2 sp = -1.0 + 2.0 * uv;
-    sp.x *= aspect;
     sp *= (2.0);
     float r = dot(sp, sp);
     float f = (1.0-sqrt(abs(1.0-r)))/(r);
-    gAlbedo.rgb = vec3(f * (0.75) * orange) + corona  * orange * orangeRed;
+    gAlbedo.rgb = ((corona) * orange * orangeRed) * 1.0;
     gAlbedo.a = 1.0;
-
-    double discardConst = 0;
+    double discardConst = 1.15;
     if(gAlbedo.r <= discardConst && gAlbedo.g <= discardConst && gAlbedo.b <= discardConst){
         discard;
     }
     gPosition = vPosition;
-    gNormal = vNormal;
-    gEmission = vec4(1.) * gAlbedo.rgba;
+    gEmission = vec4(1.5) * gAlbedo.rgba;
+
 }

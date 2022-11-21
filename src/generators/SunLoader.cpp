@@ -11,7 +11,7 @@ using namespace Galax::Assets;
 
 std::shared_ptr<Sun> SunLoader::load(std::shared_ptr<AssetLoader> &loader) {
     auto sun = std::make_shared<Sun>("Sun");
-    sun->setMesh(loader->getMesh("models/sun.obj", "sun"));
+    //sun->setMesh(loader->getMesh("models/sun.obj", "sun"));
     auto vShader = loader->getShader("shaders/sun/sun.vs.shader", Shader::Type::VERTEX, "sun vs");
     auto fShader = loader->getShader("shaders/sun/sun.fs.shader", Shader::Type::FRAGMENT, "sun fs");
     auto program = std::make_shared<Program>("sun program", vShader, fShader);

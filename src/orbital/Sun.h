@@ -6,7 +6,9 @@
 #pragma once
 
 #include <renderer/impl/Node.h>
-#include "renderer/interfaces/IMesh.h"
+
+#include <renderer/impl/Uniform.h>
+#include <renderer/impl/Mesh.h>
 
 namespace Galax::Orbital{
 	using namespace Galax::Renderer::SceneObjects;
@@ -14,11 +16,12 @@ namespace Galax::Orbital{
 	public:
 		Sun(const std::string& name);
 
-		void setMesh(std::shared_ptr<IMesh> mesh) override;
+		//void setMesh(std::shared_ptr<IMesh> mesh) override;
 		void draw() override;
 
 	protected:
-		std::shared_ptr<Quad> mesh;
+		std::shared_ptr<Renderer::SceneObjects::Mesh> mesh;
+		std::shared_ptr<Renderer::SceneObjects::Uniform> viewTowardsCamera;
 	};
 
 }
