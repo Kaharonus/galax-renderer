@@ -26,11 +26,11 @@ namespace Galax::Renderer {
          ~Scene();
 
 
-		void addModel(std::shared_ptr<INode> model);
+		void addModel(std::shared_ptr<IRenderNode> model);
 
-		void removeModel(std::shared_ptr<INode> model);
+		void removeModel(std::shared_ptr<IRenderNode> model);
 
-		std::vector<std::shared_ptr<INode>> getModels();
+		std::vector<std::shared_ptr<IRenderNode>> getModels();
 
 
         void setInputHandler(std::shared_ptr<InputHandler> inputHandler);
@@ -40,9 +40,9 @@ namespace Galax::Renderer {
 
 		void setLightingModel(std::shared_ptr<LightingModel> mode);
 
-		std::shared_ptr<LightingModel> getLightingModel() const;
+		[[nodiscard]] std::shared_ptr<LightingModel> getLightingModel() const;
 
-		std::shared_ptr<FrameBuffer> getTransparencyBuffer() const;
+		[[nodiscard]] std::shared_ptr<FrameBuffer> getTransparencyBuffer() const;
 
 
         void build();
@@ -52,13 +52,9 @@ namespace Galax::Renderer {
 		void drawTransparent();
 
     private:
-        void addMesh(std::shared_ptr<IMesh> mesh);
-        void addProgram(std::shared_ptr<IProgram> program);
-        void addShader(std::shared_ptr<IShader> shader);
-        void addTexture(std::shared_ptr<ITexture> texture);
         void addCamera(std::shared_ptr<ICamera> camera);
 
-        void buildNode(const INode& node);
+        void buildNode(IRenderNode &node);
 
         int width;
         int height;
@@ -71,17 +67,13 @@ namespace Galax::Renderer {
 
 		std::shared_ptr<FrameBuffer> transparencyBuffer;
 
-        std::vector<std::shared_ptr<INode>> models;
-        std::set<std::shared_ptr<IMesh>> meshes;
-        std::set<std::shared_ptr<ITexture>> textures;
-        std::set<std::shared_ptr<IProgram>> programs;
-        std::set<std::shared_ptr<IShader>> shaders;
+        std::vector<std::shared_ptr<IRenderNode>> models;
         std::set<std::shared_ptr<ICamera>> cameras;
 
         std::shared_ptr<GBuffer> gBuffer;
 		std::shared_ptr<LightingModel> lightingModel;
 
-		void drawNode(INode &node, bool transparencyPass, glm::mat4 modelMatrix);
+		void drawNode(IRenderNode &node, bool transparencyPass, glm::mat4 modelMatrix);
 	};
 
 } // namespace MapGenerator::Renderer

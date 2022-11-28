@@ -62,8 +62,8 @@ void RigidBody::addBodyCollider(std::shared_ptr<ICollider> collider) {
     }
 }
 
-std::shared_ptr<INode> RigidBody::getDebugNode() {
-    return std::shared_ptr<INode>();
+std::shared_ptr<IRenderNode> RigidBody::getDebugNode() {
+    return std::shared_ptr<IRenderNode>();
 }
 
 glm::vec3 RigidBody::getBodyPosition() const {

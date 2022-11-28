@@ -127,9 +127,13 @@ void QRenderer::drawPostProcess() {
 }
 
 void QRenderer::finishRender() {
-    context->swapBuffers(this);
-    context->doneCurrent();
+	gl::glBindFramebuffer((gl::GLenum)GL_FRAMEBUFFER, 0);
+	gl::glViewport(0, 0, viewportWidth, viewportHeight);
+	gl::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	//gl::glClear((gl::ClearBufferMask) GL_COLOR_BUFFER_BIT | (gl::ClearBufferMask) GL_DEPTH_BUFFER_BIT);
 
+	context->swapBuffers(this);
+	context->doneCurrent();
 }
 
 void QRenderer::paintGL() {

@@ -33,7 +33,7 @@ namespace Galax::Renderer::SceneObjects {
         bool hasTesslation() override;
 
         void setTexture(const std::shared_ptr<ITexture>& texture, int unit) override;
-        void setSSBO(const std::shared_ptr<ISSBO>& ssbo);
+        void setSSBO(const std::shared_ptr<ISSBO>& ssbo) override;
         uint getTexturePosition(const std::shared_ptr<ITexture>& texture) override;
         uint getTextureCount() override;
         std::shared_ptr<IShader> getShader(IShader::Type type) override;

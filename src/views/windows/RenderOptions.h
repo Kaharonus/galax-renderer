@@ -55,7 +55,7 @@ private:
     void addLighting(std::shared_ptr<Galax::Renderer::LightingModel> sharedPtr);
 
     void addEffects(const std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>> &effects);
-    void addNode(std::shared_ptr<INode> node, QTreeWidgetItem* parent);
+    void addNode(std::shared_ptr<IRenderNode> node, QTreeWidgetItem* parent);
 
     std::string demangle(const char* name);
 

@@ -13,7 +13,7 @@ NodeControl::NodeControl(QWidget *parent) : QWidget(parent), ui(new Ui::NodeCont
     ui->setupUi(this);
 }
 
-NodeControl::NodeControl(std::shared_ptr<INode> node, QWidget *parent) : QWidget(parent), ui(new Ui::NodeControl) {
+NodeControl::NodeControl(std::shared_ptr<IRenderNode> node, QWidget *parent) : QWidget(parent), ui(new Ui::NodeControl) {
     ui->setupUi(this);
     this->node = node;
     timer = new QTimer(this);

@@ -13,6 +13,6 @@ namespace Galax::Orbital {
         public:
             std::vector<std::shared_ptr<Planet>> getPlanets();
         private:
-            std::vector<std::shared_ptr<Planet>> getPlanets(const std::shared_ptr<INode> &node);
+            std::vector<std::shared_ptr<Planet>> getPlanets(const std::shared_ptr<IRenderNode> &node);
         };
 } // Orbital

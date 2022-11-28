@@ -85,3 +85,7 @@ std::shared_ptr<Texture> GBuffer::getEmissionTexture() {
 std::shared_ptr<Texture> GBuffer::getMetadataTexture() {
     return metadata;
 }
+
+std::shared_ptr<FrameBuffer> GBuffer::getFrameBuffer() const {
+	return frameBuffer;
+}

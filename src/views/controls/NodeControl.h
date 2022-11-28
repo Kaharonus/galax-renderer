@@ -3,7 +3,7 @@
 //
 
 
-#include "../../renderer/interfaces/INode.h"
+#include "../../renderer/interfaces/IRenderNode.h"
 #include <memory>
 #include <QWidget>
 #include <QTimer>
@@ -19,7 +19,7 @@ Q_OBJECT
 
 public:
     explicit NodeControl(QWidget *parent = nullptr);
-    NodeControl(std::shared_ptr<INode> node, QWidget *parent = nullptr);
+    NodeControl(std::shared_ptr<IRenderNode> node, QWidget *parent = nullptr);
 
     ~NodeControl() override;
 
@@ -28,7 +28,7 @@ protected slots:
 
 private:
 
-    std::shared_ptr<INode> node;
+    std::shared_ptr<IRenderNode> node;
     QTimer* timer;
 
     Ui::NodeControl *ui;

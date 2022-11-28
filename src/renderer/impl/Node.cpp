@@ -9,11 +9,11 @@ using namespace Galax::Renderer::SceneObjects;
 using namespace Galax::Renderer;
 using namespace gl;
 
-Node::Node() : INode() {
+Node::Node() : IRenderNode() {
     init();
 }
 
-Node::Node(const std::string &name) : INode(name) {
+Node::Node(const std::string &name) : IRenderNode(name) {
     init();
 }
 
@@ -41,7 +41,7 @@ void Node::addTexture(std::shared_ptr<ITexture> texture) {
 }
 
 
-void Node::addChild(std::shared_ptr<INode> child) {
+void Node::addChild(std::shared_ptr<IRenderNode> child) {
     children.push_back(child);
 }
 
@@ -107,7 +107,7 @@ glm::vec3 &Node::getScale() {
     return scale;
 }
 
-std::vector<std::shared_ptr<INode>> Node::getChildren() const {
+std::vector<std::shared_ptr<IRenderNode>> Node::getChildren() const {
     return children;
 }
 
@@ -232,6 +232,8 @@ void Node::draw(glm::mat4 parentModel) {
         program->setUniform(uniform);
     }
 
+
+
 	auto currentMatrix = parentModel * this->modelMatrix;
 	this->modelMatrixUniform->setValue(currentMatrix);
 	this->transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(currentMatrix)));
@@ -242,6 +244,11 @@ void Node::draw(glm::mat4 parentModel) {
         program->setTexture(texture, i);
         i++;
     }
+
+	if(this->isTransparent()){
+		program->setUniform(this->lightingModel->getLightCountUniform());
+		program->setSSBO(this->lightingModel->getLightSSBO());
+	}
 
     auto distance = getDistance();
     selectLOD(distance);
@@ -322,4 +329,8 @@ void Node::setTransparent(bool transparent) {
 
 bool Node::isTransparent() const {
 	return transparent;
+}
+
+void Node::setLightingModel(std::shared_ptr<LightingModel> lightingModel) {
+	this->lightingModel = lightingModel;
 }

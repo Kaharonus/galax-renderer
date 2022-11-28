@@ -84,7 +84,7 @@ void LightingModel::draw() {
 
 
 uint LightingModel::getId() {
-    return 0;
+    return outputFrameBuffer->getId();
 }
 
 std::vector<std::shared_ptr<ITexture>> LightingModel::getTextures() {
@@ -114,4 +114,17 @@ void LightingModel::resize(int width, int height) {
 void LightingModel::addLight(std::shared_ptr<ILight> light) {
     lights.push_back(light);
     lightCountUniform->setValue(lightCountUniform->getValue<int>() + 1);
+}
+
+std::shared_ptr<FrameBuffer> LightingModel::getFrameBuffer() const {
+	return outputFrameBuffer;
+}
+
+
+std::shared_ptr<IUniform> LightingModel::getLightCountUniform() const {
+	return lightCountUniform;
+}
+
+std::shared_ptr<ISSBO> LightingModel::getLightSSBO() const {
+	return lightSSBO;
 }

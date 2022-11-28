@@ -37,6 +37,8 @@ namespace Galax::Renderer {
 
         void setLightningShader(std::shared_ptr<IShader> shader);
 
+		std::shared_ptr<FrameBuffer> getFrameBuffer() const;
+
         void addTexture(std::shared_ptr<ITexture> texture);
 
         void addUniform(std::shared_ptr<IUniform> uniform);
@@ -50,6 +52,9 @@ namespace Galax::Renderer {
         void addLight(std::shared_ptr<ILight> light);
 
         void resize(int width, int height);
+
+		std::shared_ptr<IUniform> getLightCountUniform() const;
+		std::shared_ptr<ISSBO> getLightSSBO() const;
 
 
 

@@ -23,6 +23,8 @@ namespace Galax::Renderer {
         void bind();
         void unbind();
 
+		std::shared_ptr<FrameBuffer> getFrameBuffer() const;
+
         int getWidth(){
             return width;
         }

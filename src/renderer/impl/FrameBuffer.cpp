@@ -72,7 +72,8 @@ void FrameBuffer::copyFrom(unsigned int target) const {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, target);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
     glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-    glBindFramebuffer((gl::GLenum) GL_FRAMEBUFFER, 0);
+	glBindFramebuffer((gl::GLenum) GL_FRAMEBUFFER, 0);
+
 }
 
 
@@ -121,6 +122,7 @@ void FrameBuffer::resize(int width, int height) {
         std::cout << "Framebuffer not complete!" << std::endl;
 
     }
+	checkError(true);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }

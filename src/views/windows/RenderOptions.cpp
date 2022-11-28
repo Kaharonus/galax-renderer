@@ -80,7 +80,7 @@ void RenderOptions::onItemClicked() {
 
 		return;
 	}
-	auto node = dynamic_cast<QDataTreeItem<INode> *>(nodeView->currentItem());
+	auto node = dynamic_cast<QDataTreeItem<IRenderNode> *>(nodeView->currentItem());
 	if (node) {
 		auto nodeControl = new NodeControl(node->getData(), this);
 		addTab(nodeControl, node->getData());
@@ -95,11 +95,11 @@ void RenderOptions::onItemClicked() {
 	}
 }
 
-void RenderOptions::addNode(std::shared_ptr<INode> node, QTreeWidgetItem *parent) {
+void RenderOptions::addNode(std::shared_ptr<IRenderNode> node, QTreeWidgetItem *parent) {
 	// TODO: Add more options to the debug window
 
 	// Builds the base of the node
-	auto root = parent ? new QDataTreeItem<INode>(parent) : new QDataTreeItem<INode>(nodeView);
+	auto root = parent ? new QDataTreeItem<IRenderNode>(parent) : new QDataTreeItem<IRenderNode>(nodeView);
 	root->setText(0, type(*node).c_str());
 	root->setText(1, node->getName().data());
 	root->setData(node);

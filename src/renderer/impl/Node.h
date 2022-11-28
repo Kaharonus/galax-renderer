@@ -9,7 +9,7 @@
 #include "Texture.h"
 #include "Animation.h"
 #include "FrameBuffer.h"
-#include "../interfaces/INode.h"
+#include "../interfaces/IRenderNode.h"
 
 
 #include <algorithm>
@@ -22,7 +22,7 @@
 #include <vector>
 
 namespace Galax::Renderer::SceneObjects {
-    class Node : public INode {
+    class Node : public IRenderNode {
     public:
         Node();
 
@@ -38,7 +38,7 @@ namespace Galax::Renderer::SceneObjects {
 
         void setDrawTexture(std::shared_ptr<ITexture> texture) override;
 
-        void addChild(std::shared_ptr<INode> child) override;
+        void addChild(std::shared_ptr<IRenderNode> child) override;
 
         void removeChild(std::shared_ptr<Node> child);
 
@@ -76,7 +76,7 @@ namespace Galax::Renderer::SceneObjects {
 
         glm::vec3 &getPosition() override;
 
-
+		void setLightingModel(std::shared_ptr<LightingModel> lightingModel) override;
 
         std::shared_ptr<IUniform> getPositionUniform();
 
@@ -88,7 +88,7 @@ namespace Galax::Renderer::SceneObjects {
 
 		void setTransparent(bool transparent) override;
 
-        [[nodiscard]] std::vector<std::shared_ptr<INode>> getChildren() const override;
+        [[nodiscard]] std::vector<std::shared_ptr<IRenderNode>> getChildren() const override;
 
         [[nodiscard]] std::shared_ptr<IMesh> getMesh() const override;
 
@@ -134,13 +134,14 @@ namespace Galax::Renderer::SceneObjects {
         std::shared_ptr<FrameBuffer> frameBuffer;
         std::shared_ptr<ITexture> drawTexture;
         std::vector<std::shared_ptr<IAnimation>> animations;
-        std::vector<std::shared_ptr<INode>> children;
+        std::vector<std::shared_ptr<IRenderNode>> children;
         std::map<float, std::shared_ptr<IMesh>> meshLODs;
         glm::vec3 position;
         std::shared_ptr<Uniform> positionUniform;
 		std::shared_ptr<Uniform> currentTimeUniform;
 		std::shared_ptr<Uniform> frameTimeUniform;
         std::shared_ptr<Uniform> scaleUniform;
+		std::shared_ptr<LightingModel> lightingModel;
 		glm::vec3 rotation;
         glm::vec3 scale;
         glm::mat4 modelMatrix;
@@ -148,6 +149,6 @@ namespace Galax::Renderer::SceneObjects {
         bool wireframe = false;
 		bool transparent = false;
 
-    };
+	};
 
 } // namespace MapGenerator::Renderer::SceneObjects

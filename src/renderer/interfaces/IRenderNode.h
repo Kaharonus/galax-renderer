@@ -12,20 +12,21 @@
 #include "ICamera.h"
 #include "ITexture.h"
 #include "IProgram.h"
+#include <renderer/LightingModel.h>
 
 namespace Galax::Renderer {
-    class INode : public Galax::Renderer::SceneObject {
+    class IRenderNode : public Galax::Renderer::SceneObject {
     public:
         enum class DrawTarget {
             SCREEN,
             TEXTURE
         };
 
-        INode() : SceneObject() {};
+        IRenderNode() : SceneObject() {};
 
-        INode(const std::string &name) : SceneObject(name) {};
+        IRenderNode(const std::string &name) : SceneObject(name) {};
 
-        virtual ~INode() = default;
+        virtual ~IRenderNode() = default;
 
         virtual void draw(glm::mat4 parentModelMatrix) = 0;
 
@@ -43,7 +44,7 @@ namespace Galax::Renderer {
 
         virtual void setScale(const glm::vec3 &scale) = 0;
 
-        virtual void addChild(std::shared_ptr<INode> child) = 0;
+        virtual void addChild(std::shared_ptr<IRenderNode> child) = 0;
 
         virtual void setMesh(std::shared_ptr<IMesh> mesh) = 0;
 
@@ -61,6 +62,8 @@ namespace Galax::Renderer {
 
         virtual void setDrawTexture(std::shared_ptr<ITexture> texture) = 0;
 
+		virtual void setLightingModel(std::shared_ptr<LightingModel> model) = 0;
+
         virtual void drawAsWireframe(bool enabled) = 0;
 
 		virtual void setTransparent(bool transparent) = 0;
@@ -77,7 +80,7 @@ namespace Galax::Renderer {
 
         [[nodiscard]] virtual std::vector<std::shared_ptr<ITexture>> getTextures() const = 0;
 
-        [[nodiscard]] virtual std::vector<std::shared_ptr<INode>> getChildren() const = 0;
+        [[nodiscard]] virtual std::vector<std::shared_ptr<IRenderNode>> getChildren() const = 0;
 
         [[nodiscard]] virtual std::vector<std::shared_ptr<IAnimation>> getAnimations() const = 0;
 

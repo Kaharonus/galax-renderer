@@ -8,6 +8,7 @@
 #include <memory>
 #include "IShader.h"
 #include "ITexture.h"
+#include <renderer/interfaces/ISSBO.h>
 
 namespace Galax::Renderer {
     class IProgram : public Galax::Renderer::SceneObject {
@@ -29,6 +30,8 @@ namespace Galax::Renderer {
         virtual std::vector<std::shared_ptr<IShader>> getShaders() = 0;
 
         virtual std::shared_ptr<IShader> getShader(IShader::Type type) = 0;
+
+		virtual void setSSBO(const std::shared_ptr<ISSBO>&) = 0;
 
         virtual void setUniform(const std::shared_ptr<IUniform> &uniform) = 0;
 

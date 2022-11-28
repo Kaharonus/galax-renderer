@@ -7,7 +7,7 @@
 
 #include <physics/interfaces/IRigidBody.h>
 
-#include <renderer/interfaces/INode.h>
+#include <renderer/interfaces/IRenderNode.h>
 #include <physics/interfaces/IForce.h>
 
 namespace Galax::Physics {
@@ -33,7 +33,7 @@ namespace Galax::Physics {
 
         void update() override;
 
-        std::shared_ptr<INode> getDebugNode() override;
+        std::shared_ptr<IRenderNode> getDebugNode() override;
 
         [[nodiscard]] glm::vec3 getBodyPosition() const override;
 

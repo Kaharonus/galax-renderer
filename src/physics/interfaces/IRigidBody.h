@@ -6,7 +6,7 @@
 
 #include <glm/vec3.hpp>
 #include <reactphysics3d/reactphysics3d.h>
-#include <renderer/interfaces/INode.h>
+#include <renderer/interfaces/IRenderNode.h>
 #include <physics/PhysicsObject.h>
 #include <physics/interfaces/ICollider.h>
 #include <physics/interfaces/IForce.h>
@@ -36,7 +36,7 @@ namespace Galax::Physics {
 
         virtual void addBodyCollider(std::shared_ptr<ICollider> collider) = 0;
 
-        virtual std::shared_ptr<INode> getDebugNode() = 0;
+        virtual std::shared_ptr<IRenderNode> getDebugNode() = 0;
 
         virtual glm::vec3 getBodyPosition() const = 0;
 
