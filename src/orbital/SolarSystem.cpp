@@ -9,7 +9,12 @@ using namespace Galax::Orbital;
 
 
 std::vector<std::shared_ptr<Planet>> SolarSystem::getPlanets() {
-    return getPlanets(getRoot());
+	auto planets = std::vector<std::shared_ptr<Planet>>();
+	for(auto& node : getModels()) {
+		auto p = getPlanets(node);
+		planets.insert(planets.end(), p.begin(), p.end());
+	}
+    return planets;
 }
 
 std::vector<std::shared_ptr<Planet>> SolarSystem::getPlanets(const std::shared_ptr<INode> &node) {

@@ -30,7 +30,7 @@ namespace Galax::Orbital {
 
         void setGeneratorProgram(const std::shared_ptr<FeedbackProgram> &program);
 
-        void draw() override;
+        void draw(glm::mat4 parentModel) override;
 
         void setScale(const glm::vec3 &scale) override;
 
@@ -47,7 +47,7 @@ namespace Galax::Orbital {
 
         void generatePlanet();
 
-        void drawPlanet();
+        void drawPlanet(glm::mat4 mat);
 
     private:
         std::shared_ptr<Uniform> colorOffsetUniform;

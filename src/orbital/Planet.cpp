@@ -72,7 +72,7 @@ void Planet::generatePlanet(){
 
 }
 
-void Planet::drawPlanet(){
+void Planet::drawPlanet(glm::mat4 mat) {
     program->bind();
 
     for(auto &uniform: uniforms){
@@ -87,7 +87,9 @@ void Planet::drawPlanet(){
     }
     updateAnimations();
 
-
+	auto currentModel = mat * this->modelMatrix;
+	this->modelMatrixUniform->setValue(currentModel);
+	this->transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(currentModel)));
     useDefaultUniforms();
     glBindVertexArray(generatorProgram->getFeedbackVaoId());
     glBindBuffer(GL_ARRAY_BUFFER, generatorProgram->getFeedbackBufferId());
@@ -105,12 +107,12 @@ void Planet::drawPlanet(){
 }
 
 
-void Planet::draw() {
+void Planet::draw(glm::mat4 parentModel) {
     if (shouldGenerate || generatorProgram->shadersUpdated()) {
         generatePlanet();
         shouldGenerate = false;
     } else {
-          drawPlanet();
+		drawPlanet(parentModel);
     }
 }
 
@@ -165,3 +167,5 @@ void Planet::setIsMouseOver(bool isMouseOver) {
     }
 
 }
+
+

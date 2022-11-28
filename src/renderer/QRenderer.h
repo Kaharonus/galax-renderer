@@ -92,9 +92,12 @@ namespace Galax::Renderer {
 
         void prepareRender();
 
-        void drawGeometry();
+        void drawOpaqueGeometry();
 
-        void drawLighting();
+		void drawTransparentGeometry();
+
+
+		void drawLighting();
 
         void drawPostProcess();
 

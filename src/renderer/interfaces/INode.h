@@ -27,13 +27,15 @@ namespace Galax::Renderer {
 
         virtual ~INode() = default;
 
-        virtual void draw() = 0;
+        virtual void draw(glm::mat4 parentModelMatrix) = 0;
 
         virtual const glm::vec3 &getPosition() = 0;
 
         virtual const glm::vec3 &getRotation() = 0;
 
         virtual const glm::vec3 &getScale() = 0;
+
+		virtual const glm::mat4 &getModelMatrix() = 0;
 
         virtual void setPosition(const glm::vec3 &position) = 0;
 
@@ -60,6 +62,10 @@ namespace Galax::Renderer {
         virtual void setDrawTexture(std::shared_ptr<ITexture> texture) = 0;
 
         virtual void drawAsWireframe(bool enabled) = 0;
+
+		virtual void setTransparent(bool transparent) = 0;
+
+		virtual bool isTransparent() const = 0;
 
         [[nodiscard]] virtual std::shared_ptr<IMesh> getMesh() const = 0;
 

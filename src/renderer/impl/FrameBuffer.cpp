@@ -10,11 +10,11 @@ using namespace gl;
 using namespace Galax::Renderer::SceneObjects;
 
 FrameBuffer::FrameBuffer() : IFrameBuffer() {
-    init();
+	init();
 }
 
 FrameBuffer::FrameBuffer(const std::string &name) : IFrameBuffer(name) {
-    init();
+	init();
 }
 
 void FrameBuffer::init() {
@@ -46,7 +46,7 @@ void FrameBuffer::addOutputTexture(std::shared_ptr<ITexture> texture) {
 
 void FrameBuffer::bind(bool clear) {
     if (id == 0) {
-        create();
+		create();
     }
     glBindFramebuffer(GL_FRAMEBUFFER, id);
     if(clear){

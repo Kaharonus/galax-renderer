@@ -27,13 +27,13 @@ Sun::Sun(const std::string &name) : Node(name) {
 }
 
 
-void Sun::draw() {
+void Sun::draw(glm::mat4 parentModel) {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	program->setUniform(scaleUniform);
 
-	Node::draw();
+	Node::draw(parentModel);
 	glDisable(GL_BLEND);
 }

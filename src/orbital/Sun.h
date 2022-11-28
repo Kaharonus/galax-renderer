@@ -17,7 +17,7 @@ namespace Galax::Orbital{
 		Sun(const std::string& name);
 
 		//void setMesh(std::shared_ptr<IMesh> mesh) override;
-		void draw() override;
+		void draw(glm::mat4 parentModel) override;
 
 	protected:
 		std::shared_ptr<Renderer::SceneObjects::Mesh> mesh;

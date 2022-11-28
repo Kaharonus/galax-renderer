@@ -8,6 +8,7 @@
 #include "impl/Camera.h"
 #include "input/InputHandler.h"
 #include "GBuffer.h"
+#include "LightingModel.h"
 
 #include <iostream>
 #include <set>
@@ -24,16 +25,31 @@ namespace Galax::Renderer {
         Scene();
          ~Scene();
 
-        void setRoot(std::shared_ptr<INode> parent);
+
+		void addModel(std::shared_ptr<INode> model);
+
+		void removeModel(std::shared_ptr<INode> model);
+
+		std::vector<std::shared_ptr<INode>> getModels();
+
+
         void setInputHandler(std::shared_ptr<InputHandler> inputHandler);
-        std::shared_ptr<INode> getRoot();
         void setDimensions(int w, int h);
 
         void setGBuffer(std::shared_ptr<GBuffer> buffer);
 
+		void setLightingModel(std::shared_ptr<LightingModel> mode);
+
+		std::shared_ptr<LightingModel> getLightingModel() const;
+
+		std::shared_ptr<FrameBuffer> getTransparencyBuffer() const;
+
+
         void build();
 
         void draw();
+
+		void drawTransparent();
 
     private:
         void addMesh(std::shared_ptr<IMesh> mesh);
@@ -44,8 +60,6 @@ namespace Galax::Renderer {
 
         void buildNode(const INode& node);
 
-        void drawNode(INode& node);
-
         int width;
         int height;
 
@@ -55,7 +69,9 @@ namespace Galax::Renderer {
         glm::mat4 projectionMatrix;
         glm::mat4 viewMatrix;
 
-        std::shared_ptr<INode> root;
+		std::shared_ptr<FrameBuffer> transparencyBuffer;
+
+        std::vector<std::shared_ptr<INode>> models;
         std::set<std::shared_ptr<IMesh>> meshes;
         std::set<std::shared_ptr<ITexture>> textures;
         std::set<std::shared_ptr<IProgram>> programs;
@@ -63,6 +79,9 @@ namespace Galax::Renderer {
         std::set<std::shared_ptr<ICamera>> cameras;
 
         std::shared_ptr<GBuffer> gBuffer;
-    };
+		std::shared_ptr<LightingModel> lightingModel;
+
+		void drawNode(INode &node, bool transparencyPass, glm::mat4 modelMatrix);
+	};
 
 } // namespace MapGenerator::Renderer

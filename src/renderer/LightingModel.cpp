@@ -88,7 +88,7 @@ uint LightingModel::getId() {
 }
 
 std::vector<std::shared_ptr<ITexture>> LightingModel::getTextures() {
-    return textures;
+    return outputTextures;
 }
 
 std::vector<std::shared_ptr<IUniform>> LightingModel::getUniforms() {

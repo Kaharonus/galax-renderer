@@ -138,8 +138,6 @@ void Node::calculateModelMatrix() {
     auto rotationMatrix = glm::mat4_cast(glm::quat(glm::radians(rotation)));
     auto scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
     modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-    modelMatrixUniform->setValue(modelMatrix);
-    transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(modelMatrix)));
 }
 
 float Node::getDistance() {
@@ -207,7 +205,7 @@ void Node::updateAnimations() {
     }
 }
 
-void Node::draw() {
+void Node::draw(glm::mat4 parentModel) {
 
     if (meshLODs.empty()) { // There is no mesh to draw
         return;
@@ -234,6 +232,9 @@ void Node::draw() {
         program->setUniform(uniform);
     }
 
+	auto currentMatrix = parentModel * this->modelMatrix;
+	this->modelMatrixUniform->setValue(currentMatrix);
+	this->transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(currentMatrix)));
     useDefaultUniforms();
     auto i = program->getTextureCount();
     for (auto &texture: textures) {
@@ -263,7 +264,6 @@ void Node::draw() {
     if(drawTarget == DrawTarget::TEXTURE){
         frameBuffer->unbind();
     }
-
 
 }
 
@@ -314,4 +314,12 @@ void Node::drawAsWireframe(bool enabled) {
 
 std::shared_ptr<IUniform> Node::getScaleUniform() {
     return scaleUniform;
+}
+
+void Node::setTransparent(bool transparent) {
+	this->transparent = transparent;
+}
+
+bool Node::isTransparent() const {
+	return transparent;
 }

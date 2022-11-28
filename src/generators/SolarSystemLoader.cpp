@@ -99,12 +99,16 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     auto sky = generateSkybox(assets);
 
     sky->setCamera(camera);
-    system->setRoot(sky);
+	system->addModel(sky);
+
 
     auto sun = SunLoader::load(assets);
     sun->setCamera(camera);
     sun->setScale(glm::vec3(3));
-    sky->addChild(sun);
+	system->addModel(sun);
+
+
+
 
     auto sunLight = std::make_shared<Light>();
     sunLight->setColor(glm::vec3(1, 1, 1));
@@ -122,10 +126,11 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
         planet->addUniform(std::make_shared<Uniform>("inputSeed", Uniform::FLOAT, 50.0f*((float)i+1)));
         auto orbit = 10 * ((i + 1)*2);
         planet->setPosition(glm::vec3(orbit, 2, orbit));
+		planet->getChildren()[0]->setCamera(camera);
 
         planet->addAnimation(generatePlanetSpin(10000));
         //planet->addAnimation(generateRotation(planet, sun->getPositionUniform()));
-        sky->addChild(planet);
+        system->addModel(planet);
 
     }
 
@@ -133,13 +138,13 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     auto lightingModel = std::make_shared<LightingModel>();
     lightingModel->setLightningShader(assets->getShader("shaders/lighting/lighting.fs.shader", Renderer::SceneObjects::Shader::FRAGMENT));
 
-    auto lightTexture = std::make_shared<Texture>("lightMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::NEAREST);
+    auto lightTexture = std::make_shared<Texture>("lightMap", Texture::TYPE_2D, Texture::RGBA, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::NEAREST);
     lightingModel->addOutputTexture(lightTexture);
 
     auto bloomTexture = std::make_shared<Texture>("bloomMap", Texture::TYPE_2D, Texture::RGB, Texture::FLOAT, Texture::MIRRORED_REPEAT, Texture::NEAREST);
     lightingModel->addOutputTexture(bloomTexture);
     lightingModel->addLight(sunLight);
-
+	system->setLightingModel(lightingModel);
 
     //generate post processes
     std::vector<std::shared_ptr<IPostProcessEffect>> effects;
@@ -154,6 +159,6 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     auto hdr = generateHDR(lightTexture, bloomMap);
     hdr->addInputTexture(outline->getOutputTextures().at(0));
     effects.push_back(hdr);
-    return {system, lightingModel, effects};
+    return {system, effects};
 }
 

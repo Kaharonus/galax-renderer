@@ -80,17 +80,34 @@ void QRenderer::prepareRender() {
         previousHeight = viewportHeight;
         previousWidth = viewportWidth;
     }
+
     gl::glViewport(0, 0, viewportWidth, viewportHeight);
     gl::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     gl::glClear((gl::ClearBufferMask) GL_COLOR_BUFFER_BIT | (gl::ClearBufferMask) GL_DEPTH_BUFFER_BIT);
+
+	//Bind transparency fbo and clear it as well
+	if(scene->getTransparencyBuffer()){
+		scene->getTransparencyBuffer()->bind(false);
+		gl::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		gl::glClear((gl::ClearBufferMask) GL_COLOR_BUFFER_BIT | (gl::ClearBufferMask) GL_DEPTH_BUFFER_BIT);
+		scene->getTransparencyBuffer()->unbind();
+	}
 }
 
-void QRenderer::drawGeometry() {
-    GL_DEBUG("Geometry pass", {
+void QRenderer::drawOpaqueGeometry() {
+    GL_DEBUG("Geometry o-pass", {
         if (scene) {
             scene->draw();
         }
-    })
+    });
+}
+
+void QRenderer::drawTransparentGeometry() {
+	GL_DEBUG("Geometry t-pass", {
+		if (scene) {
+			scene->drawTransparent();
+		}
+	})
 }
 
 void QRenderer::drawLighting() {
@@ -122,9 +139,11 @@ void QRenderer::paintGL() {
 
     prepareRender();
 
-    drawGeometry();
+	drawOpaqueGeometry();
 
     drawLighting();
+
+	drawTransparentGeometry();
 
     drawPostProcess();
 

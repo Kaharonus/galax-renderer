@@ -32,7 +32,7 @@ namespace Galax::Generators {
         static std::unordered_map<Planet::Type, std::shared_ptr<PlanetConfig>> configs;
         static std::unordered_map<Planet::Type, std::shared_ptr<Texture>> colorPalette;
         static std::shared_ptr<Mesh> baseMesh;
-
+		static std::shared_ptr<Program> atmosphereProgram;
         static std::array<std::shared_ptr<Shader>, 5> generatorShaders;
 
         static glm::vec3 fromHex(const std::string &hex);
@@ -41,10 +41,13 @@ namespace Galax::Generators {
 
         static void generatePalette(Planet::Type type);
 
-
         static void generateMesh(const std::shared_ptr<AssetLoader> &loader);
 
         static std::shared_ptr<FeedbackProgram> createPlanetGenerator();
-    };
+
+		static void prepareAtmosphere(const std::shared_ptr<AssetLoader> &loader);
+
+		static std::shared_ptr<Node> createAtmosphere();
+	};
 
 }

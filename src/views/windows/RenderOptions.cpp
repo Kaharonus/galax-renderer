@@ -161,7 +161,9 @@ void RenderOptions::setScene(std::shared_ptr<Galax::Renderer::Scene> scene,
 	this->scene = scene;
 	this->lighting = lighting;
 	this->effects = effects;
-	addNode(scene->getRoot(), nullptr);
+	for(auto& model : scene->getModels()){
+		addNode(model, nullptr);
+	}
 	addLighting(lighting);
 	addEffects(effects);
 

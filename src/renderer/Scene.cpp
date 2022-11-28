@@ -39,14 +39,6 @@ void Scene::addCamera(std::shared_ptr<ICamera> camera) {
     this->cameras.insert(camera);
 }
 
-void Scene::setRoot(std::shared_ptr<INode> parent) {
-    root = parent;
-}
-
-std::shared_ptr<INode> Scene::getRoot() {
-    return root;
-}
-
 void Scene::buildNode(const INode &node) {
     if (node.getMesh() != nullptr) {
         addMesh(node.getMesh());
@@ -72,29 +64,26 @@ void Scene::buildNode(const INode &node) {
 }
 
 void Scene::build() {
-    buildNode(*root);
+	for (auto& model: models) {
+		buildNode(*model);
+	}
 }
 
-void Scene::drawNode(INode &node) {
+void Scene::drawNode(INode &node, bool transparencyPass, glm::mat4 modelMatrix) {
+	if(node.isTransparent() != transparencyPass){
+		for (auto& child: node.getChildren()) {
+			drawNode(*child, transparencyPass, modelMatrix * node.getModelMatrix());
+		}
+		return;
+	}
 	GL_DEBUG(node.getName().c_str(), {
-		node.draw();
+		node.draw(modelMatrix);
 	})
-    for (auto& child: node.getChildren()) {
-        drawNode(*child);
-    }
+	for (auto& child: node.getChildren()) {
+		drawNode(*child, transparencyPass, modelMatrix * node.getModelMatrix());
+	}
 }
 
-void Scene::draw() {
-    assert(gBuffer != nullptr);
-
-    for (auto& camera: this->cameras) {
-        camera->update();
-    }
-
-    gBuffer->bind();
-    drawNode(*root);
-    gBuffer->unbind();
-}
 
 void Scene::setDimensions(int w, int h) {
     this->width = w;
@@ -102,9 +91,73 @@ void Scene::setDimensions(int w, int h) {
     for (const auto &camera: this->cameras) {
 		camera->setResolution(width, height);
     }
+	if(transparencyBuffer){
+		this->transparencyBuffer->resize(width, height);
+	}
+
 }
 
 void Scene::setGBuffer(std::shared_ptr<GBuffer> buffer) {
     this->gBuffer = buffer;
 }
 
+void Scene::draw() {
+	assert(gBuffer != nullptr);
+
+	for (auto& camera: this->cameras) {
+		camera->update();
+	}
+
+
+	gBuffer->bind();
+
+	for(auto& model: models) {
+		drawNode(*model, false, glm::mat4(1.0f));
+	}
+	gBuffer->unbind();
+}
+
+void Scene::drawTransparent() {
+
+	if(!transparencyBuffer){
+		this->transparencyBuffer = std::make_shared<FrameBuffer>();
+		this->transparencyBuffer->addOutputTexture(lightingModel->getTextures()[0]);
+		this->transparencyBuffer->resize(width, height);
+	}
+
+	//Copy the depth buffer from the gBuffer to the transparency buffer
+	transparencyBuffer->copyFrom(gBuffer->getId());
+	transparencyBuffer->bind(false);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	for(auto& model: models) {
+		drawNode(*model, true, glm::mat4(1.0f));
+	}
+	glDisable(GL_BLEND);
+}
+
+void Scene::addModel(std::shared_ptr<INode> model) {
+	this->models.push_back(model);
+}
+
+void Scene::removeModel(std::shared_ptr<INode> model) {
+	this->models.erase(std::remove(this->models.begin(), this->models.end(), model), this->models.end());
+}
+
+std::vector<std::shared_ptr<INode>> Scene::getModels() {
+	return this->models;
+}
+
+std::shared_ptr<LightingModel> Scene::getLightingModel() const {
+	return lightingModel;
+}
+
+void Scene::setLightingModel(std::shared_ptr<LightingModel> model) {
+	this->lightingModel = model;
+}
+
+std::shared_ptr<FrameBuffer> Scene::getTransparencyBuffer() const {
+	return transparencyBuffer;
+}

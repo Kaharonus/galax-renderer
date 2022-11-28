@@ -30,7 +30,7 @@ namespace Galax::Renderer::SceneObjects {
 
         uint getId() override;
 
-        void draw() override;
+        void draw(glm::mat4 parentModel) override;
 
         ~Node() override;
 
@@ -72,9 +72,11 @@ namespace Galax::Renderer::SceneObjects {
 
         void addAnimation(std::shared_ptr<IAnimation> animation) override;
 
-        glm::mat4 &getModelMatrix();
+        glm::mat4 &getModelMatrix() override;
 
         glm::vec3 &getPosition() override;
+
+
 
         std::shared_ptr<IUniform> getPositionUniform();
 
@@ -83,6 +85,8 @@ namespace Galax::Renderer::SceneObjects {
         glm::vec3 &getRotation() override;
 
         glm::vec3 &getScale() override;
+
+		void setTransparent(bool transparent) override;
 
         [[nodiscard]] std::vector<std::shared_ptr<INode>> getChildren() const override;
 
@@ -99,6 +103,8 @@ namespace Galax::Renderer::SceneObjects {
         [[nodiscard]] DrawTarget getDrawTarget() const override;
 
         [[nodiscard]] std::vector<std::shared_ptr<IAnimation>> getAnimations() const override;
+
+		[[nodiscard]] bool isTransparent() const override;
 
         void drawAsWireframe(bool enabled) override;
 
@@ -140,6 +146,8 @@ namespace Galax::Renderer::SceneObjects {
         glm::mat4 modelMatrix;
         std::shared_ptr<Uniform> transposeInverseModelUniform;
         bool wireframe = false;
+		bool transparent = false;
+
     };
 
 } // namespace MapGenerator::Renderer::SceneObjects

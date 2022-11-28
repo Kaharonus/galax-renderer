@@ -23,7 +23,7 @@ namespace Galax::Generators{
     using namespace Galax::Orbital;
     class SolarSystemLoader {
     public:
-        typedef std::tuple<std::shared_ptr<SolarSystem>, std::shared_ptr<LightingModel>, std::vector<std::shared_ptr<IPostProcessEffect>>> RenderData;
+        typedef std::tuple<std::shared_ptr<SolarSystem>, std::vector<std::shared_ptr<IPostProcessEffect>>> RenderData;
 
         SolarSystemLoader() = default;
         ~SolarSystemLoader() = default;

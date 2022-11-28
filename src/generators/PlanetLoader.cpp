@@ -20,6 +20,7 @@ std::unordered_map<Planet::Type, std::shared_ptr<PlanetConfig>> PlanetLoader::co
 std::unordered_map<Planet::Type, std::shared_ptr<Texture>> PlanetLoader::colorPalette;
 std::shared_ptr<Mesh> PlanetLoader::baseMesh;
 std::array<std::shared_ptr<Shader>, 5> PlanetLoader::generatorShaders;
+std::shared_ptr<Program> PlanetLoader::atmosphereProgram;
 
 std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::Orbital::Planet::Type type) {
     if (!initialized) {
@@ -31,9 +32,26 @@ std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::O
     planet->setMesh(baseMesh);
     planet->setBodyMass(5);
     planet->addTexture(colorPalette[type]);
+	planet->addChild(createAtmosphere());
     return planet;
 }
 
+
+std::shared_ptr<Node> PlanetLoader::createAtmosphere(){
+	auto atmosphere = std::make_shared<Node>("Atmosphere");
+	atmosphere->setMesh(baseMesh);
+	atmosphere->setScale(glm::vec3(1.1f));
+	atmosphere->setProgram(atmosphereProgram);
+	atmosphere->setTransparent(true);
+	return atmosphere;
+}
+
+void PlanetLoader::prepareAtmosphere(const std::shared_ptr<AssetLoader> &loader){
+	auto fs = loader->getShader("shaders/planets/atmosphere/atmosphere.fs.shader", Shader::Type::FRAGMENT);
+	auto vs = loader->getShader("shaders/planets/atmosphere/atmosphere.vs.shader", Shader::Type::VERTEX);
+	auto program = std::make_shared<Program>("Atmosphere program",vs, fs);
+	atmosphereProgram = program;
+}
 
 Planet::Type PlanetLoader::fromStr(const std::string &str) {
     if (str == "rocky") return Planet::Type::ROCKY;
@@ -71,6 +89,8 @@ void PlanetLoader::init(const std::shared_ptr<AssetLoader> &loader) {
         //Generate color palettes
         generatePalette(type);
     }
+
+	prepareAtmosphere(loader);
 
     //Init the planet mesh generator
     generateMesh(loader);

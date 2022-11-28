@@ -51,16 +51,17 @@ void MainWindow::setupPhysics(){
 void MainWindow::loadScene() {
     SolarSystemLoader systemLoader;
 
-    auto [system, lighting, effects] = systemLoader.generateSystem();
+    auto [system, effects] = systemLoader.generateSystem();
 
     renderer->setScene(system);
-    renderer->setLightingModel(lighting);
+    renderer->setLightingModel(system->getLightingModel());
     for(auto& effect : effects){
         renderer->addPostProcess(effect);
     }
-    renderOptionsWindow->setScene(system, lighting, effects);
+    renderOptionsWindow->setScene(system, system->getLightingModel(), effects);
 
-    physicsEngine->setCamera(system->getRoot()->getCamera());
+	//FIX - unsafe
+    physicsEngine->setCamera(system->getModels()[0]->getCamera());
 
     auto planets = system->getPlanets();
     for(auto& planet : planets){
