@@ -22,6 +22,7 @@ void Camera::init(){
     cameraPositionUniform = std::make_shared<Uniform>("cameraPosition", Uniform::Type::VEC3, glm::vec3(0.0f));
     cameraRotationUniform = std::make_shared<Uniform>("cameraRotation", Uniform::Type::VEC2, glm::vec2(0.0f));
 	resolutionUniform = std::make_shared<Uniform>("cameraResolution", Uniform::Type::VEC2, glm::vec2(0.0f));
+	forwardUniform = std::make_shared<Uniform>("cameraForward", Uniform::Type::VEC3, glm::vec3(0.0f));
 
     position = glm::vec3(0.0f, 0.0f, 0.0f);
     front = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -117,6 +118,7 @@ void Camera::update() {
     frontTmp.y = sin(glm::radians(pitch));
     frontTmp.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     front = -glm::normalize(frontTmp);
+	forwardUniform->setValue(front);
     // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
     right = glm::normalize(glm::cross(front, worldUp));
     up = glm::normalize(glm::cross(right, front));
@@ -212,4 +214,8 @@ glm::vec3 Camera::getDirection() const {
 
 std::shared_ptr<Galax::Renderer::IUniform> Camera::getResolutionUniform() const {
 	return resolutionUniform;
+}
+
+std::shared_ptr<Galax::Renderer::IUniform> Camera::getForwardUniform() const {
+	return forwardUniform;
 }

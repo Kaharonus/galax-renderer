@@ -39,6 +39,8 @@ namespace Galax::Renderer {
 
         [[nodiscard]]virtual glm::mat4 getViewMatrix() const = 0;
 
+		[[nodiscard]] virtual std::shared_ptr<IUniform> getForwardUniform() const = 0;
+
         [[nodiscard]]virtual glm::mat4 getProjectionMatrix() const = 0;
 
         [[nodiscard]]virtual std::shared_ptr<IUniform> getViewUniform() const = 0;

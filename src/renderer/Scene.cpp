@@ -35,6 +35,11 @@ void Scene::buildNode(IRenderNode& node) {
 	for (auto &child: node.getChildren()) {
 		buildNode(*child);
 	}
+	// Transparent stuff might need to use the depth buffer, but we don't want to use that,
+	// instead we use the gPosition buffer, and calculate the depth in the shader.
+	if (node.isTransparent()) {
+		node.addTexture(gBuffer->getPositionTexture());
+	}
 }
 
 void Scene::build() {

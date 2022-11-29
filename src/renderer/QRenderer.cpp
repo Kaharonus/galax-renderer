@@ -48,8 +48,8 @@ void QRenderer::initializeGL(const QSurfaceFormat &format) {
 
 
     SceneObject::init();
-    this->gBuffer = std::make_shared<GBuffer>();
-    this->gBuffer->init();
+	this->gBuffer = std::make_shared<GBuffer>();
+	this->gBuffer->init();
 
 
     context->doneCurrent();
@@ -195,8 +195,8 @@ double QRenderer::getFrameTime() const {
 }
 
 void QRenderer::setScene(std::shared_ptr<Scene> scene) {
-    scene->build();
-    scene->setGBuffer(gBuffer);
+	scene->setGBuffer(gBuffer);
+	scene->build();
     this->scene = scene;
     scene->setInputHandler(this->input);
     scene->setDimensions(width(), height());

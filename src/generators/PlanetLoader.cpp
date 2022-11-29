@@ -40,7 +40,7 @@ std::shared_ptr<Planet> PlanetLoader::fromType(const std::string &name, Galax::O
 std::shared_ptr<Node> PlanetLoader::createAtmosphere(){
 	auto atmosphere = std::make_shared<Node>("Atmosphere");
 	atmosphere->setMesh(baseMesh);
-	atmosphere->setScale(glm::vec3(1.1f));
+	atmosphere->setScale(glm::vec3(1.2f));
 	atmosphere->setProgram(atmosphereProgram);
 	atmosphere->setTransparent(true);
 	return atmosphere;
