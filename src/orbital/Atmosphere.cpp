@@ -18,8 +18,10 @@ void Atmosphere::draw(glm::mat4 parentModel) {
 
 	// Flip faces
 	gl::glFrontFace(gl::GL_CW);
+	gl::glDisable(gl::GL_DEPTH_TEST);
 	Node::draw(model);
 	gl::glFrontFace(gl::GL_CCW);
+	gl::glEnable(gl::GL_DEPTH_TEST);
 
 }
 
