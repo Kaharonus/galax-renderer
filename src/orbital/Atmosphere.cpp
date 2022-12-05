@@ -5,7 +5,9 @@
 
 #include <orbital/Atmosphere.h>
 
-void Galax::Orbital::Atmosphere::draw(glm::mat4 parentModel) {
+using namespace Galax::Orbital;
+
+void Atmosphere::draw(glm::mat4 parentModel) {
 	//Extract position and scale from model matrix
 	auto position = glm::vec3(parentModel[3]);
 	auto scale = glm::vec3(glm::length(parentModel[0]), glm::length(parentModel[1]), glm::length(parentModel[2]));
@@ -18,5 +20,9 @@ void Galax::Orbital::Atmosphere::draw(glm::mat4 parentModel) {
 	gl::glFrontFace(gl::GL_CW);
 	Node::draw(model);
 	gl::glFrontFace(gl::GL_CCW);
+
+}
+
+void Atmosphere::create() {
 
 }

@@ -4,7 +4,7 @@ out vec4 FragColor;
 
 in vec2 texCoords;
 
-uniform sampler2D lightMap;
+uniform sampler2D fxaaResult;
 uniform sampler2D bloomResult;
 uniform sampler2D outlineResult;
 
@@ -31,7 +31,7 @@ vec3 reinhard_extended_luminance(vec3 v, float max_white_l)
 void main(){
     float exposure = 1;
     const float gamma = 1;
-    vec3 hdrColor = texture(lightMap, texCoords).rgb;
+    vec3 hdrColor = texture(fxaaResult, texCoords).rgb;
     vec3 bloom = texture(bloomResult, texCoords).rgb;
     vec3 outline = texture(outlineResult, texCoords).rgb;
     hdrColor += bloom;

@@ -42,7 +42,7 @@ namespace Galax::Generators{
 
 
         std::shared_ptr<PostProcessEffect>
-        generateHDR(std::shared_ptr<Texture> lightMap, std::shared_ptr<ITexture> bloomTexture);
+        generateHDR(std::shared_ptr<ITexture> lightMap, std::shared_ptr<ITexture> bloomTexture);
 
         std::shared_ptr<Effects::Bloom>
         generateBloom(std::shared_ptr<AssetLoader> assets, std::shared_ptr<Texture> bloomMap);
@@ -50,6 +50,9 @@ namespace Galax::Generators{
         std::shared_ptr<OrbitAnimation> generateRotation(std::shared_ptr<Planet> planet, std::shared_ptr<IUniform> sunPosition);
 
         std::shared_ptr<Galax::Effects::Outline> generateOutline(std::shared_ptr<AssetLoader> assets);
-    };
+
+
+		std::shared_ptr<PostProcessEffect> generateFXAA(std::shared_ptr<AssetLoader> sharedPtr);
+	};
 }
 

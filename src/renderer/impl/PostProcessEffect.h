@@ -45,6 +45,7 @@ namespace Galax::Renderer {
         std::vector<std::shared_ptr<ITexture>> inputTextures;
         std::vector<std::shared_ptr<ITexture>> outputTextures;
         std::vector<std::shared_ptr<Uniform>> uniforms;
+		std::shared_ptr<Uniform> resolutionUniform;
         std::shared_ptr<Uniform> callCountUniform;
         int requestedGBufferTextures = 0;
 

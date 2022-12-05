@@ -34,7 +34,7 @@ std::shared_ptr<OrbitAnimation> SolarSystemLoader::generateRotation(std::shared_
     return animation;
 }
 
-std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateHDR(std::shared_ptr<Texture> lightMap, std::shared_ptr<ITexture> bloomMap){
+std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateHDR(std::shared_ptr<ITexture> lightMap, std::shared_ptr<ITexture> bloomMap){
     auto hdr = std::make_shared<PostProcessEffect>("HDR");
     auto shader = assets->getShader("shaders/effects/hdr.fs.shader", Shader::FRAGMENT);
     hdr->setShader(shader);
@@ -108,15 +108,14 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
 	system->addModel(sun);
 
 
-
-
     auto sunLight = std::make_shared<Light>();
     sunLight->setColor(glm::vec3(1, 1, 1));
     sunLight->setIntensity(1);
     sunLight->setPositionUniform(sun->getPositionUniform());
 
 
-    //generate planets
+
+	//generate planets
     for(int i = 0; i < 1; i++){
         std::string name = "Planet " + std::to_string(i);
         auto planet = PlanetLoader::fromType(name, Planet::Type::TEMPERATE);
@@ -156,9 +155,23 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     auto outline = generateOutline(assets);
     effects.push_back(outline);
 
-    auto hdr = generateHDR(lightTexture, bloomMap);
+	auto fxaa = generateFXAA(assets);
+
+	fxaa->addInputTexture(lightTexture);
+	effects.push_back(fxaa);
+
+    auto hdr = generateHDR(fxaa->getOutputTextures()[0], bloomMap);
     hdr->addInputTexture(outline->getOutputTextures().at(0));
     effects.push_back(hdr);
     return {system, effects};
 }
 
+
+std::shared_ptr<PostProcessEffect> SolarSystemLoader::generateFXAA(std::shared_ptr<AssetLoader> sharedPtr) {
+	auto fxaa = std::make_shared<PostProcessEffect>("FXAA");
+	auto shader = sharedPtr->getShader("shaders/effects/fxaa.fs.shader", Shader::FRAGMENT, "FXAA shader");
+	fxaa->setShader(shader);
+	auto result = std::make_shared<Texture>("fxaaResult", Texture::TYPE_2D, Texture::RGBA, Texture::FLOAT, Texture::Wrap::MIRRORED_REPEAT, Texture::NEAREST);
+	fxaa->addOutputTexture(result);
+	return fxaa;
+}

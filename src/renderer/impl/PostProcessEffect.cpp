@@ -25,6 +25,8 @@ void PostProcessEffect::init() {
     quad->setFragShader(shader);
 
     callCountUniform = std::make_shared<Uniform>("currentCall", Uniform::Type::INT, 1);
+	resolutionUniform = std::make_shared<Uniform>("resolution", Uniform::Type::VEC2, glm::vec2(1));
+	this->uniforms.push_back(resolutionUniform);
 
     if(outputTextures.empty()){
         return;
@@ -47,7 +49,7 @@ void PostProcessEffect::draw() {
     }
     setDrawSize(width, height);
     if (frameBuffer) {
-        frameBuffer->bind(false);
+        frameBuffer->bind(true);
     }
     auto program = quad->getProgram();
     program->bind();
@@ -82,6 +84,7 @@ void PostProcessEffect::resize(int width, int height) {
     }
     this->width = width;
     this->height = height;
+	resolutionUniform->setValue(glm::vec2(width, height));
 }
 
 void PostProcessEffect::setShader(std::shared_ptr<Shader> shader) {

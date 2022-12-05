@@ -6,8 +6,10 @@
 #pragma once
 
 #include <renderer/impl/Node.h>
+#include <renderer/impl/Uniform.h>
 
 namespace Galax::Orbital {
+	using namespace Galax::Renderer;
 
 	class Atmosphere : public Galax::Renderer::Node {
 	public:
@@ -15,6 +17,10 @@ namespace Galax::Orbital {
 		Atmosphere(const std::string& name) : Node(name) {};
 
 		void draw(glm::mat4 parentModel) override;
+
+	private:
+		void create();
+		std::shared_ptr<Uniform> lightIntensity;
 	};
 }
 
