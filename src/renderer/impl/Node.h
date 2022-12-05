@@ -136,12 +136,15 @@ namespace Galax::Renderer::SceneObjects {
         std::vector<std::shared_ptr<IAnimation>> animations;
         std::vector<std::shared_ptr<IRenderNode>> children;
         std::map<float, std::shared_ptr<IMesh>> meshLODs;
-        glm::vec3 position;
-        std::shared_ptr<Uniform> positionUniform;
+
 		std::shared_ptr<Uniform> currentTimeUniform;
 		std::shared_ptr<Uniform> frameTimeUniform;
-        std::shared_ptr<Uniform> scaleUniform;
 		std::shared_ptr<LightingModel> lightingModel;
+
+		std::shared_ptr<Uniform> positionUniform;
+		std::shared_ptr<Uniform> rotationUniform;
+		std::shared_ptr<Uniform> scaleUniform;
+		glm::vec3 position;
 		glm::vec3 rotation;
         glm::vec3 scale;
         glm::mat4 modelMatrix;

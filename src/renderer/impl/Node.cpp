@@ -23,6 +23,7 @@ void Node::init() {
                                                              glm::mat4(1.0));
     this->positionUniform = std::make_shared<Uniform>("position", Uniform::Type::VEC3, glm::vec3(0.0f));
     this->scaleUniform = std::make_shared<Uniform>("scale", Uniform::Type::VEC3, glm::vec3(1.0f));
+	this->rotationUniform = std::make_shared<Uniform>("rotation", Uniform::Type::VEC3, glm::vec3(0.0f));
     this->objectIdUniform = std::make_shared<Uniform>("objectId", Uniform::Type::INT, (int)this->getId());
 	this->currentTimeUniform = std::make_shared<Uniform>("currentTime", Uniform::Type::FLOAT, 0.0f);
 	this->frameTimeUniform = std::make_shared<Uniform>("frameTime", Uniform::Type::FLOAT, 0.0f);
@@ -63,6 +64,7 @@ void Node::setPosition(const glm::vec3 &position) {
 
 void Node::setRotation(const glm::vec3 &rotation) {
     this->rotation = rotation;
+	this->rotationUniform->setValue(rotation);
     calculateModelMatrix();
 
 }
@@ -134,10 +136,14 @@ void Node::addAnimation(std::shared_ptr<IAnimation> animation) {
 }
 
 void Node::calculateModelMatrix() {
-    auto translationMatrix = glm::translate(glm::mat4(1.0f), position);
-    auto rotationMatrix = glm::mat4_cast(glm::quat(glm::radians(rotation)));
-    auto scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
-    modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+	modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::translate(modelMatrix, position);
+	modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+	modelMatrix = glm::scale(modelMatrix, scale);
+	modelMatrixUniform->setValue(modelMatrix);
+	transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(modelMatrix)));
 }
 
 float Node::getDistance() {
@@ -173,6 +179,9 @@ void Node::useDefaultUniforms() {
     program->setUniform(camera->getViewUniform());
     program->setUniform(camera->getProjectionUniform());
     program->setUniform(camera->getPositionUniform());
+	program->setUniform(this->positionUniform);
+	program->setUniform(this->scaleUniform);
+	program->setUniform(this->rotationUniform);
     program->setUniform(camera->getRotationUniform());
 	program->setUniform(camera->getResolutionUniform());
 	program->setUniform(camera->getForwardUniform());
@@ -236,9 +245,9 @@ void Node::draw(glm::mat4 parentModel) {
 
 
 
-	auto currentMatrix = parentModel * this->modelMatrix;
-	this->modelMatrixUniform->setValue(currentMatrix);
-	this->transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(currentMatrix)));
+	//auto currentMatrix = parentModel * this->modelMatrix;
+	this->modelMatrixUniform->setValue(this->modelMatrix);
+	this->transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(this->modelMatrix)));
     useDefaultUniforms();
     auto i = program->getTextureCount();
     for (auto &texture: textures) {
