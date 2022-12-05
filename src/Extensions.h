@@ -18,6 +18,13 @@
     fn
 #endif
 
+// ----------------- 2. -----------------
+// A macro that will disable a gl feature for the scope of the macro
+#define GL_DISABLE(feature, fn) \
+	gl::glDisable(feature); \
+	fn \
+	gl::glEnable(feature);
+
 
 // ----------------- 2. -----------------
 // Used to enumarete over a list of types and get an index with the value

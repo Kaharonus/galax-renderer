@@ -4,8 +4,10 @@
 #include <glbinding/gl/gl.h>
 
 #include <orbital/Atmosphere.h>
+#include <Extensions.h>
 
 using namespace Galax::Orbital;
+using namespace gl;
 
 void Atmosphere::draw(glm::mat4 parentModel) {
 	//Extract position and scale from model matrix
@@ -18,10 +20,10 @@ void Atmosphere::draw(glm::mat4 parentModel) {
 
 	// Flip faces
 	gl::glFrontFace(gl::GL_CW);
-	gl::glDisable(gl::GL_DEPTH_TEST);
-	Node::draw(model);
+	GL_DISABLE(GL_DEPTH_TEST,
+		Node::draw(model);
+	)
 	gl::glFrontFace(gl::GL_CCW);
-	gl::glEnable(gl::GL_DEPTH_TEST);
 
 }
 
