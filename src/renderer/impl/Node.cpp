@@ -245,8 +245,8 @@ void Node::draw(glm::mat4 parentModel) {
 
 
 
-	//auto currentMatrix = parentModel * this->modelMatrix;
-	this->modelMatrixUniform->setValue(this->modelMatrix);
+	auto currentMatrix = parentModel * this->modelMatrix;
+	this->modelMatrixUniform->setValue(currentMatrix);
 	this->transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(this->modelMatrix)));
     useDefaultUniforms();
     auto i = program->getTextureCount();

@@ -13,6 +13,7 @@
 #include <renderer/impl/Texture.h>
 #include <assets/PlanetConfig.h>
 #include <renderer/impl/Mesh.h>
+#include <orbital/Atmosphere.h>
 #include <orbital/FeedbackProgram.h>
 
 namespace Galax::Generators {
@@ -47,7 +48,7 @@ namespace Galax::Generators {
 
 		static void prepareAtmosphere(const std::shared_ptr<AssetLoader> &loader);
 
-		static std::shared_ptr<Node> createAtmosphere();
+		static std::shared_ptr<Atmosphere> createAtmosphere();
 	};
 
 }

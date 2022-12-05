@@ -3,34 +3,29 @@
 layout (location = 0) out vec4 color;
 layout (location = 1) out vec4 emission;
 
-in vec3 vPosition;
-in vec3 vNormal;
-in vec3 mvPosition;
-in vec3 mvCamera;
-in vec3 modelPosition;
-
 uniform int lightCount;
 
-uniform vec3 light_intensity = vec3(2.0); // how bright the light is, affects the brightness of the atmosphere
-uniform float planet_radius = 0.5; // the radius of the planet
-uniform float atmo_radius = .56; // the radius of the atmosphere
+uniform vec3 light_intensity = vec3(5.0); // how bright the light is, affects the brightness of the atmosphere
+uniform float planet_radius = .8; // the radius of the planet
+uniform float atmo_radius = .6; // the radius of the atmosphere
 uniform vec3 beta_ray =vec3(1.0, 2.0, 3.0); // the amount rayleigh scattering scatters the colors (for earth: causes the blue atmosphere)
-uniform vec3 beta_mie = vec3(1.0); // the amount mie scattering scatters colors
-uniform vec3 beta_ambient = vec3(0.01); // the amount of scattering that always occurs, can help make the back side of the atmosphere a bit brighter
-uniform float beta_e = 0.1; // exponent, helps setting really small values of beta_ray, mie and ambient, as in beta_x * pow(10.0, beta_e)
+uniform vec3 beta_mie = vec3(1.5); // the amount mie scattering scatters colors
+uniform vec3 beta_ambient = vec3(0.00); // the amount of scattering that always occurs, can help make the back side of the atmosphere a bit brighter
+uniform float beta_e = 0.25; // exponent, helps setting really small values of beta_ray, mie and ambient, as in beta_x * pow(10.0, beta_e)
 uniform float g = 0.8; // the direction mie scatters the light in (like a cone). closer to -1 means more towards a single direction
 uniform float height_ray = .5; // how high do you have to go before there is no rayleigh scattering?
 uniform float height_mie = .25; // the same, but for mie
-uniform float density_multiplier = 0.1; // how much extra the atmosphere blocks light
-uniform int steps_i = 31; // the amount of steps along the 'primary' ray, more looks better but slower
-uniform int steps_l = 4; // the amount of steps along the light ray, more looks better but slower
+uniform float density_multiplier = 0.25; // how much extra the atmosphere blocks light
+uniform int steps_i = 8; // the amount of steps along the 'primary' ray, more looks better but slower
+uniform int steps_l = 2; // the amount of steps along the light ray, more looks better but slower
 
 uniform sampler2D gPosition;
 uniform vec2 cameraResolution;
 uniform vec3 cameraPosition;
-uniform mat4 projection;
-uniform mat4 view;
-uniform mat4 model;
+
+in vec3 viewspacePosition;
+in vec3 viewspaceCamera;
+in vec3 lightDirection;
 
 struct Light{
     vec3 position;
@@ -188,16 +183,17 @@ vec4 calculate_scattering( vec3 start, vec3 dir, float max_dist, vec3 light_dir)
 
 void main() {
     vec2 screenuv = gl_FragCoord.xy / cameraResolution;
-
     vec3 position = texture(gPosition, screenuv).xyz;
-    float depth = (distance(cameraPosition, position));
 
-    vec3 lightPos = lights.data[0].position;
-    vec3 lightDir = normalize(lightPos - modelPosition);
+    float depth = distance(cameraPosition, position);
 
-    vec4 atm = calculate_scattering(mvCamera, -normalize(mvPosition), depth, -lightDir);
+
+    vec4 atm = calculate_scattering(viewspaceCamera, -normalize(viewspacePosition), depth, lightDirection);
     atm.w = clamp(atm.w, 0.0001, 1.0);
-    color.a = 1;
-    emission = color * 0;
-    color = vec4(atm.xyz / atm.w, atm.w);
+    if(isnan(atm.x) || isnan(atm.y) || isnan(atm.z)){ // Damn you NaN
+        color = vec4(0);
+    }else{
+        color = vec4(atm.xyz / atm.w, atm.w);
+    }
+    emission = color * 1;
 }
