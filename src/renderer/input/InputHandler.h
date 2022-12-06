@@ -78,7 +78,7 @@ namespace Galax::Renderer {
         void mouseMove(float x, float y);
         void mousePress(MouseButton button, float x, float y);
         void mouseRelease(MouseButton button, float x, float y);
-        void mouseWheel(int wheel, int direction, float x, float y);
+		void mouseWheel(float x, float y);
         void keyPress(Key key);
         void keyRelease(Key key);
 
@@ -91,18 +91,23 @@ namespace Galax::Renderer {
         glm::vec2 getRendererPosition();
 
         void setRendererSize(int width, int height);
-
         static Key fromQtKey(int key);
 
-    private:
+		glm::vec2 getScrollDelta();
+
+	private:
         bool keys[512];
         bool mouseButtons[3];
         float deltaX = 0;
         float deltaY = 0;
         float absoluteX = 0;
         float absoluteY = 0;
+		glm::vec2 scrollDelta = { 0, 0 };
+		bool scrollDeltaSet = false;
 
         float rendererHeight;
         float rendererWidth;
-    };
+
+
+	};
 } // namespace MapGenerator::Renderer

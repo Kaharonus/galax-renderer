@@ -6,6 +6,7 @@
 #include <generators/PlanetLoader.h>
 #include <generators/SunLoader.h>
 #include <effects/Bloom.h>
+#include <orbital/SpaceCamera.h>
 
 using namespace Galax::Generators;
 using namespace Galax::Assets;
@@ -90,7 +91,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
     assets->load("assets.data");
     PlanetLoader::init(assets);
 
-    auto camera = std::make_shared<Camera>("freeCam");
+    auto camera = std::make_shared<SpaceCamera>("freeCam");
     camera->acceptInput(true);
     camera->setPosition(glm::vec3(0, 0, -8));
 
@@ -130,7 +131,7 @@ Galax::Generators::SolarSystemLoader::RenderData SolarSystemLoader::generateSyst
         planet->addAnimation(generatePlanetSpin(10000));
         //planet->addAnimation(generateRotation(planet, sun->getPositionUniform()));
         system->addModel(planet);
-
+		camera->follow(planet);
     }
 
     //Create the lighting model

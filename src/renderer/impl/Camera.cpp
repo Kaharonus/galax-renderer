@@ -44,44 +44,10 @@ void Camera::init(){
 Camera::~Camera() {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-glm::mat4 lookAt(glm::vec3& eye, glm::vec3& target, glm::vec3& upDir){
-	// compute the forward vector from target to eye
-	auto forward = eye - target;
-	forward = normalize(forward);
-
-	// compute the left vector
-	auto left = cross(upDir, forward);
-	left = normalize(left);
-
-	// recompute the orthonormal up vector
-	auto up = cross(forward, left);
-
-	// init 4x4 matrix
-	float matrix[16];
-
-	// set rotation part, inverse rotation matrix: M^-1 = M^T for Euclidean transform
-	matrix[0] = left.x;
-	matrix[4] = left.y;
-	matrix[8] = left.z;
-	matrix[2] = up.x;
-	matrix[5] = up.y;
-	matrix[9] = up.z;
-	matrix[2] = forward.x;
-	matrix[6] = forward.y;
-	matrix[10]= forward.z;
-
-	// set translation part
-	matrix[12]= -left.x * eye.x - left.y * eye.y - left.z * eye.z;
-	matrix[13]= -up.x * eye.x - up.y * eye.y - up.z * eye.z;
-	matrix[14]= -forward.x * eye.x - forward.y * eye.y - forward.z * eye.z;
-
-	return glm::make_mat4(matrix);
-}
-
 
 void Camera::setPosition(const glm::vec3 &position) {
     this->position = position;
+	this->cameraPositionUniform->setValue(position);
 }
 
 void Camera::setRotation(float yaw, float pitch) {

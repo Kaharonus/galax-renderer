@@ -164,7 +164,7 @@ void QRenderer::timerEvent(QTimerEvent *event) {
 }
 
 QRenderer::~QRenderer() {
-    context->deleteLater();
+    //context->deleteLater();
 }
 
 ProcAddress QRenderer::getProcAddress(const char *name) {
@@ -219,7 +219,8 @@ void QRenderer::connectInput() {
     });
 
     connect(this, &QRenderer::wheelEvent, [this](QWheelEvent *event) {
-        // this->inputHandler->mouseWheel(event->delta()); TODO
+         this->input->mouseWheel(event->angleDelta().x(), event->angleDelta().y());
+
     });
     connect(this, &QRenderer::keyPressEvent, this, [&](QKeyEvent *event) {
         this->input->keyPress(InputHandler::fromQtKey(event->key()));

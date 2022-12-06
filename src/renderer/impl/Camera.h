@@ -82,7 +82,7 @@ namespace Galax::Renderer::SceneObjects {
 		uint getId() override;
 
 
-	private:
+	protected:
 		std::shared_ptr<InputHandler> input;
 		bool acceptingInput = false;
 
@@ -109,7 +109,6 @@ namespace Galax::Renderer::SceneObjects {
 		float mouseSensitivity;
 		float fov;
 		float near;
-	private:
 		float far;
 		float width;
 		float height;
