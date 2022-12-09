@@ -119,10 +119,6 @@ void Bloom::setShader(std::shared_ptr<IShader> shader) {
 
 }
 
-void Bloom::setPasses(int passes) {
-    this->passes = passes * 2; // Horizontal and vertical blur
-}
-
 int Bloom::getPasses() const {
     return this->passes / 2;
 }

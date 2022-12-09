@@ -1,0 +1,12 @@
+{
+  "name": "Procedural solar system",
+  "description": "A procedural solar system scene",
+  "generator": "SolarSystem",
+  "scene": {
+    "planet-count-range": [1, 3],
+    "planet-size-range": [0.5, 1.5],
+    "planet-distance-range": [10, 30],
+    "planet-types": ["temperate"]
+  }
+
+}

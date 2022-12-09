@@ -29,6 +29,8 @@ namespace Galax::Assets {
 
         std::shared_ptr<Texture> getCubemap(const std::string& asset, std::string name = "");
 
+		std::vector<std::string> getFiles(const std::string& dir);
+
         template <typename T> std::shared_ptr<T> getJson(const std::string& asset){
             auto text = readTextFile(asset);
             auto ptr = std::make_shared<T>();

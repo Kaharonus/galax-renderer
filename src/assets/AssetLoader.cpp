@@ -134,3 +134,15 @@ std::shared_ptr<Texture> AssetLoader::getCubemap(const std::string& asset, std::
     return skybox;
 }
 
+std::vector<std::string> AssetLoader::getFiles(const std::string &dir) {
+	auto fullPath = path + dir;
+	exists(fullPath);
+	auto files = std::vector<std::string>();
+	auto dirHandle = PHYSFS_enumerateFiles(fullPath.c_str());
+	for(auto file = dirHandle; *file != nullptr; file++) {
+		files.push_back(*file);
+	}
+	PHYSFS_freeList(dirHandle);
+	return files;
+}
+

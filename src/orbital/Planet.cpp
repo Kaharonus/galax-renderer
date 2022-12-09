@@ -5,7 +5,8 @@
 #include <glbinding/gl/gl.h>
 #include <iostream>
 
-#include "Planet.h"
+#include <orbital/Planet.h>
+#include <orbital/OrbitAnimation.h>
 #include <Extensions.h>
 #include <physics/impl/SphereCollider.h>
 
@@ -167,5 +168,60 @@ void Planet::setIsMouseOver(bool isMouseOver) {
     }
 
 }
+
+
+Planet* Planet::withSeed(float seed) {
+	addUniform(std::make_shared<Uniform>("inputSeed", Uniform::FLOAT, seed));
+	return this;
+}
+
+Planet* Planet::withRotation(float rotation) {
+	auto animation = std::make_shared<Animation>();
+	animation->setLength(rotation);
+	animation->setRepeat(Animation::Repeat::LOOP);
+	animation->setEase(Animation::Ease::LINEAR);
+	animation->setTarget(IAnimation::Target::ROTATION);
+	animation->addKeyFrame(0, glm::vec3(0, 0, 0));
+	animation->addKeyFrame(rotation, glm::vec3(0, 360, 0));
+	addAnimation(animation);
+	return this;
+}
+
+Planet* Planet::withRadius(float radius) {
+	setScale(glm::vec3(radius));
+	return this;
+}
+
+Planet* Planet::withOrbit(glm::vec3 orbit, std::shared_ptr<IUniform> orbitCenter) {
+	auto animation = std::make_shared<OrbitAnimation>();
+	animation->setPlanetRadius(this->scaleUniform);
+	animation->setSunPosition(orbitCenter);
+	animation->setInitialPosition(orbit);
+	this->addAnimation(animation);
+
+	return this;
+
+}
+
+Planet* Planet::withAtmosphere(std::shared_ptr<Atmosphere> atmosphere) {
+	if(atmosphere) this->addChild(atmosphere);
+	return this;
+}
+
+Planet* Planet::withCamera(std::shared_ptr<SpaceCamera> camera) {
+	if(camera) this->setCamera(camera);
+	return this;
+}
+
+Planet* Planet::configure(){
+	return this;
+}
+
+Planet* Planet::withPosition(glm::vec3 position) {
+	setPosition(position);
+	return this;
+}
+
+
 
 

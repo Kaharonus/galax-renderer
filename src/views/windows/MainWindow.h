@@ -5,6 +5,9 @@
 #include <QMainWindow>
 #include <QSurfaceFormat>
 #include <physics/PhysicsEngine.h>
+#include <physics/interfaces/IRigidBody.h>
+
+#include <assets/SceneLoader.h>
 #include <QTimer>
 
 QT_BEGIN_NAMESPACE
@@ -25,7 +28,9 @@ public:
 
 private:
     void setupRenderer(const QSurfaceFormat &format);
-    void loadScene();
+    void loadScene(const std::string& path);
+
+	std::shared_ptr<Galax::Assets::SceneLoader> sceneLoader;
 
     RenderOptions* renderOptionsWindow;
     Galax::Renderer::QRenderer* renderer;
@@ -36,4 +41,7 @@ private:
     Ui::MainWindow* ui;
 
     void setupPhysics();
+
+	std::vector<std::shared_ptr<IRigidBody>> getPhysical(const std::shared_ptr<IRenderNode> &node);
+	std::vector<std::shared_ptr<IRigidBody>> getPhysical(std::shared_ptr<Scene> scene);
 };

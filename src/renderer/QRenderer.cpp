@@ -62,11 +62,16 @@ void QRenderer::resize() {
 	input->setRendererSize(viewportWidth, viewportHeight);
 
     gBuffer->resize(viewportWidth, viewportHeight);
-    lightingModel->resize(viewportWidth, viewportHeight);
+	if(lightingModel){
+		lightingModel->resize(viewportWidth, viewportHeight);
+
+	}
     for (auto &effect: postProcesses) {
         effect->resize(viewportWidth, viewportHeight);
     }
-    scene->setDimensions(viewportWidth, viewportHeight);
+	if(scene){
+		scene->setDimensions(viewportWidth, viewportHeight);
+	}
 }
 
 
@@ -86,7 +91,7 @@ void QRenderer::prepareRender() {
     gl::glClear((gl::ClearBufferMask) GL_COLOR_BUFFER_BIT | (gl::ClearBufferMask) GL_DEPTH_BUFFER_BIT);
 
 	//Bind transparency fbo and clear it as well
-	if(scene->getTransparencyBuffer()){
+	if(scene && scene->getTransparencyBuffer()){
 		scene->getTransparencyBuffer()->bind(false);
 		gl::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		gl::glClear((gl::ClearBufferMask) GL_COLOR_BUFFER_BIT | (gl::ClearBufferMask) GL_DEPTH_BUFFER_BIT);
@@ -112,7 +117,9 @@ void QRenderer::drawTransparentGeometry() {
 
 void QRenderer::drawLighting() {
     GL_DEBUG("Deferred lighting", {
-        lightingModel->draw();
+		if (lightingModel) {
+			lightingModel->draw();
+		}
     })
 }
 

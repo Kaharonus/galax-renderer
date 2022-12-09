@@ -13,6 +13,9 @@ rp3d::PhysicsWorld* Galax::Physics::PhysicsObject::createWorld() {
 }
 
 rp3d::SphereShape *PhysicsObject::createSphereShape(float radius) {
+	if(radius <=0){
+		radius = 0.1f;
+	}
     return common.createSphereShape(radius);
 }
 

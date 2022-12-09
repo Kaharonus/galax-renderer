@@ -27,7 +27,6 @@ namespace Galax::Effects {
             void addInputTexture(std::shared_ptr<ITexture> texture) override;
             void addOutputTexture(std::shared_ptr<ITexture> texture) override;
             void setShader(std::shared_ptr<IShader> shader);
-            void setPasses(int passes);
             int getPasses() const;
             [[nodiscard]] std::vector<std::shared_ptr<ITexture>> getInputTextures() const override;
             [[nodiscard]] std::vector<std::shared_ptr<ITexture>> getOutputTextures() const override;
@@ -38,7 +37,7 @@ namespace Galax::Effects {
             GBufferTexture getRequestedGBufferTextures() override;
 
         private:
-            int passes = 2;
+            int passes = 6;
             std::shared_ptr<IShader> shader;
             std::shared_ptr<ITexture> inputTexture;
             std::shared_ptr<ITexture> outputTexture;

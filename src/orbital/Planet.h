@@ -7,6 +7,8 @@
 #include <physics/impl/PhysicalNode.h>
 #include <orbital/FeedbackProgram.h>
 #include <physics/impl/Force.h>
+#include <orbital/Atmosphere.h>
+#include <orbital/SpaceCamera.h>
 
 namespace Galax::Orbital {
 
@@ -19,11 +21,11 @@ namespace Galax::Orbital {
     public:
         enum class Type {
             ROCKY,
-            GAS_GIANT,
             ICE,
             HOT,
             TEMPERATE,
-            OCEAN
+            OCEAN,
+			MOON
         };
 
         Planet(const std::string &name, Planet::Type type);
@@ -33,6 +35,17 @@ namespace Galax::Orbital {
         void draw(glm::mat4 parentModel) override;
 
         void setScale(const glm::vec3 &scale) override;
+
+		Planet* configure();
+		Planet* withRadius(float scale);
+		Planet* withAtmosphere(std::shared_ptr<Atmosphere> atmosphere);
+		Planet* withOrbit(glm::vec3 orbit, std::shared_ptr<IUniform> orbitCenter);
+		Planet* withSeed(float seed);
+		Planet* withRotation(float rotation);
+		Planet* withCamera(std::shared_ptr<SpaceCamera> camera);
+		Planet* withPosition(glm::vec3 position);
+
+
 
         void setIsMouseOver(bool isMouseOver) override;
 
@@ -60,6 +73,6 @@ namespace Galax::Orbital {
 
         int getSizeQueryResult();
 
-    };
+	};
 
 }

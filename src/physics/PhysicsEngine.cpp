@@ -34,7 +34,9 @@ void PhysicsEngine::addRigidBody(std::shared_ptr<IRigidBody> rigidBody) {
 
 
 void PhysicsEngine::update() {
-    assert(camera != nullptr);
+	if(!camera){
+		return;
+	}
 
     world->update(1.0 / 100.0);
 
@@ -75,6 +77,7 @@ void PhysicsEngine::setCamera(std::shared_ptr<ICamera> camera) {
 }
 
 Ray PhysicsEngine::createRayFromMousePosition() {
+
     auto mousePosition = inputHandler->getAbsolutePosition();
 
     glm::vec4 rayClip = glm::vec4((2.0f * mousePosition.x) / camera->getWidth() - 1.0f,

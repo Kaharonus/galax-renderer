@@ -19,7 +19,6 @@ namespace Galax::Orbital {
 		void draw(glm::mat4 parentModel) override;
 
 	private:
-		void create();
 		std::shared_ptr<Uniform> lightIntensity;
 	};
 }

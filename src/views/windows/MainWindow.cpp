@@ -4,7 +4,7 @@
 
 // You may need to build the project (run Qt uic code generator) to get "ui_MainWindow.h" resolved
 #include <assets/AssetLoader.h>
-#include <generators/SolarSystemLoader.h>
+#include <generators/SolarSystemGenerator.h>
 #include <physics/PhysicsEngine.h>
 
 #include "ui_MainWindow.h"
@@ -25,7 +25,10 @@ MainWindow::MainWindow(const QSurfaceFormat &format, QWidget *parent, Qt::Window
     this->inputHandler = std::make_shared<InputHandler>();
     setupRenderer(format);
     setupPhysics();
-    loadScene();
+    this->sceneLoader = std::make_shared<SceneLoader>("assets.data", "scenes");
+	this->sceneLoader->registerGenerator(std::make_shared<SolarSystemGenerator>());
+
+	loadScene("scenes/solar-system.json");
 }
 
 void MainWindow::setupRenderer(const QSurfaceFormat &format){
@@ -44,31 +47,60 @@ void MainWindow::setupRenderer(const QSurfaceFormat &format){
 
 void MainWindow::setupPhysics(){
     physicsEngine = new PhysicsEngine(inputHandler, 1/60.f, this);
-
 }
 
 
-void MainWindow::loadScene() {
-    SolarSystemLoader systemLoader;
 
-    auto [system, effects] = systemLoader.generateSystem();
 
-    renderer->setScene(system);
-    renderer->setLightingModel(system->getLightingModel());
-    for(auto& effect : effects){
+void MainWindow::loadScene(const std::string& path) {
+
+	auto sceneData = this->sceneLoader->loadScene(path);
+	if(!sceneData){
+		return;
+	}
+	auto scene = sceneData->scene;
+	auto effects = sceneData->postProcessEffects;
+
+    renderer->setScene(scene);
+    renderer->setLightingModel(scene->getLightingModel());
+    for(auto& effect : sceneData->postProcessEffects){
         renderer->addPostProcess(effect);
     }
-    renderOptionsWindow->setScene(system, system->getLightingModel(), effects);
+    renderOptionsWindow->setScene(scene, scene->getLightingModel(), effects);
 
 	//FIX - unsafe
-    physicsEngine->setCamera(system->getModels()[0]->getCamera());
+    physicsEngine->setCamera(scene->getModels()[0]->getCamera());
 
-    auto planets = system->getPlanets();
-    for(auto& planet : planets){
-        physicsEngine->addRigidBody(planet);
+    auto physics = getPhysical(scene);
+    for(auto& item : physics){
+        physicsEngine->addRigidBody(item);
     }
-
 }
+
+std::vector<std::shared_ptr<IRigidBody>> MainWindow::getPhysical(std::shared_ptr<Scene> scene) {
+	auto physical = std::vector<std::shared_ptr<IRigidBody>>();
+	for(auto& node : scene->getModels()) {
+		auto p = getPhysical(node);
+		if(auto planet = std::dynamic_pointer_cast<Planet>(node)){
+			p.push_back(planet);
+		}
+		physical.insert(physical.end(), p.begin(), p.end());
+	}
+	return physical;
+}
+
+std::vector<std::shared_ptr<IRigidBody>> MainWindow::getPhysical(const std::shared_ptr<IRenderNode> &node) {
+	std::vector<std::shared_ptr<IRigidBody>> physical;
+	for (const auto &child : node->getChildren()) {
+		if (auto planet = std::dynamic_pointer_cast<IRigidBody>(child)) {
+			physical.push_back(planet);
+		}
+		auto children = getPhysical(child);
+		physical.insert(physical.end(), children.begin(), children.end());
+	}
+	return physical;
+}
+
 
 MainWindow::~MainWindow() {
     delete ui;

@@ -59,7 +59,7 @@ namespace Galax::Orbital {
         void updateTime();
 
         // Constants
-        float animationSpeed = 1.f;
+        float animationSpeed = 10.f;
         float massConstant = 1000.0f;
         static constexpr auto pi2 = glm::two_pi<float>();
         static constexpr auto pi_43 = glm::pi<float>() * 4.0f / 3.0f;
