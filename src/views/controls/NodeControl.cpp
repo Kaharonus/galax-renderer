@@ -23,9 +23,9 @@ NodeControl::NodeControl(std::shared_ptr<IRenderNode> node, QWidget *parent) : Q
 
 
 void NodeControl::update(){
-    auto x = this->node->getPosition().x;
-    auto y = this->node->getPosition().y;
-    auto z = this->node->getPosition().z;
+    auto x = this->node->getRelativePosition().x;
+    auto y = this->node->getRelativePosition().y;
+    auto z = this->node->getRelativePosition().z;
     if (!ui->x->hasFocus()) {
         ui->x->setValue(x);
     }
@@ -37,9 +37,9 @@ void NodeControl::update(){
     }
     node->setPosition(glm::vec3(ui->x->value(), ui->y->value(), ui->z->value()));
 
-    x = this->node->getRotation().x;
-    y = this->node->getRotation().y;
-    z = this->node->getRotation().z;
+    x = this->node->getRelativeRotation().x;
+    y = this->node->getRelativeRotation().y;
+    z = this->node->getRelativeRotation().z;
 
     if (!ui->xRotation->hasFocus()) {
         ui->xRotation->setValue(x);
@@ -52,9 +52,9 @@ void NodeControl::update(){
     }
     node->setRotation(glm::vec3(ui->xRotation->value(), ui->yRotation->value(), ui->zRotation->value()));
 
-    x = this->node->getScale().x;
-    y = this->node->getScale().y;
-    z = this->node->getScale().z;
+    x = this->node->getRelativeScale().x;
+    y = this->node->getRelativeScale().y;
+    z = this->node->getRelativeScale().z;
 
 
     if (!ui->xScale->hasFocus()) {

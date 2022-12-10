@@ -11,8 +11,14 @@ using namespace gl;
 
 void Atmosphere::draw(glm::mat4 parentModel) {
 	//Extract position and scale from model matrix
-	auto position = glm::vec3(parentModel[3]);
-	auto scale = glm::vec3(glm::length(parentModel[0]), glm::length(parentModel[1]), glm::length(parentModel[2]));
+
+	auto position = glm::vec3(1);
+	auto scale = glm::vec3(1);
+
+	if(this->parent){
+		position = this->parent->getRelativePosition();
+		scale = this->parent->getRelativeScale();
+	}
 
 	//Recreate model matrix without rotation
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
@@ -24,8 +30,13 @@ void Atmosphere::draw(glm::mat4 parentModel) {
 	auto cameraDistance = glm::distance(cameraPosition, position);
 	if (cameraDistance > this->scale.x) {
 		gl::glFrontFace(gl::GL_CW);
+		Node::draw(model);
+		gl::glFrontFace(gl::GL_CCW);
+	}else{
+		GL_DISABLE(gl::GL_DEPTH_TEST,{
+			Node::draw(model);
+		});
 	}
-	Node::draw(model);
-	gl::glFrontFace(gl::GL_CCW);
+
 
 }

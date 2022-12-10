@@ -11,7 +11,7 @@ PhysicalNode::PhysicalNode(const std::string name) : Node(name), RigidBody(name)
 }
 
 void PhysicalNode::setBodyPosition(const glm::vec3 &position) {
-    RigidBody::setBodyPosition(position);
+    RigidBody::setBodyPosition(parent ? parent->getPosition() + position : position);
     Node::setPosition(position);
 }
 
@@ -21,7 +21,8 @@ void PhysicalNode::setBodyRotation(const glm::vec3 &rotation) {
 }
 
 void PhysicalNode::setPosition(const glm::vec3 &position) {
-    RigidBody::setBodyPosition(position);
+	auto physicsPosition = parent ? (parent->getPosition() + (position * this->getScale())) : position;
+    RigidBody::setBodyPosition(physicsPosition);
     Node::setPosition(position);
 }
 
@@ -31,9 +32,11 @@ void PhysicalNode::setRotation(const glm::vec3 &rotation) {
 }
 
 void PhysicalNode::update() {
+	auto physicsPosition = RigidBody::getBodyPosition();
     RigidBody::update();
-    auto pos = RigidBody::getBodyPosition();
-    Node::setPosition(pos);
+    auto updatedPhysicsPos = RigidBody::getBodyPosition();
+	auto diff = updatedPhysicsPos - physicsPosition;
+	Node::setPosition(Node::getRelativePosition() + diff);
     Node::setRotation(this->getBodyRotation());
 }
 

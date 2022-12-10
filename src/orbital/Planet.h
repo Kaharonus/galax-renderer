@@ -63,9 +63,16 @@ namespace Galax::Orbital {
         void drawPlanet(glm::mat4 mat);
 
     private:
+		std::shared_ptr<Uniform> tessLevel;
         std::shared_ptr<Uniform> colorOffsetUniform;
         std::shared_ptr<Animation> lightenAnimation;
         std::shared_ptr<Animation> darkenAnimation;
+
+		float minTess = 1;
+		float minTessDistance = 3;
+		float maxTess = 32;
+		float maxTessDistance = 50;
+
 
         uint sizeQuery = 0;
 

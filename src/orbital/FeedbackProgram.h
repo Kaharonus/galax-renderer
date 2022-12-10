@@ -30,7 +30,10 @@ namespace Galax::Orbital {
 
         bool shadersUpdated();
 
-        void bind() override;
+		bool compile() override;
+
+
+		void bind() override;
 
     protected:
         // The size of the feedback buffer. The buffer is allocated per planet. The size is around 2M vertices, which is
@@ -43,7 +46,6 @@ namespace Galax::Orbital {
         uint feedbackId = 0;
         uint feedbackVaoId = 0;
 
-        bool compile() override;
 
         void prepareFeedback();
 

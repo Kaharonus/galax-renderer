@@ -38,7 +38,7 @@ void PhysicsEngine::update() {
 		return;
 	}
 
-    world->update(1.0 / 100.0);
+    //world->update(1.0 / 100.0);
 
     auto ray = createRayFromMousePosition();
     auto hits = std::vector<std::shared_ptr<IRigidBody>>();

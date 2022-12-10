@@ -39,7 +39,6 @@ bool FeedbackProgram::compile() {
     prepareFeedback();
     checkError(true);
 
-
     return true;
 
 }
@@ -52,8 +51,6 @@ void FeedbackProgram::bind() {
 
     glBindBuffer(GL_ARRAY_BUFFER, feedbackBufferId);
     glUseProgram(this->id);
-
-
 }
 
 void FeedbackProgram::clearFeedbackVariables() {
@@ -94,7 +91,7 @@ void FeedbackProgram::prepareFeedback() {
     glCreateBuffers(1, &feedbackBufferId);
     glBindBuffer(GL_ARRAY_BUFFER, feedbackBufferId);
 
-    glBufferData(GL_ARRAY_BUFFER, feedbackBufferSize, nullptr, GL_DYNAMIC_COPY);
+    glBufferData(GL_ARRAY_BUFFER, feedbackBufferSize, nullptr, GL_DYNAMIC_DRAW);
     glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, feedbackBufferId);
 
     auto stride = std::accumulate(feedbackSizes.begin(), feedbackSizes.end(), 0);

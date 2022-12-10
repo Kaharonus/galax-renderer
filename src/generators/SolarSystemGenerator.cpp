@@ -104,13 +104,13 @@ void SolarSystemGenerator::addPlanets() {
 				->withAtmosphere(atmosphere);
 
 		auto moon = planetGenerator->createFromType(Planet::Type::MOON);
+		planet->addChild(moon);
 		moon->configure()
 			->withPosition(glm::vec3(0,3,0))
 			->withSeed(50.0f * (i + 1))
 			->withRadius(0.5f + (0.05 * i))
 			->withRotation(10000)
 			->withCamera(camera);
-		planet->addChild(moon);
 
 		scene->addModel(planet);
 	}
@@ -186,7 +186,7 @@ void SolarSystemGenerator::addFXAA() {
 void SolarSystemGenerator::addCamera() {
 	camera = std::make_shared<SpaceCamera>("freeCam");
 	camera->acceptInput(true);
-	camera->setPosition(glm::vec3(0, 0, -8));
+	camera->setPosition(glm::vec3(20, 0, -8));
 }
 
 

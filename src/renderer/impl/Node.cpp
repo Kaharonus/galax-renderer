@@ -43,6 +43,7 @@ void Node::addTexture(std::shared_ptr<ITexture> texture) {
 
 
 void Node::addChild(std::shared_ptr<IRenderNode> child) {
+	child->setParent(this->shared_from_this());
     children.push_back(child);
 }
 
@@ -97,16 +98,16 @@ glm::mat4 &Node::getModelMatrix() {
     return modelMatrix;
 }
 
-glm::vec3 &Node::getPosition() {
-    return position;
+glm::vec3 Node::getPosition() {
+	return parent ? parent->getPosition() + position : position;
 }
 
-glm::vec3 &Node::getRotation() {
-    return rotation;
+glm::vec3 Node::getRotation() {
+	return parent ? rotation + parent->getRotation() : rotation;
 }
 
-glm::vec3 &Node::getScale() {
-    return scale;
+glm::vec3 Node::getScale() {
+	return parent ? parent->getScale() * scale : scale;
 }
 
 std::vector<std::shared_ptr<IRenderNode>> Node::getChildren() const {
@@ -344,4 +345,24 @@ bool Node::isTransparent() const {
 
 void Node::setLightingModel(std::shared_ptr<LightingModel> lightingModel) {
 	this->lightingModel = lightingModel;
+}
+
+void Node::setParent(std::shared_ptr<IRenderNode> parent) {
+	this->parent = parent;
+}
+
+std::shared_ptr<IRenderNode> Node::getParent() const {
+	return parent;
+}
+
+const glm::vec3 &Node::getRelativePosition() {
+	return position;
+}
+
+const glm::vec3 &Node::getRelativeRotation() {
+	return rotation;
+}
+
+const glm::vec3 &Node::getRelativeScale() {
+	return scale;
 }

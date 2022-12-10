@@ -8,11 +8,11 @@ in vec3 vPosition[];
 
 out vec3 tcPosition[];
 
+uniform int tessLevel;
 
 // attributes of the output CPs
 
 void main(){
-    float tessLevel = 2.0;
     // Set the control points of the output patch
 
     tcPosition[gl_InvocationID] = vPosition[gl_InvocationID];

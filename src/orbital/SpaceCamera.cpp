@@ -36,7 +36,7 @@ void SpaceCamera::update() {
 	pitch = pitch > 89.0f ? 89.0f : pitch < -89.0f ? -89.0f : pitch;
 
 
-	auto position = followedObject->getPosition();
+	auto position = followedObject->getRelativePosition();
 	//Make sure the distance is about 2 times the radius of the object
 
 	calculateDistance();

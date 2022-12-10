@@ -22,7 +22,7 @@
 #include <vector>
 
 namespace Galax::Renderer::SceneObjects {
-    class Node : public IRenderNode {
+class Node : public IRenderNode, public std::enable_shared_from_this<Node> {
     public:
         Node();
 
@@ -74,7 +74,6 @@ namespace Galax::Renderer::SceneObjects {
 
         glm::mat4 &getModelMatrix() override;
 
-        glm::vec3 &getPosition() override;
 
 		void setLightingModel(std::shared_ptr<LightingModel> lightingModel) override;
 
@@ -82,11 +81,13 @@ namespace Galax::Renderer::SceneObjects {
 
         std::shared_ptr<IUniform> getScaleUniform();
 
-        glm::vec3 &getRotation() override;
+        glm::vec3 getRotation() override;
 
-        glm::vec3 &getScale() override;
+        glm::vec3 getScale() override;
 
-		void setTransparent(bool transparent) override;
+		glm::vec3 getPosition() override;
+
+	void setTransparent(bool transparent) override;
 
         [[nodiscard]] std::vector<std::shared_ptr<IRenderNode>> getChildren() const override;
 
@@ -108,7 +109,17 @@ namespace Galax::Renderer::SceneObjects {
 
         void drawAsWireframe(bool enabled) override;
 
-    protected:
+		void setParent(std::shared_ptr<IRenderNode> parent) override;
+
+		std::shared_ptr<IRenderNode> getParent() const override;
+
+		const glm::vec3 &getRelativePosition() override;
+
+		const glm::vec3 &getRelativeRotation() override;
+
+		const glm::vec3 &getRelativeScale() override;
+
+protected:
 
 
         void init() override;
@@ -124,6 +135,7 @@ namespace Galax::Renderer::SceneObjects {
         void updateAnimations();
 
         DrawTarget drawTarget = DrawTarget::SCREEN;
+		std::shared_ptr<IRenderNode> parent;
         std::shared_ptr<IMesh> mesh;
         std::shared_ptr<ICamera> camera;
         std::shared_ptr<Uniform> modelMatrixUniform;

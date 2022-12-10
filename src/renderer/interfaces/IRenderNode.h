@@ -30,11 +30,17 @@ namespace Galax::Renderer {
 
         virtual void draw(glm::mat4 parentModelMatrix) = 0;
 
-        virtual const glm::vec3 &getPosition() = 0;
+        virtual const glm::vec3 &getRelativePosition() = 0;
 
-        virtual const glm::vec3 &getRotation() = 0;
+		virtual glm::vec3 getPosition() = 0;
 
-        virtual const glm::vec3 &getScale() = 0;
+        virtual const glm::vec3 &getRelativeRotation() = 0;
+
+		virtual glm::vec3 getRotation() = 0;
+
+        virtual const glm::vec3 &getRelativeScale() = 0;
+
+		virtual glm::vec3 getScale() = 0;
 
 		virtual const glm::mat4 &getModelMatrix() = 0;
 
@@ -85,6 +91,11 @@ namespace Galax::Renderer {
         [[nodiscard]] virtual std::vector<std::shared_ptr<IAnimation>> getAnimations() const = 0;
 
         [[nodiscard]] virtual DrawTarget getDrawTarget() const = 0;
+
+		virtual void setParent(std::shared_ptr<IRenderNode> parent) = 0;
+
+		virtual std::shared_ptr<IRenderNode> getParent() const = 0;
+
 
     private:
         virtual void init() = 0;
