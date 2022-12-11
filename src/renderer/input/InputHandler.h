@@ -2,6 +2,10 @@
 
 #include <tuple>
 #include <glm/vec2.hpp>
+#include <functional>
+#include <chrono>
+
+
 
 namespace Galax::Renderer {
     class InputHandler {
@@ -82,6 +86,8 @@ namespace Galax::Renderer {
         void keyPress(Key key);
         void keyRelease(Key key);
 
+		void registerMouseClickCallback(std::function<void(MouseButton, float, float)> callback);
+
         bool isKeyPressed(Key key);
         bool isKeyUp(Key key);
         bool isMouseButtonPressed(MouseButton button);
@@ -96,8 +102,11 @@ namespace Galax::Renderer {
 		glm::vec2 getScrollDelta();
 
 	private:
+		std::vector<std::function<void(MouseButton, float, float)>> mouseClickCallbacks;
+
         bool keys[512];
         bool mouseButtons[3];
+		std::chrono::milliseconds mousePressTime[3];
         float deltaX = 0;
         float deltaY = 0;
         float absoluteX = 0;

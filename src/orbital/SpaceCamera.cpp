@@ -4,6 +4,9 @@
 
 #include <orbital/SpaceCamera.h>
 #include <iostream>
+#include <glm/vec4.hpp>
+#define GLM_SWIZZLE
+#include <glm/glm.hpp>
 
 using namespace Galax::Orbital;
 using namespace Galax::Renderer::SceneObjects;
@@ -31,12 +34,15 @@ void SpaceCamera::update() {
 	}
 
 
+
+
 	yaw -= deltaX * mouseSensitivity;
 	pitch += deltaY * mouseSensitivity;
 	pitch = pitch > 89.0f ? 89.0f : pitch < -89.0f ? -89.0f : pitch;
 
 
-	auto position = followedObject->getRelativePosition();
+	auto modelMatrix = followedObject->getRenderModelMatrix();
+	auto camPos = glm::vec3(modelMatrix[3]);
 	//Make sure the distance is about 2 times the radius of the object
 
 	calculateDistance();
@@ -44,14 +50,20 @@ void SpaceCamera::update() {
 	auto x = distance * glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
 	auto y = distance * glm::sin(glm::radians(pitch));
 	auto z = distance * glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-	auto pos = position + glm::vec3(x, y, z);
+	this->position = camPos + glm::vec3(x, y, z);
 
-	auto front = glm::normalize(position - getPosition());
-	auto right = glm::normalize(glm::cross(front, glm::vec3(0, 1, 0)));
-	auto up = glm::normalize(glm::cross(right, front));
-	auto viewMatrix = glm::lookAt(pos, position, up);
+	this->cameraPositionUniform->setValue(this->position);
+	this->cameraRotationUniform->setValue(glm::vec2(yaw, pitch));
+
+	this->front = -glm::normalize(glm::vec3(x, y, z));
+	this->forwardUniform->setValue(front);
+	this->right = glm::normalize(glm::cross(front, glm::vec3(0, 1, 0)));
+	this->up = glm::normalize(glm::cross(right, front));
+	auto viewMatrix = glm::lookAt(this->position, camPos, up);
+
 	this->viewMatrix = viewMatrix;
-	viewUniform->setValue(viewMatrix);
+	this->viewUniform->setValue(viewMatrix);
+
 
 }
 

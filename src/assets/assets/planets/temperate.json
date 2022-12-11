@@ -1,5 +1,40 @@
 {
   "name": "temperate",
+  "clampUnder": 0.001,
+  "noiseSettings": [
+    {
+      "roughness": 0.1,
+      "strength": 0.06
+    },
+    {
+      "roughness": 1,
+      "strength": 0.04
+    },
+    {
+      "roughness": 3,
+      "strength": 0.025
+    },
+    {
+      "roughness": 10,
+      "strength": 0.01
+    },
+    {
+      "roughness": 20,
+      "strength": 0.005
+    },
+    {
+      "roughness": 50,
+      "strength": 0.005
+    },
+    {
+      "roughness": 100,
+      "strength": 0.001
+    },
+    {
+      "roughness": 200,
+      "strength": 0.001
+    }
+  ],
   "colorPalette": [
     {
       "name": "ocean",
@@ -37,10 +72,9 @@
       "transition": 1.0,
       "colors": [
         {
-            "color": "#708322",
-            "endPoint": 0.0
+          "color": "#708322",
+          "endPoint": 0.0
         },
-
         {
           "color": "#428047",
           "endPoint": 0.55
@@ -102,6 +136,9 @@
     }
   ],
   "atmosphere": {
-
+    "color": [1.0, 2.0, 3.0],
+    "radius": 1.1,
+    "density": 0.25,
+    "awef": "awef"
   }
 }

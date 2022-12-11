@@ -9,6 +9,7 @@
 #include <renderer/impl/PostProcessEffect.h>
 #include <orbital/OrbitAnimation.h>
 #include <orbital/SpaceCamera.h>
+#include <orbital/SolarSystem.h>
 
 #include <assets/AssetLoader.h>
 #include <effects/Bloom.h>
@@ -40,7 +41,7 @@ namespace Galax::Generators{
         std::shared_ptr<AssetLoader> assets;
 		std::shared_ptr<Assets::SceneInfo::SceneConfig> config;
 
-		std::shared_ptr<Scene> scene;
+		std::shared_ptr<SolarSystem> scene;
 
 		void addCamera();
 

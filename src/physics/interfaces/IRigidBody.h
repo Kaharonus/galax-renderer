@@ -56,7 +56,7 @@ namespace Galax::Physics {
 
         virtual void setIsMouseOver(bool isMouseOver) = 0;
 
-        virtual bool getIsMouseOver() const = 0;
+        virtual bool isMouseOver() const = 0;
 
     protected:
         [[nodiscard]] static rp3d::Transform toRp3dTransform(const glm::vec3 &position, const glm::vec3 &rotation) {

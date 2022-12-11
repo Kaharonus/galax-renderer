@@ -134,11 +134,11 @@ void RigidBody::clearColliders() {
 }
 
 void RigidBody::setIsMouseOver(bool isMouseOver) {
-    this->isMouseOver = isMouseOver;
+    this->mouseOver = isMouseOver;
 }
 
-bool RigidBody::getIsMouseOver() const {
-    return isMouseOver;
+bool RigidBody::isMouseOver() const {
+    return mouseOver;
 }
 
 std::vector<std::shared_ptr<ICollider>> RigidBody::getColliders() const {

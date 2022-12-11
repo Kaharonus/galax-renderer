@@ -51,14 +51,14 @@ namespace Galax::Physics {
 
         void setIsMouseOver(bool isMouseOver) override;
 
-        bool getIsMouseOver() const override;
+        bool isMouseOver() const override;
 
         std::vector<std::shared_ptr<ICollider>> getColliders() const override;
 
     protected:
         void createCollider(std::shared_ptr<ICollider> collider);
 
-        bool isMouseOver = false;
+        bool mouseOver = false;
         bool isBodyVisible = true;
 
         rp3d::Transform transform;

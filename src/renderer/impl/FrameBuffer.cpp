@@ -88,7 +88,6 @@ void FrameBuffer::resize(int width, int height) {
 
     std::vector<GLenum> attachments;
     for (auto [i, texture]: enumerate(outTextures)) {
-        checkError(true);
         texture->setDimensions(width, height);
         texture->upload();
         glBindTexture((GLenum) texture->getType(), texture->getId());

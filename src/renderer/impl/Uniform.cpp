@@ -28,6 +28,7 @@ uint Uniform::getId() {
 }
 
 void Uniform::setValue(UniformT v) {
+
     this->value = v;
 }
 

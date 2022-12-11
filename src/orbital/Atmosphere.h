@@ -13,13 +13,25 @@ namespace Galax::Orbital {
 
 	class Atmosphere : public Galax::Renderer::Node {
 	public:
-		Atmosphere() = default;
-		Atmosphere(const std::string& name) : Node(name) {};
+		Atmosphere();
+		Atmosphere(const std::string& name);
 
 		void draw(glm::mat4 parentModel) override;
 
+		void setColor(glm::vec3 color);
+		void setRadius(float radius);
+		void setDensity(float density);
+
+
 	private:
-		std::shared_ptr<Uniform> lightIntensity;
+		std::shared_ptr<Uniform> atmosphereColor;
+		std::shared_ptr<Uniform> atmosphereScale;
+		std::shared_ptr<Uniform> planetRadius;
+		std::shared_ptr<Uniform> atmosphereDensity;
+
+		float radius;
+
+		void init();
 	};
 }
 

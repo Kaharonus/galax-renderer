@@ -3,6 +3,7 @@
 #include <tuple>
 
 using namespace Galax::Renderer;
+using namespace std::chrono;
 
 InputHandler::InputHandler() {
 
@@ -34,6 +35,7 @@ void InputHandler::mouseMove(float x, float y) {
 
 void InputHandler::mousePress(MouseButton button, float x, float y) {
 	mouseButtons[button] = true;
+	mousePressTime[button] = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 	this->absoluteX = x;
 	this->absoluteY = y;
 }
@@ -42,6 +44,18 @@ void InputHandler::mouseRelease(MouseButton button, float x, float y) {
 	mouseButtons[button] = false;
 	this->absoluteX = x;
 	this->absoluteY = y;
+	auto time = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	auto timeDiff = time - mousePressTime[button];
+	// 175 ms was chosen as a reasonable time for a single click
+	// It might seem like a lot, but I tried clicking the same way my grandma does, and it was about 167 ms
+	// Tried 200, but sometimes it was too slow
+	if (timeDiff < milliseconds(175)) {
+		std::cout << timeDiff.count() << std::endl;
+		for (auto &callback: mouseClickCallbacks) {
+			callback(button, x, y);
+		}
+	}
+
 }
 
 void InputHandler::mouseWheel(float x, float y) {
@@ -117,4 +131,8 @@ glm::vec2 InputHandler::getRendererPosition() {
 void InputHandler::setRendererSize(int width, int height) {
 	rendererWidth = width;
 	rendererHeight = height;
+}
+
+void InputHandler::registerMouseClickCallback(std::function<void(MouseButton, float, float)> callback) {
+	mouseClickCallbacks.push_back(callback);
 }

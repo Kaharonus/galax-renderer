@@ -22,92 +22,92 @@
 #include <vector>
 
 namespace Galax::Renderer::SceneObjects {
-class Node : public IRenderNode, public std::enable_shared_from_this<Node> {
-    public:
-        Node();
+	class Node : public IRenderNode, public std::enable_shared_from_this<Node> {
+	public:
+		Node();
 
-        Node(const std::string &name);
+		Node(const std::string &name);
 
-        uint getId() override;
+		uint getId() override;
 
-        void draw(glm::mat4 parentModel) override;
+		void draw(glm::mat4 parentModel) override;
 
-        ~Node() override;
+		~Node() override;
 
-        void setDrawTarget(DrawTarget target) override;
+		void setDrawTarget(DrawTarget target) override;
 
-        void setDrawTexture(std::shared_ptr<ITexture> texture) override;
+		void setDrawTexture(std::shared_ptr<ITexture> texture) override;
 
-        void addChild(std::shared_ptr<IRenderNode> child) override;
+		void addChild(std::shared_ptr<IRenderNode> child) override;
 
-        void removeChild(std::shared_ptr<Node> child);
+		void removeChild(std::shared_ptr<Node> child);
 
-        void removeAllChildren();
+		void removeAllChildren();
 
-        void setPosition(const glm::vec3 &position) override;
+		void setPosition(const glm::vec3 &position) override;
 
-        void setRotation(const glm::vec3 &rotation) override;
+		void setRotation(const glm::vec3 &rotation) override;
 
-        void setScale(const glm::vec3 &scale) override;
+		void setScale(const glm::vec3 &scale) override;
 
-        void setMesh(std::shared_ptr<IMesh> mesh) override;
+		void setMesh(std::shared_ptr<IMesh> mesh) override;
 
-        /// <summary>
-        /// Sets all lod levels including the base mesh.
-        /// Key in the map is the distance from the camera at which the mesh should be used.
-        /// The value with lowest key is the base mesh.
-        /// </summary>
-        /// \param mesh map of meshes
-        void setMeshWithLOD(std::map<float, std::shared_ptr<IMesh>> mesh);
+		/// <summary>
+		/// Sets all lod levels including the base mesh.
+		/// Key in the map is the distance from the camera at which the mesh should be used.
+		/// The value with lowest key is the base mesh.
+		/// </summary>
+		/// \param mesh map of meshes
+		void setMeshWithLOD(std::map<float, std::shared_ptr<IMesh>> mesh);
 
-        void addLodLevel(std::shared_ptr<IMesh> mesh, float distance);
+		void addLodLevel(std::shared_ptr<IMesh> mesh, float distance);
 
-        void setProgram(std::shared_ptr<IProgram> program) override;
+		void setProgram(std::shared_ptr<IProgram> program) override;
 
-        void setCamera(std::shared_ptr<ICamera> camera) override;
+		void setCamera(std::shared_ptr<ICamera> camera) override;
 
-        void addUniform(std::shared_ptr<IUniform> uniform) override;
+		void addUniform(std::shared_ptr<IUniform> uniform) override;
 
-        void addTexture(std::shared_ptr<ITexture> texture) override;
+		void addTexture(std::shared_ptr<ITexture> texture) override;
 
-        void addAnimation(std::shared_ptr<IAnimation> animation) override;
+		void addAnimation(std::shared_ptr<IAnimation> animation) override;
 
-        glm::mat4 &getModelMatrix() override;
+		glm::mat4 &getModelMatrix() override;
 
 
 		void setLightingModel(std::shared_ptr<LightingModel> lightingModel) override;
 
-        std::shared_ptr<IUniform> getPositionUniform();
+		std::shared_ptr<IUniform> getPositionUniform();
 
-        std::shared_ptr<IUniform> getScaleUniform();
+		std::shared_ptr<IUniform> getScaleUniform();
 
-        glm::vec3 getRotation() override;
+		glm::vec3 getRotation() override;
 
-        glm::vec3 getScale() override;
+		glm::vec3 getScale() override;
 
 		glm::vec3 getPosition() override;
 
-	void setTransparent(bool transparent) override;
+		void setTransparent(bool transparent) override;
 
-        [[nodiscard]] std::vector<std::shared_ptr<IRenderNode>> getChildren() const override;
+		[[nodiscard]] std::vector<std::shared_ptr<IRenderNode>> getChildren() const override;
 
-        [[nodiscard]] std::shared_ptr<IMesh> getMesh() const override;
+		[[nodiscard]] std::shared_ptr<IMesh> getMesh() const override;
 
-        [[nodiscard]] std::vector<std::shared_ptr<IProgram>> getPrograms() const override;
+		[[nodiscard]] std::vector<std::shared_ptr<IProgram>> getPrograms() const override;
 
-        [[nodiscard]] std::shared_ptr<ICamera> getCamera() const override;
+		[[nodiscard]] std::shared_ptr<ICamera> getCamera() const override;
 
-        [[nodiscard]] std::vector<std::shared_ptr<IUniform>> getUniforms() const override;
+		[[nodiscard]] std::vector<std::shared_ptr<IUniform>> getUniforms() const override;
 
-        [[nodiscard]] std::vector<std::shared_ptr<ITexture>> getTextures() const override;
+		[[nodiscard]] std::vector<std::shared_ptr<ITexture>> getTextures() const override;
 
-        [[nodiscard]] DrawTarget getDrawTarget() const override;
+		[[nodiscard]] DrawTarget getDrawTarget() const override;
 
-        [[nodiscard]] std::vector<std::shared_ptr<IAnimation>> getAnimations() const override;
+		[[nodiscard]] std::vector<std::shared_ptr<IAnimation>> getAnimations() const override;
 
 		[[nodiscard]] bool isTransparent() const override;
 
-        void drawAsWireframe(bool enabled) override;
+		void drawAsWireframe(bool enabled) override;
 
 		void setParent(std::shared_ptr<IRenderNode> parent) override;
 
@@ -119,35 +119,37 @@ class Node : public IRenderNode, public std::enable_shared_from_this<Node> {
 
 		const glm::vec3 &getRelativeScale() override;
 
-protected:
+		const glm::mat4 &getRenderModelMatrix() override;
+
+	protected:
 
 
-        void init() override;
+		void init() override;
 
-        void selectLOD(float distance);
+		void selectLOD(float distance);
 
-        void useDefaultUniforms();
+		void useDefaultUniforms();
 
-        void calculateModelMatrix();
+		void calculateModelMatrix();
 
-        float getDistance();
+		float getDistance();
 
-        void updateAnimations();
+		void updateAnimations();
 
-        DrawTarget drawTarget = DrawTarget::SCREEN;
+		DrawTarget drawTarget = DrawTarget::SCREEN;
 		std::shared_ptr<IRenderNode> parent;
-        std::shared_ptr<IMesh> mesh;
-        std::shared_ptr<ICamera> camera;
-        std::shared_ptr<Uniform> modelMatrixUniform;
-        std::shared_ptr<Uniform> objectIdUniform;
-        std::shared_ptr<IProgram> program;
-        std::vector<std::shared_ptr<IUniform>> uniforms;
-        std::vector<std::shared_ptr<ITexture>> textures;
-        std::shared_ptr<FrameBuffer> frameBuffer;
-        std::shared_ptr<ITexture> drawTexture;
-        std::vector<std::shared_ptr<IAnimation>> animations;
-        std::vector<std::shared_ptr<IRenderNode>> children;
-        std::map<float, std::shared_ptr<IMesh>> meshLODs;
+		std::shared_ptr<IMesh> mesh;
+		std::shared_ptr<ICamera> camera;
+		std::shared_ptr<Uniform> modelMatrixUniform;
+		std::shared_ptr<Uniform> objectIdUniform;
+		std::shared_ptr<IProgram> program;
+		std::vector<std::shared_ptr<IUniform>> uniforms;
+		std::vector<std::shared_ptr<ITexture>> textures;
+		std::shared_ptr<FrameBuffer> frameBuffer;
+		std::shared_ptr<ITexture> drawTexture;
+		std::vector<std::shared_ptr<IAnimation>> animations;
+		std::vector<std::shared_ptr<IRenderNode>> children;
+		std::map<float, std::shared_ptr<IMesh>> meshLODs;
 
 		std::shared_ptr<Uniform> currentTimeUniform;
 		std::shared_ptr<Uniform> frameTimeUniform;
@@ -156,13 +158,15 @@ protected:
 		std::shared_ptr<Uniform> positionUniform;
 		std::shared_ptr<Uniform> rotationUniform;
 		std::shared_ptr<Uniform> scaleUniform;
+		glm::mat4 currentDrawMatrix;
 		glm::vec3 position;
 		glm::vec3 rotation;
-        glm::vec3 scale;
-        glm::mat4 modelMatrix;
-        std::shared_ptr<Uniform> transposeInverseModelUniform;
-        bool wireframe = false;
+		glm::vec3 scale;
+		glm::mat4 modelMatrix;
+		std::shared_ptr<Uniform> transposeInverseModelUniform;
+		bool wireframe = false;
 		bool transparent = false;
+
 
 	};
 

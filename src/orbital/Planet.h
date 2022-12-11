@@ -63,6 +63,8 @@ namespace Galax::Orbital {
         void drawPlanet(glm::mat4 mat);
 
     private:
+		int calculateLod(glm::mat4 parentModel);
+
 		std::shared_ptr<Uniform> tessLevel;
         std::shared_ptr<Uniform> colorOffsetUniform;
         std::shared_ptr<Animation> lightenAnimation;

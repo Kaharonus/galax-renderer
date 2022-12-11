@@ -25,7 +25,7 @@ std::string SolarSystemGenerator::getName() {
 }
 
 std::shared_ptr<ISceneGenerator::SceneData> SolarSystemGenerator::generate() {
-	scene = std::make_shared<Scene>();
+	scene = std::make_shared<SolarSystem>();
 
 	addCamera();
 

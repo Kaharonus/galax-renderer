@@ -5,19 +5,12 @@ layout (location = 1) out vec4 emission;
 
 uniform int lightCount;
 
-uniform vec3 light_intensity = vec3(5.0); // how bright the light is, affects the brightness of the atmosphere
-uniform float planet_radius = .8; // the radius of the planet
-uniform float atmo_radius = .6; // the radius of the atmosphere
-uniform vec3 beta_ray =vec3(1.0, 2.0, 3.0); // the amount rayleigh scattering scatters the colors (for earth: causes the blue atmosphere)
-uniform vec3 beta_mie = vec3(1.5); // the amount mie scattering scatters colors
-uniform vec3 beta_ambient = vec3(0.00); // the amount of scattering that always occurs, can help make the back side of the atmosphere a bit brighter
-uniform float beta_e = 0.25; // exponent, helps setting really small values of beta_ray, mie and ambient, as in beta_x * pow(10.0, beta_e)
-uniform float g = 0.8; // the direction mie scatters the light in (like a cone). closer to -1 means more towards a single direction
-uniform float height_ray = .5; // how high do you have to go before there is no rayleigh scattering?
-uniform float height_mie = .25; // the same, but for mie
 uniform float density_multiplier = 0.25; // how much extra the atmosphere blocks light
-uniform int steps_i = 8; // the amount of steps along the 'primary' ray, more looks better but slower
-uniform int steps_l = 2; // the amount of steps along the light ray, more looks better but slower
+uniform vec3 beta_ray =vec3(1.0, 2.0, 3.0); // the amount rayleigh scattering scatters the colors (for earth: causes the blue atmosphere)
+uniform float planet_radius = .8;
+uniform float atmo_scale;
+uniform vec3 light_intensity = vec3(5.0);
+
 
 uniform sampler2D gPosition;
 uniform vec2 cameraResolution;
@@ -38,6 +31,7 @@ layout (std430) buffer lightData{
     Light data[];
 } lights;
 
+
 vec3 CalcPointLight(Light light, vec3 fragPos, vec3 fragNormal){
     vec3 lightPos = light.position;
     vec3 diffuseColor = light.color * light.intensity;
@@ -50,6 +44,17 @@ vec3 CalcPointLight(Light light, vec3 fragPos, vec3 fragNormal){
 
 
 vec4 calculate_scattering( vec3 start, vec3 dir, float max_dist, vec3 light_dir) {
+    float atmo_radius = planet_radius * atmo_scale;
+
+    vec3 beta_mie = vec3(1.5);
+    vec3 beta_ambient = vec3(0.0015);
+    float beta_e = .25;
+    float g = .975;
+    float height_ray = .5;
+    float height_mie = .25;
+    int steps_i = 16;
+    int steps_l = 2;
+
     // calculate the start and end position of the ray, as a distance along the ray
     // we do this with a ray sphere intersect
     float a = dot(dir, dir);
@@ -193,6 +198,7 @@ void main() {
     if(isnan(atm.x) || isnan(atm.y) || isnan(atm.z)){ // Damn you NaN
         color = vec4(0);
     }else{
+        //Adjus color for sun color and intensity
         color = vec4(atm.xyz / atm.w, atm.w);
     }
     emission = color * 1;

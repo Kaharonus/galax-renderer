@@ -3,6 +3,7 @@
 #include "Node.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <stdexcept>
+#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 
 using namespace Galax::Renderer::SceneObjects;
@@ -246,8 +247,8 @@ void Node::draw(glm::mat4 parentModel) {
 
 
 
-	auto currentMatrix = parentModel * this->modelMatrix;
-	this->modelMatrixUniform->setValue(currentMatrix);
+	this->currentDrawMatrix = parentModel * this->modelMatrix;
+	this->modelMatrixUniform->setValue(currentDrawMatrix);
 	this->transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(this->modelMatrix)));
     useDefaultUniforms();
     auto i = program->getTextureCount();
@@ -365,4 +366,8 @@ const glm::vec3 &Node::getRelativeRotation() {
 
 const glm::vec3 &Node::getRelativeScale() {
 	return scale;
+}
+
+const glm::mat4 &Node::getRenderModelMatrix() {
+	return currentDrawMatrix;
 }

@@ -1,5 +1,6 @@
 
 #pragma once
+
 #include "impl/Node.h"
 #include "impl/Mesh.h"
 #include "impl/Program.h"
@@ -20,60 +21,63 @@ using namespace Galax::Renderer::SceneObjects;
 
 namespace Galax::Renderer {
 
-    class Scene  {
-    public:
-        Scene();
-         ~Scene();
+	class Scene {
+	public:
+		Scene();
+
+		~Scene();
 
 
-		void addModel(std::shared_ptr<IRenderNode> model);
+		virtual void addModel(std::shared_ptr<IRenderNode> model);
 
-		void removeModel(std::shared_ptr<IRenderNode> model);
+		virtual void removeModel(std::shared_ptr<IRenderNode> model);
 
-		std::vector<std::shared_ptr<IRenderNode>> getModels();
-
-
-        void setInputHandler(std::shared_ptr<InputHandler> inputHandler);
-        void setDimensions(int w, int h);
-
-        void setGBuffer(std::shared_ptr<GBuffer> buffer);
-
-		void setLightingModel(std::shared_ptr<LightingModel> mode);
-
-		[[nodiscard]] std::shared_ptr<LightingModel> getLightingModel() const;
-
-		[[nodiscard]] std::shared_ptr<FrameBuffer> getTransparencyBuffer() const;
+		virtual std::vector<std::shared_ptr<IRenderNode>> getModels();
 
 
-        void build();
+		virtual void setInputHandler(std::shared_ptr<InputHandler> inputHandler);
 
-        void draw();
+		virtual void setDimensions(int w, int h);
 
-		void drawTransparent();
+		virtual void setGBuffer(std::shared_ptr<GBuffer> buffer);
 
-    private:
-        void addCamera(std::shared_ptr<ICamera> camera);
+		virtual void setLightingModel(std::shared_ptr<LightingModel> mode);
 
-        void buildNode(IRenderNode &node);
+		[[nodiscard]] virtual std::shared_ptr<LightingModel> getLightingModel() const;
 
-        int width;
-        int height;
+		[[nodiscard]] virtual std::shared_ptr<FrameBuffer> getTransparencyBuffer() const;
 
-        std::shared_ptr<InputHandler> inputHandler;
 
-        std::shared_ptr<ICamera> currentCamera;
-        glm::mat4 projectionMatrix;
-        glm::mat4 viewMatrix;
+		virtual void build();
+
+		virtual void draw();
+
+		virtual void drawTransparent();
+
+	protected:
+		void addCamera(std::shared_ptr<ICamera> camera);
+
+		virtual void buildNode(IRenderNode &node);
+
+		virtual void drawNode(IRenderNode &node, bool transparencyPass, glm::mat4 modelMatrix);
+
+		int width;
+		int height;
+
+		std::shared_ptr<InputHandler> inputHandler;
+
+		std::shared_ptr<ICamera> currentCamera;
+		glm::mat4 projectionMatrix;
+		glm::mat4 viewMatrix;
 
 		std::shared_ptr<FrameBuffer> transparencyBuffer;
 
-        std::vector<std::shared_ptr<IRenderNode>> models;
-        std::set<std::shared_ptr<ICamera>> cameras;
+		std::vector<std::shared_ptr<IRenderNode>> models;
+		std::set<std::shared_ptr<ICamera>> cameras;
 
-        std::shared_ptr<GBuffer> gBuffer;
+		std::shared_ptr<GBuffer> gBuffer;
 		std::shared_ptr<LightingModel> lightingModel;
 
-		void drawNode(IRenderNode &node, bool transparencyPass, glm::mat4 modelMatrix);
 	};
 
 } // namespace MapGenerator::Renderer

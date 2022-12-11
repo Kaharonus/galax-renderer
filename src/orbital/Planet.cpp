@@ -91,9 +91,10 @@ void Planet::drawPlanet(glm::mat4 mat) {
 	}
 	updateAnimations();
 
-	auto currentModel = mat * this->modelMatrix;
-	this->modelMatrixUniform->setValue(currentModel);
-	this->transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(currentModel)));
+	this->currentDrawMatrix = mat * this->modelMatrix;
+
+	this->modelMatrixUniform->setValue(currentDrawMatrix);
+	this->transposeInverseModelUniform->setValue(glm::transpose(glm::inverse(currentDrawMatrix)));
 	useDefaultUniforms();
 	glBindVertexArray(generatorProgram->getFeedbackVaoId());
 	glBindBuffer(GL_ARRAY_BUFFER, generatorProgram->getFeedbackBufferId());
@@ -113,23 +114,10 @@ void Planet::drawPlanet(glm::mat4 mat) {
 
 void Planet::draw(glm::mat4 parentModel) {
 
-	// Calculate distance from camera
-	auto cameraPos = this->camera->getPosition();
-	//Grab position from parent model
-	auto planetPos = glm::vec3(parentModel * this->modelMatrix * glm::vec4(0, 0, 0, 1));
-	auto distance = glm::distance(cameraPos, planetPos);
+	auto level = calculateLod(parentModel);
 
-	auto logMin = glm::log(minTessDistance);
-	auto logMax = glm::log(maxTessDistance);
-	auto logDistance = glm::clamp(glm::log(distance), logMin, logMax);
-	auto logScale = (logDistance - logMin) / (logMax - logMin);
-	auto level = glm::mix(maxTess, minTess, logScale);
-
-	//Clamp level to power of 2
-	auto iLevel = (int) glm::pow(2.0f, glm::round(glm::log2(level)));
-
-	if (tessLevel->getValue<int>() != iLevel) {
-		tessLevel->setValue(iLevel);
+	if (tessLevel->getValue<int>() != level) {
+		tessLevel->setValue(level);
 		generatorProgram->compile(); // NO. Huge fucking hack. But it works.
 		shouldGenerate = true;
 	}
@@ -247,6 +235,27 @@ Planet *Planet::withPosition(glm::vec3 position) {
 	setPosition(position);
 	return this;
 }
+
+int Planet::calculateLod(glm::mat4 parentModel) {
+	// Calculate distance from camera
+	auto cameraPos = this->camera->getPosition();
+	//Grab position from parent model
+	auto planetPos = glm::vec3(parentModel * this->modelMatrix * glm::vec4(0, 0, 0, 1));
+	auto distance = glm::distance(cameraPos, planetPos);
+
+	auto logMin = glm::log(minTessDistance);
+	auto logMax = glm::log(maxTessDistance);
+	auto logDistance = glm::clamp(glm::log(distance), logMin, logMax);
+	auto logScale = (logDistance - logMin) / (logMax - logMin);
+	auto level = glm::mix(maxTess, minTess, logScale);
+	//Clamp level to power of 2
+	auto iLevel = (int) glm::pow(2.0f, glm::round(glm::log2(level)));
+
+	// Slight optimization for moons. When tess is at max, the difference is small and the stutter is noticeable.
+	// Noticeable on a GTX 1080
+	return type == Type::MOON ? iLevel / 2 : iLevel;
+}
+
 
 
 
