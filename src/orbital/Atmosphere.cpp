@@ -22,6 +22,7 @@ void Atmosphere::init() {
 	this->atmosphereScale = std::make_shared<Uniform>("atmo_scale", Uniform::FLOAT, 1.15f);
 	this->planetRadius = std::make_shared<Uniform>("planet_radius", Uniform::FLOAT, 0.8f);
 	this->atmosphereDensity = std::make_shared<Uniform>("density_multiplier", Uniform::FLOAT, 0.25f);
+	this->lightOffset = std::make_shared<Uniform>("lightOffset", Uniform::FLOAT, 0.0f);
 
 	this->addUniform(this->atmosphereColor);
 	this->addUniform(this->atmosphereScale);
@@ -67,6 +68,9 @@ void Atmosphere::draw(glm::mat4 parentModel) {
 
 
 }
+
+
+
 
 void Atmosphere::setDensity(float density) {
 	this->atmosphereDensity->setValue(density);

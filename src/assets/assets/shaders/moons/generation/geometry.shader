@@ -13,6 +13,10 @@ out float gsNoise;
 
 //uniform float inputSeed;
 
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
+
 struct Noise{
     float roughness;
     float strength;
@@ -146,17 +150,17 @@ void main(){
     v2 += o2;
     v3 += o3;
 
-    gl_Position = vec4(v1, 1);
+    gl_Position = projection * view * model * vec4(v1, 1);
     gsPosition = v1;
     gsNoise = noiseA * multiplier;
     EmitVertex();
 
-    gl_Position = vec4(v2, 1);
+    gl_Position = projection * view * model *  vec4(v2, 1);
     gsPosition = v2;
     gsNoise = noiseB * multiplier;
     EmitVertex();
 
-    gl_Position =  vec4(v3, 1);
+    gl_Position =  projection * view * model *  vec4(v3, 1);
     gsPosition = v3;
     gsNoise = noiseC * multiplier;
     EmitVertex();

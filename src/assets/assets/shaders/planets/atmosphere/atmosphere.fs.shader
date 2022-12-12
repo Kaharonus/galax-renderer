@@ -19,6 +19,7 @@ uniform vec3 cameraPosition;
 in vec3 viewspacePosition;
 in vec3 viewspaceCamera;
 in vec3 lightDirection;
+in vec3 vNormal;
 
 struct Light{
     vec3 position;
@@ -191,7 +192,6 @@ void main() {
     vec3 position = texture(gPosition, screenuv).xyz;
 
     float depth = distance(cameraPosition, position);
-
 
     vec4 atm = calculate_scattering(viewspaceCamera, -normalize(viewspacePosition), depth, lightDirection);
     atm.w = clamp(atm.w, 0.0001, 1.0);

@@ -12,8 +12,8 @@ uniform sampler2D palette;
 
 
 void main(){
-    gAlbedo = vec4(1);
+    gAlbedo = vec4(0);
     gPosition = gsPosition;
     gNormal = vec3(0);
-    gEmission = vec3(1);
+    gEmission = vec3(0);
 }

@@ -53,7 +53,7 @@ void Planet::generatePlanet() {
 	startSizeQuery();
 
 	//Prepare for transform feedback rendering - disable rasterization and begin the transform feedback
-	glEnable(GL_RASTERIZER_DISCARD);
+	//glEnable(GL_RASTERIZER_DISCARD);
 	glBeginTransformFeedback(GL_TRIANGLES);
 
 	//Normal mesh drawing
@@ -66,7 +66,7 @@ void Planet::generatePlanet() {
 
 	//End transform feedback and re-enable rasterization
 	glEndTransformFeedback();
-	glDisable(GL_RASTERIZER_DISCARD);
+	//glDisable(GL_RASTERIZER_DISCARD);
 
 	// Get query result
 	prims = getSizeQueryResult();

@@ -28,10 +28,12 @@ namespace Galax::Orbital {
 		std::shared_ptr<Uniform> atmosphereScale;
 		std::shared_ptr<Uniform> planetRadius;
 		std::shared_ptr<Uniform> atmosphereDensity;
+		std::shared_ptr<Uniform> lightOffset;
 
 		float radius;
 
 		void init();
+
 	};
 }
 

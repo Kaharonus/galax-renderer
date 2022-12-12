@@ -19,6 +19,10 @@ struct Noise{
 };
 
 
+uniform mat4 view;
+uniform mat4 projection;
+uniform mat4 model;
+
 //Simplex noise implementation by Ian McEwan, Ashima Arts
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
@@ -128,17 +132,17 @@ void main(){
     v2 += o2;
     v3 += o3;
 
-    gl_Position = vec4(v1, 1);
+    gl_Position = projection * view * model * vec4(v1, 1);
     gsPosition = v1;
     gsNoise = noiseA * multiplier;
     EmitVertex();
 
-    gl_Position = vec4(v2, 1);
+    gl_Position =  projection * view * model * vec4(v2, 1);
     gsPosition = v2;
     gsNoise = noiseB * multiplier;
     EmitVertex();
 
-    gl_Position =  vec4(v3, 1);
+    gl_Position =  projection * view * model * vec4(v3, 1);
     gsPosition = v3;
     gsNoise = noiseC * multiplier;
     EmitVertex();

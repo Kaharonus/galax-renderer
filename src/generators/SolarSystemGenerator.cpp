@@ -97,7 +97,7 @@ void SolarSystemGenerator::addPlanets() {
 		planet->configure()
 				->withPosition(glm::vec3(orbit, 0, 0))
 				->withSeed(50.0f * (i + 1))
-				->withRadius(0.5f + (0.25f * i))
+				->withRadius(1.f + (0.25f * i))
 				->withRotation(10000)
 				//->withOrbit(glm::vec3(orbit, 2, orbit), sun->getPositionUniform())
 				->withCamera(camera)
