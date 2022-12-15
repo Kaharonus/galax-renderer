@@ -68,9 +68,11 @@ void Planet::generatePlanet() {
 	glEndTransformFeedback();
 	//glDisable(GL_RASTERIZER_DISCARD);
 
+
 	// Get query result
 	prims = getSizeQueryResult();
 
+	std::cout << prims<< std::endl;
 
 	glBindVertexArray(0);
 
@@ -253,6 +255,7 @@ int Planet::calculateLod(glm::mat4 parentModel) {
 
 	// Slight optimization for moons. When tess is at max, the difference is small and the stutter is noticeable.
 	// Noticeable on a GTX 1080
+	return iLevel;
 	return type == Type::MOON ? iLevel / 2 : iLevel;
 }
 

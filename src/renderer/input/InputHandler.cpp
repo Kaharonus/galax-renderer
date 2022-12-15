@@ -50,7 +50,6 @@ void InputHandler::mouseRelease(MouseButton button, float x, float y) {
 	// It might seem like a lot, but I tried clicking the same way my grandma does, and it was about 167 ms
 	// Tried 200, but sometimes it was too slow
 	if (timeDiff < milliseconds(175)) {
-		std::cout << timeDiff.count() << std::endl;
 		for (auto &callback: mouseClickCallbacks) {
 			callback(button, x, y);
 		}

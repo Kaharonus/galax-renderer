@@ -72,7 +72,7 @@ namespace Galax::Orbital {
 
 		float minTess = 1;
 		float minTessDistance = 3;
-		float maxTess = 32;
+		float maxTess = 8;
 		float maxTessDistance = 50;
 
 

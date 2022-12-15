@@ -48,7 +48,6 @@ void SolarSystem::setInputHandler(std::shared_ptr<InputHandler> inputHandler) {
 				camera->follow(body);
 			}
 		}
-		std::cout << "Mouse click: " << x << ", " << y << std::endl;
 	});
 	Scene::setInputHandler(inputHandler);
 }
