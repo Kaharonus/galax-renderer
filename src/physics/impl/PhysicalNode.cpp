@@ -21,7 +21,7 @@ void PhysicalNode::setBodyRotation(const glm::vec3 &rotation) {
 }
 
 void PhysicalNode::setPosition(const glm::vec3 &position) {
-	auto physicsPosition = parent ? (parent->getPosition() + (position * this->getScale())) : position;
+	auto physicsPosition = parent ? (parent->getPosition() + (position)) : position;
     RigidBody::setBodyPosition(physicsPosition);
     Node::setPosition(position);
 }

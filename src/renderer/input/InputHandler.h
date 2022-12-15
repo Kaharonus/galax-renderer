@@ -4,8 +4,8 @@
 #include <glm/vec2.hpp>
 #include <functional>
 #include <chrono>
-
-
+#include <memory>
+#include <any>
 
 namespace Galax::Renderer {
     class InputHandler {
@@ -87,6 +87,9 @@ namespace Galax::Renderer {
         void keyRelease(Key key);
 
 		void registerMouseClickCallback(std::function<void(MouseButton, float, float)> callback);
+		void setClickOnDetection(std::function<std::any(MouseButton, float, float)> fn);
+
+		void registerMouseClickOnCallback(std::function<void(std::any, MouseButton)> fn);
 
         bool isKeyPressed(Key key);
         bool isKeyUp(Key key);
@@ -103,6 +106,9 @@ namespace Galax::Renderer {
 
 	private:
 		std::vector<std::function<void(MouseButton, float, float)>> mouseClickCallbacks;
+		std::function<std::any(MouseButton, float, float)> clickedOn;
+		std::vector<std::function<void(std::any, MouseButton)>> mouseClickedOnCallbacks;
+
 
         bool keys[512];
         bool mouseButtons[3];

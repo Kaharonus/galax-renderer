@@ -40,7 +40,7 @@ protected:
                 dragMultiplier *= 5.0;
             auto diff = (dragMultiplier * dragDist);
 
-            this->setValue(this->value() + diff);
+            this->setValue(this->value() - diff);
             QCursor::setPos(StartDragPos);
         }
 
@@ -53,6 +53,8 @@ protected:
         IsDragging = false;
         QApplication::restoreOverrideCursor();
     };
+
+
 
 private:
     bool IsDragging = false;

@@ -89,7 +89,6 @@ void SolarSystemGenerator::addPlanets() {
 	auto planetGenerator = std::make_shared<PlanetGenerator>(assets);
 	for (int i = 0; i < 1; i++) {
 		//TODO change the hardcoded values to dynamic ones
-
 		auto atmosphere = planetGenerator->createAtmosphere();
 		atmosphere->setCamera(camera);
 		auto orbit = 20 * (i + 1);

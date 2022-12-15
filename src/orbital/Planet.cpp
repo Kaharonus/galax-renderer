@@ -116,6 +116,14 @@ void Planet::drawPlanet(glm::mat4 mat) {
 
 void Planet::draw(glm::mat4 parentModel) {
 
+	if (this->parent) {
+		auto position = this->parent->getPosition();
+		auto scale = this->parent->getScale();
+		parentModel = glm::translate(glm::mat4(1.0f), position);
+		parentModel = glm::scale(parentModel, scale);
+	}
+
+
 	auto level = calculateLod(parentModel);
 
 	if (tessLevel->getValue<int>() != level) {
@@ -239,6 +247,8 @@ Planet *Planet::withPosition(glm::vec3 position) {
 }
 
 int Planet::calculateLod(glm::mat4 parentModel) {
+
+
 	// Calculate distance from camera
 	auto cameraPos = this->camera->getPosition();
 	//Grab position from parent model

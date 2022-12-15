@@ -33,7 +33,7 @@ std::shared_ptr<Galax::Physics::IRenderNode> findMouseOverRecursive(std::shared_
 
 
 void SolarSystem::setInputHandler(std::shared_ptr<InputHandler> inputHandler) {
-	inputHandler->registerMouseClickCallback([&](InputHandler::MouseButton button, float x, float y){
+	inputHandler->setClickOnDetection([&](InputHandler::MouseButton button, float x, float y){
 		std::shared_ptr<Physics::IRenderNode> body;
 		for(const auto& model : this->models){
 			auto result = findMouseOverRecursive(model);
@@ -42,12 +42,13 @@ void SolarSystem::setInputHandler(std::shared_ptr<InputHandler> inputHandler) {
 				break;
 			}
 		}
-		for(auto model : this->models){
+		for(auto& model : this->models){
 			auto camera = std::dynamic_pointer_cast<Orbital::SpaceCamera>(model->getCamera());
 			if(camera != nullptr){
 				camera->follow(body);
 			}
 		}
+		return body;
 	});
 	Scene::setInputHandler(inputHandler);
 }

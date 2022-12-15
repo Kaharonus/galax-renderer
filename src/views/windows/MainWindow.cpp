@@ -28,21 +28,26 @@ MainWindow::MainWindow(const QSurfaceFormat &format, QWidget *parent, Qt::Window
     this->sceneLoader = std::make_shared<SceneLoader>("assets.data", "scenes");
 	this->sceneLoader->registerGenerator(std::make_shared<SolarSystemGenerator>());
 
+
+
 	loadScene("scenes/solar-system.json");
 }
 
 void MainWindow::setupRenderer(const QSurfaceFormat &format){
     renderer = new QRenderer(inputHandler, format);
     //renderer->setVerticalSync(Galax::Renderer::QRenderer::Disabled);
-    QWidget * widget = QWidget::createWindowContainer(renderer);
-    widget->setMinimumSize(1,1);
-    widget->setAutoFillBackground(false); // Important for overdraw, not occluding the scene.
+    auto widget = QWidget::createWindowContainer(renderer);
+    //widget->setMinimumSize(1,1);
+    widget->setAutoFillBackground(false); // Important for overdraw, not occluding the scee.
     widget->setFocusPolicy(Qt::TabFocus);
-    auto layout = this->findChild<QGridLayout*>("baseGridLayout");
+	widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+    auto layout = this->findChild<QGridLayout*>("layout");
     layout->addWidget(widget);
     show();
     renderOptionsWindow = new RenderOptions(this);
     renderOptionsWindow->show();
+
+	this->ui->splitter->setSizes({60, 200});
 }
 
 void MainWindow::setupPhysics(){
@@ -67,6 +72,22 @@ void MainWindow::loadScene(const std::string& path) {
         renderer->addPostProcess(effect);
     }
     renderOptionsWindow->setScene(scene, scene->getLightingModel(), effects);
+
+	inputHandler->registerMouseClickOnCallback([](auto body, auto button){
+		//Check if it is a planet
+		std::shared_ptr<IRenderNode> node;
+		try{
+			node = std::any_cast<std::shared_ptr<IRenderNode>>(body);
+		}catch(...){
+			return;
+		}
+		auto planet = std::dynamic_pointer_cast<Planet>(node);
+		if(!planet){
+			return;
+		}
+
+
+	});
 
 	//FIX - unsafe
     physicsEngine->setCamera(scene->getModels()[0]->getCamera());

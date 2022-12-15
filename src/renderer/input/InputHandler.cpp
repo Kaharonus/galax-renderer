@@ -49,10 +49,21 @@ void InputHandler::mouseRelease(MouseButton button, float x, float y) {
 	// 175 ms was chosen as a reasonable time for a single click
 	// It might seem like a lot, but I tried clicking the same way my grandma does, and it was about 167 ms
 	// Tried 200, but sometimes it was too slow
-	if (timeDiff < milliseconds(175)) {
-		for (auto &callback: mouseClickCallbacks) {
-			callback(button, x, y);
-		}
+	if (timeDiff > milliseconds(175)) {
+		return;
+	}
+
+	for (auto &callback: mouseClickCallbacks) {
+		callback(button, x, y);
+	}
+
+	if (!this->clickedOn) {
+		return;
+	}
+
+	auto body = this->clickedOn(button, x, y);
+	for (auto &callback: mouseClickedOnCallbacks) {
+		callback(body, button);
 	}
 
 }
@@ -95,7 +106,7 @@ glm::vec2 InputHandler::getAbsolutePosition() {
 }
 
 glm::vec2 InputHandler::getScrollDelta() {
-	if(scrollDeltaSet){
+	if (scrollDeltaSet) {
 		scrollDeltaSet = false;
 		return scrollDelta;
 	}
@@ -134,4 +145,14 @@ void InputHandler::setRendererSize(int width, int height) {
 
 void InputHandler::registerMouseClickCallback(std::function<void(MouseButton, float, float)> callback) {
 	mouseClickCallbacks.push_back(callback);
+}
+
+void InputHandler::setClickOnDetection(std::function<std::any(MouseButton, float, float)> fn) {
+	clickedOn = fn;
+
+}
+
+void InputHandler::registerMouseClickOnCallback( std::function<void(std::any, MouseButton)> fn) {
+	mouseClickedOnCallbacks.push_back(fn);
+
 }

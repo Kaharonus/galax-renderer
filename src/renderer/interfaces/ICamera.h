@@ -8,7 +8,7 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include "IUniform.h"
-#include "../input/InputHandler.h"
+#include <renderer/input/InputHandler.h>
 
 namespace Galax::Renderer {
     class ICamera : public Galax::Renderer::SceneObject {

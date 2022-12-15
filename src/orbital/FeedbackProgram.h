@@ -36,7 +36,7 @@ namespace Galax::Orbital {
 		void bind() override;
 
     protected:
-        uint feedbackBufferSize = 30'000'000;
+        uint feedbackBufferSize = 32'000'000;
 
         std::vector<std::string> feedbackVars;
         std::vector<int> feedbackSizes;
