@@ -26,6 +26,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+
    <layout class="QGridLayout" name="baseGridLayout">
     <property name="leftMargin">
      <number>0</number>
@@ -124,7 +125,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="speedInput"/>
+             <widget class="QDraggableDoubleSpinBox" name="speedInput"/>
             </item>
            </layout>
           </item>
@@ -158,52 +159,10 @@
          </widget>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="moonPropertiesLayout">
+         <layout class="QVBoxLayout" name="moonList">
           <property name="leftMargin">
            <number>5</number>
           </property>
-          <item>
-           <layout class="QHBoxLayout" name="moonSeed">
-            <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>Seed:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDoubleSpinBox" name="moonSeedInput"/>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>Speed:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDoubleSpinBox" name="speedInput"/>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="scale">
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Size:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDraggableDoubleSpinBox" name="moonScaleInput"/>
-            </item>
-           </layout>
-          </item>
          </layout>
         </item>
         <item>
@@ -214,62 +173,68 @@
           <property name="text">
            <string>Atmosphere properties:</string>
           </property>
+          <property name="margin">
+           <number>5</number>
+          </property>
          </widget>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="atmosphereLayout">
-          <property name="leftMargin">
-           <number>6</number>
-          </property>
-          <item>
-           <layout class="QHBoxLayout" name="atmoColorLayout">
-            <item>
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Color:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDraggableDoubleSpinBox" name="colorR"/>
-            </item>
-            <item>
-             <widget class="QDraggableDoubleSpinBox" name="colorG"/>
-            </item>
-            <item>
-             <widget class="QDraggableDoubleSpinBox" name="colorB"/>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <widget class="QLabel" name="label_6">
-              <property name="text">
-               <string>Density:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDraggableDoubleSpinBox" name="doubleSpinBox"/>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>Size:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDraggableDoubleSpinBox" name="doubleSpinBox_2"/>
-            </item>
-           </layout>
-          </item>
-         </layout>
+         <widget class="QWidget" name="atmosphereWidget">
+          <layout class="QVBoxLayout" name="atmosphereLayout">
+           <property name="leftMargin">
+            <number>6</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="atmoColorLayout">
+             <item>
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Color:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDraggableDoubleSpinBox" name="colorR"/>
+             </item>
+             <item>
+              <widget class="QDraggableDoubleSpinBox" name="colorG"/>
+             </item>
+             <item>
+              <widget class="QDraggableDoubleSpinBox" name="colorB"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Density:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDraggableDoubleSpinBox" name="densityInput"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Size:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDraggableDoubleSpinBox" name="atmoSizeInput"/>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+
         </item>
         <item>
          <widget class="QPushButton" name="pauseAnimationsButton">

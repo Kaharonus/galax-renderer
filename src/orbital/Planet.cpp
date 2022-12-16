@@ -39,7 +39,7 @@ Planet::Planet(const std::string &name, Planet::Type type) : Physics::PhysicalNo
 
 	this->tessLevel = std::make_shared<Uniform>("tessLevel", Uniform::INT, 1);
 	this->addUniform(this->tessLevel);
-
+	this->orbitAnimation = std::make_shared<OrbitAnimation>();
 }
 
 void Planet::generatePlanet() {
@@ -49,11 +49,13 @@ void Planet::generatePlanet() {
 	for (auto &uniform: uniforms) {
 		generatorProgram->setUniform(uniform);
 	}
+	useDefaultUniforms();
 
 	startSizeQuery();
 
 	//Prepare for transform feedback rendering - disable rasterization and begin the transform feedback
 	//glEnable(GL_RASTERIZER_DISCARD);
+	glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER, 0, generatorProgram->getFeedbackBufferId(), 0, 32'000'000);
 	glBeginTransformFeedback(GL_TRIANGLES);
 
 	//Normal mesh drawing
@@ -69,10 +71,12 @@ void Planet::generatePlanet() {
 	//glDisable(GL_RASTERIZER_DISCARD);
 
 
+
 	// Get query result
 	prims = getSizeQueryResult();
+	glFlush();
 
-	std::cout << prims<< std::endl;
+	std::cout << prims << std::endl;
 
 	glBindVertexArray(0);
 
@@ -118,9 +122,7 @@ void Planet::draw(glm::mat4 parentModel) {
 
 	if (this->parent) {
 		auto position = this->parent->getPosition();
-		auto scale = this->parent->getScale();
 		parentModel = glm::translate(glm::mat4(1.0f), position);
-		parentModel = glm::scale(parentModel, scale);
 	}
 
 
@@ -128,7 +130,6 @@ void Planet::draw(glm::mat4 parentModel) {
 
 	if (tessLevel->getValue<int>() != level) {
 		tessLevel->setValue(level);
-		generatorProgram->compile(); // NO. Huge fucking hack. But it works.
 		shouldGenerate = true;
 	}
 
@@ -168,7 +169,6 @@ int Planet::getSizeQueryResult() {
 
 void Planet::setScale(const glm::vec3 &scale) {
 	Node::setScale(scale);
-
 	auto radius = scale.x;
 	auto collider = std::make_shared<Physics::SphereCollider>(radius);
 	Physics::RigidBody::clearColliders();
@@ -195,19 +195,20 @@ void Planet::setIsMouseOver(bool isMouseOver) {
 
 
 Planet *Planet::withSeed(float seed) {
-	addUniform(std::make_shared<Uniform>("inputSeed", Uniform::FLOAT, seed));
+	this->seedUniform = std::make_shared<Uniform>("inputSeed", Uniform::FLOAT, seed);
+	addUniform(this->seedUniform);
 	return this;
 }
 
 Planet *Planet::withRotation(float rotation) {
-	auto animation = std::make_shared<Animation>();
-	animation->setLength(rotation);
-	animation->setRepeat(Animation::Repeat::LOOP);
-	animation->setEase(Animation::Ease::LINEAR);
-	animation->setTarget(IAnimation::Target::ROTATION);
-	animation->addKeyFrame(0, glm::vec3(0, 0, 0));
-	animation->addKeyFrame(rotation, glm::vec3(0, 360, 0));
-	addAnimation(animation);
+	this->rotationAnimation = std::make_shared<Animation>();
+	rotationAnimation->setLength(rotation);
+	rotationAnimation->setRepeat(Animation::Repeat::LOOP);
+	rotationAnimation->setEase(Animation::Ease::LINEAR);
+	rotationAnimation->setTarget(IAnimation::Target::ROTATION);
+	rotationAnimation->addKeyFrame(0, glm::vec3(0, 0, 0));
+	rotationAnimation->addKeyFrame(rotation, glm::vec3(0, 360, 0));
+	addAnimation(rotationAnimation);
 	return this;
 }
 
@@ -217,18 +218,37 @@ Planet *Planet::withRadius(float radius) {
 }
 
 Planet *Planet::withOrbit(glm::vec3 orbit, std::shared_ptr<IUniform> orbitCenter) {
-	auto animation = std::make_shared<OrbitAnimation>();
-	animation->setPlanetRadius(this->scaleUniform);
-	animation->setSunPosition(orbitCenter);
-	animation->setInitialPosition(orbit);
-	this->addAnimation(animation);
+	this->orbitAnimation->setPlanetRadius(this->scaleUniform);
+	this->orbitAnimation->setSunPosition(orbitCenter);
+	this->orbitAnimation->setInitialPosition(orbit);
+	this->addAnimation(this->orbitAnimation);
 
 	return this;
 
 }
 
+std::string Planet::getTypeName(){
+	switch(type){
+		case Type::TEMPERATE:
+			return "Temperate";
+		case Type::MOON:
+			return "Moon";
+		case Type::ROCKY:
+			return "Rocky";
+		case Type::ICE:
+			return "Ice";
+		case Type::HOT:
+			return "Hot";
+		case Type::OCEAN:
+			return "Ocean";
+	}
+}
+
 Planet *Planet::withAtmosphere(std::shared_ptr<Atmosphere> atmosphere) {
-	if (atmosphere) this->addChild(atmosphere);
+	if (atmosphere) {
+		this->addChild(atmosphere);
+		this->atmosphere = atmosphere;
+	}
 	return this;
 }
 
@@ -269,6 +289,36 @@ int Planet::calculateLod(glm::mat4 parentModel) {
 	return type == Type::MOON ? iLevel / 2 : iLevel;
 }
 
+float Planet::getSeed() {
+	return this->seedUniform->getValue<float>();
+}
+
+void Planet::setSeed(float seed) {
+	this->seedUniform->setValue(seed);
+	this->shouldGenerate = true;
+}
+
+float Planet::getSize() {
+	return this->scale.x;
+}
+
+void Planet::setSize(float size) {
+	setScale(glm::vec3(size));
+}
+
+float Planet::getSpeed() {
+	return orbitAnimation->getSpeed();
+}
+
+void Planet::setSpeed(float speed) {
+	orbitAnimation->setSpeed(speed);
+}
+
+Planet *Planet::withMoon(std::shared_ptr<Planet> moon) {
+	moons.push_back(moon);
+	children.push_back(moon);
+	return this;
+}
 
 
 

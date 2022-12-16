@@ -42,6 +42,14 @@ namespace Galax::Orbital {
 
         void setOffset(glm::vec3 offset);
 
+		void setSpeed(float speed){
+			this->animationSpeed = speed;
+		}
+
+		float getSpeed(){
+			return animationSpeed;
+		}
+
     private:
         glm::vec3 currentPosition = {0, 0, 0};
         glm::vec3 radius = {0, 0, 0};

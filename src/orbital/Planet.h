@@ -9,6 +9,7 @@
 #include <physics/impl/Force.h>
 #include <orbital/Atmosphere.h>
 #include <orbital/SpaceCamera.h>
+#include <orbital/OrbitAnimation.h>
 
 namespace Galax::Orbital {
 
@@ -44,10 +45,29 @@ namespace Galax::Orbital {
 		Planet* withRotation(float rotation);
 		Planet* withCamera(std::shared_ptr<SpaceCamera> camera);
 		Planet* withPosition(glm::vec3 position);
+		Planet* withMoon(std::shared_ptr<Planet> moon);
 
 
+		float getSeed();
+		void setSeed(float seed);
+
+		float getSize();
+		void setSize(float size);
+
+		float getSpeed();
+		void setSpeed(float speed);
 
         void setIsMouseOver(bool isMouseOver) override;
+
+		std::string getTypeName();
+
+		std::shared_ptr<Atmosphere> getAtmosphere(){
+			return atmosphere;
+		}
+
+		std::vector<std::shared_ptr<Planet>> getMoons(){
+			return moons;
+		}
 
         [[nodiscard]] std::vector<std::shared_ptr<Renderer::IProgram>> getPrograms() const override;
 
@@ -63,13 +83,19 @@ namespace Galax::Orbital {
         void drawPlanet(glm::mat4 mat);
 
     private:
+
+
 		int calculateLod(glm::mat4 parentModel);
 
 		std::shared_ptr<Uniform> tessLevel;
         std::shared_ptr<Uniform> colorOffsetUniform;
+		std::shared_ptr<Uniform> seedUniform;
         std::shared_ptr<Animation> lightenAnimation;
         std::shared_ptr<Animation> darkenAnimation;
-
+		std::shared_ptr<Animation> rotationAnimation;
+		std::shared_ptr<OrbitAnimation> orbitAnimation;
+		std::shared_ptr<Atmosphere> atmosphere;
+		std::vector<std::shared_ptr<Planet>> moons;
 		float minTess = 1;
 		float minTessDistance = 3;
 		float maxTess = 8;
@@ -81,6 +107,7 @@ namespace Galax::Orbital {
         void startSizeQuery();
 
         int getSizeQueryResult();
+
 
 	};
 

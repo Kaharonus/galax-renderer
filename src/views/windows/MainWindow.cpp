@@ -6,9 +6,11 @@
 #include <assets/AssetLoader.h>
 #include <generators/SolarSystemGenerator.h>
 #include <physics/PhysicsEngine.h>
+#include <views/controls/QDraggableDoubleSpinBox.h>
 
 #include "ui_MainWindow.h"
 #include "MainWindow.h"
+#include "Extensions.h"
 
 #include <QGridLayout>
 
@@ -16,93 +18,164 @@
 using namespace Galax::Renderer;
 using namespace Galax::Generators;
 using namespace Galax::Physics;
-//using namespace Galax::Renderer::SceneObjects;
+
 
 MainWindow::MainWindow(const QSurfaceFormat &format, QWidget *parent, Qt::WindowFlags flags) :
-        QMainWindow(parent, flags), ui(new Ui::MainWindow) {
-    ui->setupUi(this);
+		QMainWindow(parent, flags), ui(new Ui::MainWindow) {
+	ui->setupUi(this);
 
-    this->inputHandler = std::make_shared<InputHandler>();
-    setupRenderer(format);
-    setupPhysics();
-    this->sceneLoader = std::make_shared<SceneLoader>("assets.data", "scenes");
+	this->inputHandler = std::make_shared<InputHandler>();
+	setupRenderer(format);
+	setupPhysics();
+	this->sceneLoader = std::make_shared<SceneLoader>("assets.data", "scenes");
 	this->sceneLoader->registerGenerator(std::make_shared<SolarSystemGenerator>());
 
-
+	refreshTimer = new QTimer(this);
+	refreshTimer->setInterval(33);
+	connect(refreshTimer, &QTimer::timeout, this, &MainWindow::uiRefresh);
+	refreshTimer->start();
 
 	loadScene("scenes/solar-system.json");
+	ui->atmosphereWidget->setVisible(false);
+
 }
 
-void MainWindow::setupRenderer(const QSurfaceFormat &format){
-    renderer = new QRenderer(inputHandler, format);
-    //renderer->setVerticalSync(Galax::Renderer::QRenderer::Disabled);
-    auto widget = QWidget::createWindowContainer(renderer);
-    //widget->setMinimumSize(1,1);
-    widget->setAutoFillBackground(false); // Important for overdraw, not occluding the scee.
-    widget->setFocusPolicy(Qt::TabFocus);
+void MainWindow::uiRefresh() {
+	if (!this->selectedPlanet) {
+		return;
+	}
+	auto planet = this->selectedPlanet;
+	{ //Planet
+		ui->planetType->setText(planet->getTypeName().c_str());
+		if (!ui->seedInput->hasFocus()) {
+			ui->seedInput->setValue(this->selectedPlanet->getSeed());
+		}
+		if (planet->getSeed() != this->ui->seedInput->value()) {
+			planet->setSeed(ui->seedInput->value());
+		}
+
+		if (!ui->scaleInput->hasFocus()) {
+			ui->scaleInput->setValue(planet->getSize());
+		}
+		planet->setSize(ui->scaleInput->value());
+
+		if (!ui->speedInput->hasFocus()) {
+			ui->speedInput->setValue(planet->getSpeed());
+		}
+		planet->setSpeed(ui->speedInput->value());
+	}
+
+	auto atmo = planet->getAtmosphere();
+	ui->atmosphereWidget->setVisible(atmo != nullptr);
+	if (atmo) {
+		auto color = atmo->getColor();
+		if (!ui->colorR->hasFocus()) {
+			ui->colorR->setValue(color.r);
+		}
+		if (!ui->colorG->hasFocus()) {
+			ui->colorG->setValue(color.g);
+		}
+		if (!ui->colorB->hasFocus()) {
+			ui->colorB->setValue(color.b);
+		}
+		atmo->setColor(glm::vec3(ui->colorR->value(), ui->colorG->value(), ui->colorB->value()));
+
+		if (!ui->atmoSizeInput->hasFocus()) {
+			ui->atmoSizeInput->setValue(atmo->getRadius());
+		}
+		atmo->setRadius(ui->atmoSizeInput->value());
+
+		if (!ui->densityInput->hasFocus()) {
+			ui->densityInput->setValue(atmo->getDensity());
+		}
+		atmo->setDensity(ui->densityInput->value());
+	}
+
+	for (const auto &moon: this->moonControls) {
+		moon->update();
+	}
+
+
+}
+
+
+void MainWindow::setupRenderer(const QSurfaceFormat &format) {
+	renderer = new QRenderer(inputHandler, format);
+	//renderer->setVerticalSync(Galax::Renderer::QRenderer::Disabled);
+	auto widget = QWidget::createWindowContainer(renderer);
+	widget->setAutoFillBackground(false); // Important for overdraw, not occluding the scee.
+	widget->setFocusPolicy(Qt::TabFocus);
 	widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
-    auto layout = this->findChild<QGridLayout*>("layout");
-    layout->addWidget(widget);
-    show();
-    renderOptionsWindow = new RenderOptions(this);
-    renderOptionsWindow->show();
+	auto layout = this->findChild<QGridLayout *>("layout");
+	layout->addWidget(widget);
+	show();
+	renderOptionsWindow = new RenderOptions(this);
+	renderOptionsWindow->show();
 
 	this->ui->splitter->setSizes({60, 200});
 }
 
-void MainWindow::setupPhysics(){
-    physicsEngine = new PhysicsEngine(inputHandler, 1/60.f, this);
+void MainWindow::setupPhysics() {
+	physicsEngine = new PhysicsEngine(inputHandler, 1 / 60.f, this);
 }
 
 
-
-
-void MainWindow::loadScene(const std::string& path) {
+void MainWindow::loadScene(const std::string &path) {
 
 	auto sceneData = this->sceneLoader->loadScene(path);
-	if(!sceneData){
+	if (!sceneData) {
 		return;
 	}
 	auto scene = sceneData->scene;
 	auto effects = sceneData->postProcessEffects;
 
-    renderer->setScene(scene);
-    renderer->setLightingModel(scene->getLightingModel());
-    for(auto& effect : sceneData->postProcessEffects){
-        renderer->addPostProcess(effect);
-    }
-    renderOptionsWindow->setScene(scene, scene->getLightingModel(), effects);
+	renderer->setScene(scene);
+	renderer->setLightingModel(scene->getLightingModel());
+	for (auto &effect: sceneData->postProcessEffects) {
+		renderer->addPostProcess(effect);
+	}
+	renderOptionsWindow->setScene(scene, scene->getLightingModel(), effects);
 
-	inputHandler->registerMouseClickOnCallback([](auto body, auto button){
+	inputHandler->registerMouseClickOnCallback([&](auto body, auto button) {
 		//Check if it is a planet
 		std::shared_ptr<IRenderNode> node;
-		try{
+		try {
 			node = std::any_cast<std::shared_ptr<IRenderNode>>(body);
-		}catch(...){
+		} catch (...) {
 			return;
 		}
 		auto planet = std::dynamic_pointer_cast<Planet>(node);
-		if(!planet){
-			return;
+		this->selectedPlanet = planet;
+		for (auto control: moonControls) {
+			ui->moonList->removeWidget(control);
+			control->deleteLater();
 		}
-
+		moonControls.clear();
+		if (this->selectedPlanet) {
+			int i = 0;
+			for (const auto& moon: planet->getMoons()) {
+				auto c = new MoonControl(moon, i,nullptr);
+				moonControls.push_back(c);
+				ui->moonList->addWidget(c);
+			}
+		}
 
 	});
 
 	//FIX - unsafe
-    physicsEngine->setCamera(scene->getModels()[0]->getCamera());
+	physicsEngine->setCamera(scene->getModels()[0]->getCamera());
 
-    auto physics = getPhysical(scene);
-    for(auto& item : physics){
-        physicsEngine->addRigidBody(item);
-    }
+	auto physics = getPhysical(scene);
+	for (auto &item: physics) {
+		physicsEngine->addRigidBody(item);
+	}
 }
 
 std::vector<std::shared_ptr<IRigidBody>> MainWindow::getPhysical(std::shared_ptr<Scene> scene) {
 	auto physical = std::vector<std::shared_ptr<IRigidBody>>();
-	for(auto& node : scene->getModels()) {
+	for (auto &node: scene->getModels()) {
 		auto p = getPhysical(node);
-		if(auto planet = std::dynamic_pointer_cast<Planet>(node)){
+		if (auto planet = std::dynamic_pointer_cast<Planet>(node)) {
 			p.push_back(planet);
 		}
 		physical.insert(physical.end(), p.begin(), p.end());
@@ -112,7 +185,7 @@ std::vector<std::shared_ptr<IRigidBody>> MainWindow::getPhysical(std::shared_ptr
 
 std::vector<std::shared_ptr<IRigidBody>> MainWindow::getPhysical(const std::shared_ptr<IRenderNode> &node) {
 	std::vector<std::shared_ptr<IRigidBody>> physical;
-	for (const auto &child : node->getChildren()) {
+	for (const auto &child: node->getChildren()) {
 		if (auto planet = std::dynamic_pointer_cast<IRigidBody>(child)) {
 			physical.push_back(planet);
 		}
@@ -124,7 +197,7 @@ std::vector<std::shared_ptr<IRigidBody>> MainWindow::getPhysical(const std::shar
 
 
 MainWindow::~MainWindow() {
-    delete ui;
+	delete ui;
 }
 
 

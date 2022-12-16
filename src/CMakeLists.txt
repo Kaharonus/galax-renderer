@@ -4,7 +4,7 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 # Source files
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS *.h *.cpp *.ui)
-set(SOURCES ${SOURCES} generators/SolarSystemGenerator.cpp generators/SolarSystemGenerator.h)
+set(SOURCES ${SOURCES} generators/SolarSystemGenerator.cpp generators/SolarSystemGenerator.h views/controls/MoonControl.cpp views/controls/MoonControl.h views/controls/MoonControl.ui)
 add_compile_options("$<$<CONFIG:DEBUG>:-DDEBUG>")
 
 # --------------------------------------------------------------------------------

@@ -22,15 +22,16 @@ namespace Galax::Orbital {
 		void setRadius(float radius);
 		void setDensity(float density);
 
+		glm::vec3 getColor();
+		float getRadius();
+		float getDensity();
+
 
 	private:
 		std::shared_ptr<Uniform> atmosphereColor;
 		std::shared_ptr<Uniform> atmosphereScale;
 		std::shared_ptr<Uniform> planetRadius;
 		std::shared_ptr<Uniform> atmosphereDensity;
-		std::shared_ptr<Uniform> lightOffset;
-
-		float radius;
 
 		void init();
 

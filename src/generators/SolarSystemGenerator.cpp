@@ -91,8 +91,13 @@ void SolarSystemGenerator::addPlanets() {
 		//TODO change the hardcoded values to dynamic ones
 		auto atmosphere = planetGenerator->createAtmosphere();
 		atmosphere->setCamera(camera);
+
+
 		auto orbit = 20 * (i + 1);
 		auto planet = planetGenerator->createFromType(Planet::Type::TEMPERATE);
+		auto moon = planetGenerator->createFromType(Planet::Type::MOON);
+		moon->setParent(planet);
+
 		planet->configure()
 				->withPosition(glm::vec3(orbit, 0, 0))
 				->withSeed(50.0f * (i + 1))
@@ -100,16 +105,15 @@ void SolarSystemGenerator::addPlanets() {
 				->withRotation(10000)
 				//->withOrbit(glm::vec3(orbit, 2, orbit), sun->getPositionUniform())
 				->withCamera(camera)
-				->withAtmosphere(atmosphere);
+				->withAtmosphere(atmosphere)
+				->withMoon(moon);
 
-		auto moon = planetGenerator->createFromType(Planet::Type::MOON);
-		planet->addChild(moon);
 		moon->configure()
-			->withPosition(glm::vec3(0,3,0))
-			->withSeed(50.0f * (i + 1))
-			->withRadius(0.5f + (0.05 * i))
-			->withRotation(10000)
-			->withCamera(camera);
+				->withPosition(glm::vec3(0,3,0))
+				->withSeed(50.0f * (i + 1))
+				->withRadius(0.5f + (0.05 * i))
+				->withRotation(10000)
+				->withCamera(camera);
 
 		scene->addModel(planet);
 	}
