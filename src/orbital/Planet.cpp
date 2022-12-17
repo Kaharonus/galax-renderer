@@ -40,6 +40,13 @@ Planet::Planet(const std::string &name, Planet::Type type) : Physics::PhysicalNo
 	this->tessLevel = std::make_shared<Uniform>("tessLevel", Uniform::INT, 1);
 	this->addUniform(this->tessLevel);
 	this->orbitAnimation = std::make_shared<OrbitAnimation>();
+
+	this->noiseConfig = std::make_shared<SSBO>("noiseConfig");
+
+
+	this->clampUnder = std::make_shared<Uniform>("clampUnder", Uniform::FLOAT, 0.0f);
+	this->addUniform(this->clampUnder);
+
 }
 
 void Planet::generatePlanet() {
@@ -53,6 +60,7 @@ void Planet::generatePlanet() {
 
 	startSizeQuery();
 
+	generatorProgram->setSSBO(this->noiseConfig);
 	//Prepare for transform feedback rendering - disable rasterization and begin the transform feedback
 	//glEnable(GL_RASTERIZER_DISCARD);
 	glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER, 0, generatorProgram->getFeedbackBufferId(), 0, 32'000'000);
@@ -124,15 +132,12 @@ void Planet::draw(glm::mat4 parentModel) {
 		auto position = this->parent->getPosition();
 		parentModel = glm::translate(glm::mat4(1.0f), position);
 	}
-
-
 	auto level = calculateLod(parentModel);
 
 	if (tessLevel->getValue<int>() != level) {
 		tessLevel->setValue(level);
 		shouldGenerate = true;
 	}
-
 
 	if (shouldGenerate || generatorProgram->shadersUpdated()) {
 		generatePlanet();
@@ -242,6 +247,7 @@ std::string Planet::getTypeName(){
 		case Type::OCEAN:
 			return "Ocean";
 	}
+	return "";
 }
 
 Planet *Planet::withAtmosphere(std::shared_ptr<Atmosphere> atmosphere) {
@@ -318,6 +324,14 @@ Planet *Planet::withMoon(std::shared_ptr<Planet> moon) {
 	moons.push_back(moon);
 	children.push_back(moon);
 	return this;
+}
+
+void Planet::addNoiseLevel(float roughness, float strength) {
+	noiseConfig->addData(std::pair<float, float>(roughness, strength));
+}
+
+void Planet::setClampUnder(float value) {
+	this->clampUnder->setValue(value);
 }
 
 

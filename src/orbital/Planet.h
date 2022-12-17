@@ -17,8 +17,6 @@ namespace Galax::Orbital {
 
 
     class Planet : public Physics::PhysicalNode {
-
-
     public:
         enum class Type {
             ROCKY,
@@ -59,6 +57,8 @@ namespace Galax::Orbital {
 
         void setIsMouseOver(bool isMouseOver) override;
 
+		void setClampUnder(float value);
+
 		std::string getTypeName();
 
 		std::shared_ptr<Atmosphere> getAtmosphere(){
@@ -68,6 +68,9 @@ namespace Galax::Orbital {
 		std::vector<std::shared_ptr<Planet>> getMoons(){
 			return moons;
 		}
+
+
+		void addNoiseLevel(float roughness, float strength);
 
         [[nodiscard]] std::vector<std::shared_ptr<Renderer::IProgram>> getPrograms() const override;
 
@@ -95,6 +98,9 @@ namespace Galax::Orbital {
 		std::shared_ptr<Animation> rotationAnimation;
 		std::shared_ptr<OrbitAnimation> orbitAnimation;
 		std::shared_ptr<Atmosphere> atmosphere;
+
+		std::shared_ptr<SSBO> noiseConfig;
+
 		std::vector<std::shared_ptr<Planet>> moons;
 		float minTess = 1;
 		float minTessDistance = 3;
@@ -109,6 +115,7 @@ namespace Galax::Orbital {
         int getSizeQueryResult();
 
 
+		std::shared_ptr<Uniform> clampUnder;
 	};
 
 }

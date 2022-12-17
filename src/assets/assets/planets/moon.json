@@ -1,0 +1,24 @@
+{
+  "name": "moon",
+  "clampUnder": 0.000,
+  "minSize": 0.25,
+  "maxSize": 0.75,
+  "noiseSettings": [
+    {
+      "roughness": 0.75,
+      "strength": 0.05
+    },
+    {
+      "roughness": 2,
+      "strength": 0.1
+    },
+    {
+      "roughness": 3,
+      "strength": 0.025
+    },
+    {
+      "roughness": 10,
+      "strength": 0.01
+    }
+    ]
+}

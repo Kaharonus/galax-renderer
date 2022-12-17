@@ -63,7 +63,7 @@ void SolarSystemGenerator::addSun() {
 	auto program = std::make_shared<Program>("Sun Program", vShader, fShader);
 	sun->setProgram(program);
 	sun->setPosition(glm::vec3(0, 0, 0));
-	sun->setScale(glm::vec3(3));
+	sun->setScale(glm::vec3(10));
 	sun->setCamera(camera);
 	scene->addModel(sun);
 
@@ -87,33 +87,9 @@ void SolarSystemGenerator::addSkyBox() {
 
 void SolarSystemGenerator::addPlanets() {
 	auto planetGenerator = std::make_shared<PlanetGenerator>(assets);
-	for (int i = 0; i < 1; i++) {
-		//TODO change the hardcoded values to dynamic ones
-		auto atmosphere = planetGenerator->createAtmosphere();
-		atmosphere->setCamera(camera);
-
-
-		auto orbit = 20 * (i + 1);
-		auto planet = planetGenerator->createFromType(Planet::Type::TEMPERATE);
-		auto moon = planetGenerator->createFromType(Planet::Type::MOON);
-		moon->setParent(planet);
-
-		planet->configure()
-				->withPosition(glm::vec3(orbit, 0, 0))
-				->withSeed(50.0f * (i + 1))
-				->withRadius(1.f + (0.25f * i))
-				->withRotation(10000)
-				//->withOrbit(glm::vec3(orbit, 2, orbit), sun->getPositionUniform())
-				->withCamera(camera)
-				->withAtmosphere(atmosphere)
-				->withMoon(moon);
-
-		moon->configure()
-				->withPosition(glm::vec3(0,3,0))
-				->withSeed(50.0f * (i + 1))
-				->withRadius(0.5f + (0.05 * i))
-				->withRotation(10000)
-				->withCamera(camera);
+	for (int i = 0; i < 5; i++) {
+		auto planet = planetGenerator->createFromType(Planet::Type::TEMPERATE, camera);
+		planet->configure()->withOrbit(planet->getPosition(), sun->getPositionUniform());
 
 		scene->addModel(planet);
 	}

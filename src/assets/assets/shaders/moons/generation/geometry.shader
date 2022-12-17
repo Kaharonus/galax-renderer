@@ -1,4 +1,4 @@
-#version 430 core
+    #version 430 core
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
@@ -16,14 +16,19 @@ out float gsNoise;
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
+uniform float clampUnder;
 
 struct Noise{
     float roughness;
     float strength;
 };
 
+layout (std430) buffer noiseConfig{
+    Noise data[];
+} noiseLevels;
 
-//Simplex noise implementation by Ian McEwan, Ashima Arts
+
+    //Simplex noise implementation by Ian McEwan, Ashima Arts
 
 float hash( in vec3 p )
 {
@@ -120,10 +125,9 @@ float noise(vec3 position, float roughness, float strength){
 }
 
 float evaluateNoise(vec3 position){
-    Noise settings[] = {{0.75, .05} , {2, 0.1}, {3, 0.025}, {10, 0.01}};
     float noiseValue = 0;
-    for(int i = 0; i < settings.length(); i++){
-        Noise n = settings[i];
+    for(int i = 0; i < noiseLevels.data.length(); i++){
+        Noise n = noiseLevels.data[i];
         noiseValue += noise(position, n.roughness, n.strength);
     }
     return -noiseValue;

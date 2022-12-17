@@ -32,6 +32,8 @@ void PhysicalNode::setRotation(const glm::vec3 &rotation) {
 }
 
 void PhysicalNode::update() {
+	//Probably slow. Do not care. Will fix later. Now ill fix it by fucking slowing down the refresh rate LOL
+	setPosition(this->Galax::Renderer::SceneObjects::Node::position);
 	auto physicsPosition = RigidBody::getBodyPosition();
     RigidBody::update();
     auto updatedPhysicsPos = RigidBody::getBodyPosition();

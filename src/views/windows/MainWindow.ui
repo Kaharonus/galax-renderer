@@ -111,7 +111,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="seedInput"/>
+             <widget class="QDraggableDoubleSpinBox" name="seedInput"/>
             </item>
            </layout>
           </item>

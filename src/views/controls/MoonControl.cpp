@@ -36,7 +36,7 @@ void MoonControl::update() {
 	if(!ui->moonSeedInput->hasFocus()){
 		ui->moonSeedInput->setValue(moon->getSeed());
 	}
-	if (moon->getSeed() != this->ui->moonSeedInput->value()) {
+	if (abs(moon->getSeed() - this->ui->moonSeedInput->value()) > .5) {
 		moon->setSeed(ui->moonSeedInput->value());
 	}
 

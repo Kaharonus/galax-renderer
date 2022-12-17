@@ -1,4 +1,4 @@
-#version 430 core
+#version 450 core
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
@@ -18,10 +18,15 @@ struct Noise{
     float strength;
 };
 
+layout (std430) buffer noiseConfig{
+    Noise data[];
+} noiseLevels;
+
 
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 model;
+uniform float clampUnder;
 
 //Simplex noise implementation by Ian McEwan, Ashima Arts
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -102,13 +107,13 @@ float noise(vec3 position, float roughness, float strength){
 }
 
 float evaluateNoise(vec3 position){
-    Noise settings[] = {{0.1, .06} , {1, 0.04}, {3, 0.025}, {10, 0.01}, {20, 0.005}, {50, 0.005},  {100, 0.001}, {200, 0.001}};
+    //Noise settings[] = {{0.1, .06} , {1, 0.04}, {3, 0.025}, {10, 0.01}, {20, 0.005}, {50, 0.005},  {100, 0.001}, {200, 0.001}};
     float noiseValue = 0;
-    for(int i = 0; i < settings.length(); i++){
-        Noise n = settings[i];
+    for(int i = 0; i < noiseLevels.data.length(); i++){
+        Noise n = noiseLevels.data[i];
         noiseValue += noise(position, n.roughness, n.strength);
     }
-    return max(0.009, noiseValue);
+    return max(clampUnder, noiseValue);
 }
 
 

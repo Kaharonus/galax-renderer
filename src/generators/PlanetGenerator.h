@@ -26,13 +26,12 @@ namespace Galax::Generators {
 
 		explicit PlanetGenerator(const std::shared_ptr<AssetLoader> &loader);
 
-        std::shared_ptr<Planet> createFromType(Planet::Type type);
+		std::shared_ptr<Planet> createFromType(Planet::Type type, std::shared_ptr<SpaceCamera> camera);
 
-		std::shared_ptr<Atmosphere> createAtmosphere();
 
     private:
 		void prepareAtmosphere();
-
+		std::shared_ptr<Atmosphere> createAtmosphere(const std::string& name);
 
 		int planetCount = 0;
 
@@ -40,6 +39,7 @@ namespace Galax::Generators {
         std::unordered_map<Planet::Type, std::shared_ptr<Program>> programs;
         std::unordered_map<Planet::Type, std::shared_ptr<PlanetConfig>> configs;
         std::unordered_map<Planet::Type, std::shared_ptr<Texture>> colorPalette;
+		std::unordered_map<Planet::Type, std::vector<std::tuple<float, float>>> noiseConfig;
         std::shared_ptr<Mesh> planetMesh;
 		std::shared_ptr<Mesh> atmosphereMesh;
 		std::shared_ptr<Program> atmosphereProgram;
@@ -55,7 +55,12 @@ namespace Galax::Generators {
 
 		void prepareMoon();
 
+		int rndInt(int min, int max);
+
+		float rndFloat(float min, float max);
+
 		std::shared_ptr<FeedbackProgram> createPlanetGenerator(bool moon);
+
 	};
 
 }

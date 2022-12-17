@@ -14,6 +14,7 @@ using namespace Galax::Orbital;
 using namespace Galax::Generators;
 
 PlanetGenerator::PlanetGenerator(const std::shared_ptr<AssetLoader> &loader) {
+	srand(static_cast <unsigned> (time(0)));
 	this->loader = loader;
 	std::vector<std::string> types = {"temperate"};
 
@@ -57,19 +58,63 @@ PlanetGenerator::PlanetGenerator(const std::shared_ptr<AssetLoader> &loader) {
 	for(int i = 0; i < paths.size(); i++) {
 		planetGeneratorShaders[i] = loader->getShader(paths[i], pathTypes[i]);
 	}
+
+
 }
 
-
-std::shared_ptr<Planet> PlanetGenerator::createFromType(Galax::Orbital::Planet::Type type) {
+//This function is terrible. It was okay ish but i was doing a lot of last minute changes and didnt have time to do a proper refactor
+//TODO: actually do this correctly
+std::shared_ptr<Planet> PlanetGenerator::createFromType(Galax::Orbital::Planet::Type type, std::shared_ptr<SpaceCamera> camera) {
 	planetCount++;
-    auto planet = std::make_shared<Planet>("Planet " + std::to_string(planetCount), type);
-    planet->setProgram(programs[type]);
 	bool isMoon = type == Planet::Type::MOON;
+	auto config = configs[type];
+	auto name =(isMoon ? "Moon " : "Planet ") + std::to_string(planetCount);
+    auto planet = std::make_shared<Planet>(name, type);
+    planet->setProgram(programs[type]);
     planet->setGeneratorProgram(createPlanetGenerator(isMoon));
     planet->setMesh(planetMesh);
     planet->setBodyMass(5);
-	if(!isMoon){
-		planet->addTexture(colorPalette[type]);
+	planet->setClampUnder(config->clampUnder);
+
+	for(auto noiseLevel: config->noiseSettings){
+		planet->addNoiseLevel(noiseLevel.roughness, noiseLevel.strength);
+	}
+	planet->configure()
+			->withSeed(rndFloat(0,500))
+			->withCamera(camera);
+
+	if(isMoon){ // This shit doesnt need more configuration.
+		return planet;
+	}
+	auto xy = rndFloat(-250,250);
+	auto position = glm::vec3(xy,rndFloat(-2,2), xy);
+	planet->configure()
+			->withRadius(rndFloat(config->minSize, config->maxSize))
+			->withPosition(position)
+			->withRotation(10000);
+
+
+	planet->addTexture(colorPalette[type]);
+	auto moonCount = rndInt(config->minMoons, config->maxMoons);
+	auto moonConfig = configs[Orbital::Planet::Type::MOON];
+	for(int i = 0; i < moonCount; i++){
+		auto moon = createFromType(Planet::Type::MOON, camera);
+		moon->setParent(planet);
+		planet->configure()->withMoon(moon);
+		auto position = glm::vec3(rndFloat(-8,8),rndFloat(-8,8), rndFloat(-8,8));
+		moon->configure()
+				->withPosition(position)
+				->withRadius(rndFloat(moonConfig->minSize, moonConfig->maxSize))
+				->withRotation(5000);
+	}
+
+	if(!config->atmosphere.color.empty()){
+		auto atmo = createAtmosphere("Atmosphere (" + name + ")");
+		atmo->setDensity(config->atmosphere.density);
+		atmo->setColor(glm::vec3(config->atmosphere.color[0], config->atmosphere.color[1], config->atmosphere.color[2]));
+		atmo->setRadius(config->atmosphere.radius);
+		atmo->setCamera(camera);
+		planet->configure()->withAtmosphere(atmo);
 	}
     return planet;
 }
@@ -78,8 +123,8 @@ std::shared_ptr<Planet> PlanetGenerator::createFromType(Galax::Orbital::Planet::
 
 
 
-std::shared_ptr<Atmosphere> PlanetGenerator::createAtmosphere(){
-	auto atmosphere = std::make_shared<Atmosphere>("Atmosphere");
+std::shared_ptr<Atmosphere> PlanetGenerator::createAtmosphere(const std::string& name){
+	auto atmosphere = std::make_shared<Atmosphere>(name);
 	atmosphere->setMesh(atmosphereMesh);
 	atmosphere->setScale(glm::vec3(1.5f));
 	atmosphere->setProgram(atmosphereProgram);
@@ -123,6 +168,9 @@ void PlanetGenerator::prepareMoon() {
 	moonGeneratorShaders[2] = gs;
 	moonGeneratorShaders[3] = tcs;
 	moonGeneratorShaders[4] = tes;
+
+	auto config = loader->getJson<Assets::PlanetConfig>("planets/moon.json");
+	configs[Orbital::Planet::Type::MOON] = config;
 }
 
 
@@ -235,6 +283,12 @@ glm::vec3 PlanetGenerator::fromHex(const std::string &hex) {
     return {0, 0, 0};
 }
 
+int PlanetGenerator::rndInt(int min, int max) {
+	return rand() % (max - min + 1) + min;
+}
 
+float PlanetGenerator::rndFloat(float min, float max) {
+	return min + static_cast <float> (rand()) /(static_cast <float>(RAND_MAX)/(max-min));
+}
 
 

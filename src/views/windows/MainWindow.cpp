@@ -48,9 +48,9 @@ void MainWindow::uiRefresh() {
 	{ //Planet
 		ui->planetType->setText(planet->getTypeName().c_str());
 		if (!ui->seedInput->hasFocus()) {
-			ui->seedInput->setValue(this->selectedPlanet->getSeed());
+			ui->seedInput->setValue(planet->getSeed());
 		}
-		if (planet->getSeed() != this->ui->seedInput->value()) {
+		if (abs(planet->getSeed() - this->ui->seedInput->value()) > 0.5) {
 			planet->setSeed(ui->seedInput->value());
 		}
 
@@ -116,7 +116,7 @@ void MainWindow::setupRenderer(const QSurfaceFormat &format) {
 }
 
 void MainWindow::setupPhysics() {
-	physicsEngine = new PhysicsEngine(inputHandler, 1 / 60.f, this);
+	physicsEngine = new PhysicsEngine(inputHandler, 1 / 30.f, this);
 }
 
 
@@ -157,6 +157,7 @@ void MainWindow::loadScene(const std::string &path) {
 				auto c = new MoonControl(moon, i,nullptr);
 				moonControls.push_back(c);
 				ui->moonList->addWidget(c);
+				i++;
 			}
 		}
 
