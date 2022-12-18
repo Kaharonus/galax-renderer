@@ -23,8 +23,8 @@ namespace Galax::Orbital{
 	protected:
 		void calculateDistance();
 		std::shared_ptr<IRenderNode> followedObject;
-		float distance = 2;
-		float targetDistance = 2;
+		float distance = 5;
+		float targetDistance = 5;
 	};
 }
 

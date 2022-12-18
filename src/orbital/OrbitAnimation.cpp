@@ -31,7 +31,6 @@ void OrbitAnimation::updateTime() {
 
     animationLength = (animationSpeed / 1000.0) / speed;
 
-    this->previousTime = Galax::Renderer::SceneObject::currentTime;
     this->animationTime += this->frameTime;
     if(animationTime > this->animationLength){
         animationTime = 0;
@@ -40,6 +39,10 @@ void OrbitAnimation::updateTime() {
 }
 
 void OrbitAnimation::update() {
+
+	if(!isRunning){
+		return;
+	}
 
     if(Galax::Renderer::SceneObject::currentTime == this->previousTime){
         return; //Already calculated at this time, should be ok, but might not be.
@@ -93,18 +96,13 @@ void OrbitAnimation::setOffset(glm::vec3 offset) {
     this->offset = offset;
 }
 
-void OrbitAnimation::start() {
-    //Empty - this animation always runs
+void OrbitAnimation::start(){
+	isRunning = true;
 }
 
 void OrbitAnimation::stop() {
-    //Empty - this animation always runs
-
+	isRunning = false;
 }
-
-
-
-
 
 
 

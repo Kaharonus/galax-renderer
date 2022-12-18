@@ -79,17 +79,26 @@ void Camera::update() {
     if (!acceptingInput || input == nullptr) {
         return;
     }
+
+	auto moveSpeed = movementSpeed;
+	if(input->isKeyPressed(InputHandler::KEY_SHIFT)){
+		moveSpeed *= 5;
+	}
+	if(input->isKeyPressed(InputHandler::KEY_CONTROL)){
+		moveSpeed *= 0.2;
+	}
+
     if (input->isKeyPressed(InputHandler::KEY_W)) {
-        position += front * movementSpeed * frameTime;
+        position += front * moveSpeed * frameTime;
     }
     if (input->isKeyPressed(InputHandler::KEY_S)) {
-        position -= front * movementSpeed * frameTime;
+        position -= front * moveSpeed * frameTime;
     }
     if (input->isKeyPressed(InputHandler::KEY_A)) {
-        position -= right * movementSpeed * frameTime;
+        position -= right * moveSpeed * frameTime;
     }
     if (input->isKeyPressed(InputHandler::KEY_D)) {
-        position += right * movementSpeed * frameTime;
+        position += right * moveSpeed * frameTime;
     }
 
     cameraPositionUniform->setValue(position);

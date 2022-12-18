@@ -194,12 +194,17 @@ void main() {
     float depth = distance(cameraPosition, position);
 
     vec4 atm = calculate_scattering(viewspaceCamera, -normalize(viewspacePosition), depth, lightDirection);
+    if(atm.w == 0){
+        discard;
+    }
     atm.w = clamp(atm.w, 0.0001, 1.0);
+
     if(isnan(atm.x) || isnan(atm.y) || isnan(atm.z)){ // Damn you NaN
         color = vec4(0);
     }else{
         //Adjus color for sun color and intensity
         color = vec4(atm.xyz / atm.w, atm.w);
     }
+
     emission = color * 1;
 }

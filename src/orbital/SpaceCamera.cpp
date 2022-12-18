@@ -69,6 +69,9 @@ void SpaceCamera::update() {
 
 void SpaceCamera::follow(const std::shared_ptr<IRenderNode> &object) {
 	followedObject = object;
+	if(object){
+		distance = targetDistance = object->getScale().x * 4;
+	}
 
 }
 

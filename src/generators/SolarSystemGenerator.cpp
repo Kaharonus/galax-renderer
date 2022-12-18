@@ -165,7 +165,8 @@ void SolarSystemGenerator::addFXAA() {
 void SolarSystemGenerator::addCamera() {
 	camera = std::make_shared<SpaceCamera>("freeCam");
 	camera->acceptInput(true);
-	camera->setPosition(glm::vec3(20, 0, -8));
+	camera->setRotation(0, 89);
+	camera->setPosition(glm::vec3(0, 200, 0));
 }
 
 

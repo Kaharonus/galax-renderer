@@ -51,6 +51,8 @@ namespace Galax::Orbital {
 		}
 
     private:
+		bool isRunning = true;
+
         glm::vec3 currentPosition = {0, 0, 0};
         glm::vec3 radius = {0, 0, 0};
         glm::vec3 offset = {0, 0, 0};

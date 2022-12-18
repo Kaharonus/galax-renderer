@@ -1,7 +1,7 @@
 {
   "name": "temperate",
   "clampUnder": 0.009,
-  "minMoons": 1,
+  "minMoons": 0,
   "maxMoons": 2,
   "minSize": 1.0,
   "maxSize": 3.0,

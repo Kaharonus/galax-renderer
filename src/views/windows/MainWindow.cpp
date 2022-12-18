@@ -38,6 +38,36 @@ MainWindow::MainWindow(const QSurfaceFormat &format, QWidget *parent, Qt::Window
 	loadScene("scenes/solar-system.json");
 	ui->atmosphereWidget->setVisible(false);
 
+	connect(this->ui->pauseAnimationsButton, &QPushButton::clicked, this, [&]{
+		auto scene =this->renderer->getScene();
+		if(!scene){
+			return;
+		}
+		pauseAnimations(scene);
+	});
+
+}
+
+
+void MainWindow::pauseNode(std::shared_ptr<IRenderNode> node){
+	auto anim = node->getAnimations();
+	for(auto animation: anim){
+		if(pause){
+			animation->stop();
+		}else{
+			animation->start();
+		}
+	}
+	for(const auto& child: node->getChildren()){
+		pauseNode(child);
+	}
+}
+
+void MainWindow::pauseAnimations(std::shared_ptr<Scene> scene){
+	for(const auto& model :scene->getModels()){
+		pauseNode(model);
+	}
+	pause = !pause;;
 }
 
 void MainWindow::uiRefresh() {

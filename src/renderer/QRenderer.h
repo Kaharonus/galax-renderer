@@ -46,6 +46,9 @@ namespace Galax::Renderer {
         void setLightingModel(std::shared_ptr<LightingModel> lightingModel);
         void addPostProcess(std::shared_ptr<IPostProcessEffect> postProcess);
 
+		std::shared_ptr<Scene> getScene(){
+			return scene;
+		}
         double getFrameTime() const;
 
         ~QRenderer();

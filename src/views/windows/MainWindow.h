@@ -29,6 +29,7 @@ public:
     ~MainWindow() override;
 
 private:
+	bool pause = true;
     void setupRenderer(const QSurfaceFormat &format);
     void loadScene(const std::string& path);
 
@@ -52,4 +53,8 @@ private:
 	std::vector<std::shared_ptr<IRigidBody>> getPhysical(std::shared_ptr<Scene> scene);
 
 	void uiRefresh();
+
+	void pauseAnimations(std::shared_ptr<Scene> scene);
+
+	void pauseNode(std::shared_ptr<IRenderNode> node);
 };
