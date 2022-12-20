@@ -1,0 +1,40 @@
+{
+  "name": "ocean",
+  "clampUnder": 1.000,
+  "minMoons": 0,
+  "maxMoons": 0,
+  "minSize": 2.0,
+  "maxSize": 2.5,
+  "noiseSettings": [
+    {
+      "roughness": 0.1,
+      "strength": 0.06
+    }
+  ],
+  "colorPalette": [
+    {
+      "name": "ocean",
+      "heightStart": 0.0,
+      "transition": 1.0,
+      "colors": [
+        {
+          "color": "#003C5F",
+          "endPoint": 0.1
+        },
+        {
+          "color": "#005EB8",
+          "endPoint": 0.75
+        },
+        {
+          "color": "#75AEDC",
+          "endPoint": 1.0
+        }
+      ]
+    }
+  ],
+  "atmosphere": {
+    "color": [4.0, 8.0, 12.0],
+    "radius": 4.42,
+    "density": 10
+  }
+}

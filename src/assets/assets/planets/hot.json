@@ -1,0 +1,113 @@
+{
+  "name": "hot",
+  "clampUnder": 0.00,
+  "minMoons": 1,
+  "maxMoons": 2,
+  "minSize": 2.0,
+  "maxSize": 3.0,
+  "noiseSettings": [
+    {
+      "roughness": 0.1,
+      "strength": 0.06
+    },
+    {
+      "roughness": 1,
+      "strength": 0.04
+    },
+    {
+      "roughness": 3,
+      "strength": 0.025
+    },
+    {
+      "roughness": 10,
+      "strength": 0.01
+    },
+    {
+      "roughness": 20,
+      "strength": 0.005
+    },
+    {
+      "roughness": 50,
+      "strength": 0.005
+    },
+    {
+      "roughness": 100,
+      "strength": 0.001
+    },
+    {
+      "roughness": 200,
+      "strength": 0.001
+    }
+  ],
+  "colorPalette": [
+    {
+      "name": "lava",
+      "heightStart": 0.0,
+      "transition": 1.0,
+      "colors": [
+        {
+          "color": "#CF1020",
+          "endPoint": 0.1
+        },
+        {
+          "color": "#cc4422",
+          "endPoint": 0.8
+        },
+        {
+          "color": "#ff8d5c",
+          "endPoint": 1.0
+        }
+      ]
+    },
+    {
+      "name": "rocks",
+      "heightStart": 0.3,
+      "transition": 1.0,
+      "colors": [
+        {
+          "color": "#333333",
+          "endPoint": 0.2
+        },
+        {
+          "color": "#444444",
+          "endPoint": 1
+        }
+      ]
+    },
+    {
+      "name": "yellow",
+      "heightStart": 0.8500,
+      "transition": 1.0,
+      "colors": [
+        {
+          "color": "#887711",
+          "endPoint": 0.2
+        },
+        {
+          "color": "#998A10",
+          "endPoint": 1
+        }
+      ]
+    },
+    {
+      "name": "yellow",
+      "heightStart": 1.00,
+      "transition": 1.0,
+      "colors": [
+        {
+          "color": "#AA55AA",
+          "endPoint": 0.2
+        },
+        {
+          "color": "#AA66AA",
+          "endPoint": 1
+        }
+      ]
+    }
+  ],
+  "atmosphere": {
+    "color": [1.0, 1.0, 6.0],
+    "radius": 1.2,
+    "density": 0.3
+  }
+}

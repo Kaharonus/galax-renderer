@@ -22,7 +22,7 @@ namespace Galax::Renderer {
 
         IShader() : SceneObject() {};
 
-        IShader(const std::string &name) : SceneObject(name) {};
+        IShader(const std::string &name) : SceneObject(name, true) {};
 
         virtual ~IShader() = default;
 

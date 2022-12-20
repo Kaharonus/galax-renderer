@@ -16,7 +16,7 @@ using namespace Galax::Generators;
 PlanetGenerator::PlanetGenerator(const std::shared_ptr<AssetLoader> &loader) {
 	srand(static_cast <unsigned> (time(0)));
 	this->loader = loader;
-	std::vector<std::string> types = {"temperate"};
+	std::vector<std::string> types = {"temperate", "rocky", "ocean", "hot"};
 
 	for (auto &typeName: types) {
 		//Load the programs
@@ -35,7 +35,10 @@ PlanetGenerator::PlanetGenerator(const std::shared_ptr<AssetLoader> &loader) {
 		configs[type] = config;
 
 		//Generate color palettes
-		generatePalette(type);
+		if(!config->colorPalette.empty()){
+			generatePalette(type);
+
+		}
 	}
 
 	prepareAtmosphere();
@@ -86,8 +89,11 @@ std::shared_ptr<Planet> PlanetGenerator::createFromType(Galax::Orbital::Planet::
 	if(isMoon){ // This shit doesnt need more configuration.
 		return planet;
 	}
-	auto xy = rndFloat(-250,250);
-	auto position = glm::vec3(xy,rndFloat(-2,2), xy);
+	glm::vec3 position = glm::vec3(0);
+	while(glm::length(position) < 10){
+		auto xy = rndFloat(-250,250);
+		position = glm::vec3(xy,rndFloat(-2,2), xy);
+	}
 	planet->configure()
 			->withRadius(rndFloat(config->minSize, config->maxSize))
 			->withPosition(position)
@@ -126,7 +132,7 @@ std::shared_ptr<Planet> PlanetGenerator::createFromType(Galax::Orbital::Planet::
 std::shared_ptr<Atmosphere> PlanetGenerator::createAtmosphere(const std::string& name){
 	auto atmosphere = std::make_shared<Atmosphere>(name);
 	atmosphere->setMesh(atmosphereMesh);
-	atmosphere->setScale(glm::vec3(1.5f));
+	atmosphere->setScale(glm::vec3(5.f));
 	atmosphere->setProgram(atmosphereProgram);
 	atmosphere->setTransparent(true);
 	return atmosphere;
@@ -141,7 +147,6 @@ void PlanetGenerator::prepareAtmosphere(){
 
 Planet::Type PlanetGenerator::fromStr(const std::string &str) {
     if (str == "rocky") return Planet::Type::ROCKY;
-    if (str == "ice") return Planet::Type::ICE;
     if (str == "hot") return Planet::Type::HOT;
     if (str == "temperate") return Planet::Type::TEMPERATE;
     if (str == "ocean") return Planet::Type::OCEAN;

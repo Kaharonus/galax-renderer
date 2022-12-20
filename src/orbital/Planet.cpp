@@ -240,8 +240,7 @@ std::string Planet::getTypeName(){
 			return "Moon";
 		case Type::ROCKY:
 			return "Rocky";
-		case Type::ICE:
-			return "Ice";
+
 		case Type::HOT:
 			return "Hot";
 		case Type::OCEAN:

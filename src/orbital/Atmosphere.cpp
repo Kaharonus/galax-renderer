@@ -39,7 +39,7 @@ void Atmosphere::draw(glm::mat4 parentModel) {
 
 	if (this->parent) {
 		position = this->parent->getRelativePosition();
-		scale = this->parent->getRelativeScale();
+		scale = this->parent->getScale();
 	}
 
 	//Recreate model matrix without rotation

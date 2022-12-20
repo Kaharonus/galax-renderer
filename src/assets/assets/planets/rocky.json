@@ -1,8 +1,72 @@
 {
   "name": "rocky",
+  "clampUnder": -1.000,
+  "minMoons": 2,
+  "maxMoons": 4,
+  "minSize": 0.5,
+  "maxSize": 6.0,
+  "noiseSettings": [
+    {
+      "roughness": 0.1,
+      "strength": 0.5
+    },
+    {
+      "roughness": 1,
+      "strength": 0.04
+    },
+    {
+      "roughness": 3,
+      "strength": 0.05
+    },
+    {
+      "roughness": 10,
+      "strength": 0.02
+    },
+    {
+      "roughness": 20,
+      "strength": 0.005
+    },
+    {
+      "roughness": 50,
+      "strength": 0.005
+    }
+  ],
   "colorPalette": [
-
-
+    {
+      "name": "mud",
+      "heightStart": 0.000,
+      "transition": 0.05,
+      "colors": [
+        {
+          "color": "#5A3F1D",
+          "endPoint": 0.25
+        },{
+          "color": "#687C6A",
+          "endPoint": 1
+        }
+      ]
+    },
+    {
+      "name": "rock",
+      "heightStart": 0.1,
+      "transition": 0.25,
+      "colors": [
+        {
+          "color": "#666666",
+          "endPoint": 1
+        }
+      ]
+    },
+    {
+      "name": "rock",
+      "heightStart": 1,
+      "transition": 1,
+      "colors": [
+        {
+          "color": "#556644",
+          "endPoint": 1
+        }
+      ]
+    }
   ]
-
 }

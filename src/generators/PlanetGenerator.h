@@ -28,6 +28,9 @@ namespace Galax::Generators {
 
 		std::shared_ptr<Planet> createFromType(Planet::Type type, std::shared_ptr<SpaceCamera> camera);
 
+		static int rndInt(int min, int max);
+
+		static float rndFloat(float min, float max);
 
     private:
 		void prepareAtmosphere();
@@ -55,9 +58,6 @@ namespace Galax::Generators {
 
 		void prepareMoon();
 
-		int rndInt(int min, int max);
-
-		float rndFloat(float min, float max);
 
 		std::shared_ptr<FeedbackProgram> createPlanetGenerator(bool moon);
 

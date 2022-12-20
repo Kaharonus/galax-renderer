@@ -20,7 +20,6 @@ namespace Galax::Orbital {
     public:
         enum class Type {
             ROCKY,
-            ICE,
             HOT,
             TEMPERATE,
             OCEAN,

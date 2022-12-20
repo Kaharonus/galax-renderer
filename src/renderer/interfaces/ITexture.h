@@ -50,7 +50,7 @@ namespace Galax::Renderer {
 
         ITexture() : SceneObject() {};
 
-        ITexture(const std::string &name) : SceneObject(name) {};
+        ITexture(const std::string &name) : SceneObject(name, true) {};
 
         [[nodiscard]] virtual std::tuple<int, int, int> getDimensions() const = 0;
 

@@ -87,10 +87,10 @@ void SolarSystemGenerator::addSkyBox() {
 
 void SolarSystemGenerator::addPlanets() {
 	auto planetGenerator = std::make_shared<PlanetGenerator>(assets);
-	for (int i = 0; i < 5; i++) {
-		auto planet = planetGenerator->createFromType(Planet::Type::TEMPERATE, camera);
+	std::vector<Planet::Type> types = {Planet::Type::TEMPERATE, Planet::Type::ROCKY, Planet::Type::OCEAN, Planet::Type::HOT};
+	for(auto type: types){
+		auto planet = planetGenerator->createFromType(type, camera);
 		planet->configure()->withOrbit(planet->getPosition(), sun->getPositionUniform());
-
 		scene->addModel(planet);
 	}
 }
