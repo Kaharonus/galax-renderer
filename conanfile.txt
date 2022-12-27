@@ -3,5 +3,6 @@ glbinding/3.1.0
 physfs/3.0.2
 nlohmann_json/3.11.0
 libspng/0.7.2
+fpgen/1.1.0
 [generators]
 cmake

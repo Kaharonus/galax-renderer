@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "impl/Node.h"
+#include "impl/RenderNode.h"
 #include "impl/Mesh.h"
 #include "impl/Program.h"
 #include "impl/Shader.h"
@@ -11,10 +11,17 @@
 #include "GBuffer.h"
 #include "LightingModel.h"
 
+#undef foreach
+#include <fpgen/fpgen.hpp>
+
+
+#include <iterator>
 #include <iostream>
+#include <coroutine>
 #include <set>
 #include <memory>
 #include <vector>
+#include <Extensions.h>
 
 using namespace Galax::Renderer::SceneObjects;
 
@@ -23,6 +30,7 @@ namespace Galax::Renderer {
 
 	class Scene {
 	public:
+
 		Scene();
 
 		~Scene();
@@ -47,12 +55,14 @@ namespace Galax::Renderer {
 
 		[[nodiscard]] virtual std::shared_ptr<FrameBuffer> getTransparencyBuffer() const;
 
-
 		virtual void build();
 
 		virtual void draw();
 
 		virtual void drawTransparent();
+
+
+		fpgen::generator<std::shared_ptr<IRenderNode>> getAllNodes();
 
 	protected:
 		void addCamera(std::shared_ptr<ICamera> camera);

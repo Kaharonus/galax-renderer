@@ -1,229 +1,50 @@
+
 //
-// Created by tomas on 2.8.22.
+// Created by tomas on 02.10.21.
 //
 
-// You may need to build the project (run Qt uic code generator) to get "ui_MainWindow.h" resolved
-#include <assets/AssetLoader.h>
-#include <generators/SolarSystemGenerator.h>
-#include <physics/PhysicsEngine.h>
-#include <views/controls/QDraggableDoubleSpinBox.h>
+
+#include <QCodeEditor>
+#include <QEvent>
+#include <QGLSLCompleter>
+#include <QGLSLHighlighter>
+#include <QGridLayout>
+#include <QKeyEvent>
+#include <QLayout>
+#include <QPushButton>
+#include <QString>
+#include <QSyntaxStyle>
+#include <QWidget>
+#include <QLabel>
+#include <QStyleFactory>
+#include <memory>
+#include <cxxabi.h>
+#include <sstream>
 
 #include "ui_MainWindow.h"
 #include "MainWindow.h"
-#include "Extensions.h"
 
-#include <QGridLayout>
-
-
-using namespace Galax::Renderer;
-using namespace Galax::Generators;
-using namespace Galax::Physics;
+#include "views/controls/generic/QDataTreeItem.h"
+#include "views/controls/scene/CameraControl.h"
+#include "views/controls/scene/NodeControl.h"
+#include "views/controls/scene/TextureControl.h"
+#include "views/controls/scene/CodeEditor.h"
 
 
-MainWindow::MainWindow(const QSurfaceFormat &format, QWidget *parent, Qt::WindowFlags flags) :
-		QMainWindow(parent, flags), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
 	ui->setupUi(this);
+	this->nodeView = ui->nodeView;
+	connect(nodeView, &QTreeWidget::itemSelectionChanged, this, &MainWindow::onItemClicked);
 
-	this->inputHandler = std::make_shared<InputHandler>();
-	setupRenderer(format);
-	setupPhysics();
-	this->sceneLoader = std::make_shared<SceneLoader>("assets.data", "scenes");
-	this->sceneLoader->registerGenerator(std::make_shared<SolarSystemGenerator>());
-
-	refreshTimer = new QTimer(this);
-	refreshTimer->setInterval(33);
-	connect(refreshTimer, &QTimer::timeout, this, &MainWindow::uiRefresh);
-	refreshTimer->start();
-
-	loadScene("scenes/solar-system.json");
-	ui->atmosphereWidget->setVisible(false);
-
-	connect(this->ui->pauseAnimationsButton, &QPushButton::clicked, this, [&]{
-		auto scene =this->renderer->getScene();
-		if(!scene){
-			return;
-		}
-		pauseAnimations(scene);
-	});
-
-}
-
-
-void MainWindow::pauseNode(std::shared_ptr<IRenderNode> node){
-	auto anim = node->getAnimations();
-	for(auto animation: anim){
-		if(pause){
-			animation->stop();
-		}else{
-			animation->start();
-		}
-	}
-	for(const auto& child: node->getChildren()){
-		pauseNode(child);
-	}
-}
-
-void MainWindow::pauseAnimations(std::shared_ptr<Scene> scene){
-	for(const auto& model :scene->getModels()){
-		pauseNode(model);
-	}
-	pause = !pause;;
-}
-
-void MainWindow::uiRefresh() {
-	if (!this->selectedPlanet) {
-		return;
-	}
-	auto planet = this->selectedPlanet;
-	{ //Planet
-		ui->planetType->setText(planet->getTypeName().c_str());
-		if (!ui->seedInput->hasFocus()) {
-			ui->seedInput->setValue(planet->getSeed());
-		}
-		if (abs(planet->getSeed() - this->ui->seedInput->value()) > 0.5) {
-			planet->setSeed(ui->seedInput->value());
-		}
-
-		if (!ui->scaleInput->hasFocus()) {
-			ui->scaleInput->setValue(planet->getSize());
-		}
-		planet->setSize(ui->scaleInput->value());
-
-		if (!ui->speedInput->hasFocus()) {
-			ui->speedInput->setValue(planet->getSpeed());
-		}
-		planet->setSpeed(ui->speedInput->value());
-	}
-
-	auto atmo = planet->getAtmosphere();
-	ui->atmosphereWidget->setVisible(atmo != nullptr);
-	if (atmo) {
-		auto color = atmo->getColor();
-		if (!ui->colorR->hasFocus()) {
-			ui->colorR->setValue(color.r);
-		}
-		if (!ui->colorG->hasFocus()) {
-			ui->colorG->setValue(color.g);
-		}
-		if (!ui->colorB->hasFocus()) {
-			ui->colorB->setValue(color.b);
-		}
-		atmo->setColor(glm::vec3(ui->colorR->value(), ui->colorG->value(), ui->colorB->value()));
-
-		if (!ui->atmoSizeInput->hasFocus()) {
-			ui->atmoSizeInput->setValue(atmo->getRadius());
-		}
-		atmo->setRadius(ui->atmoSizeInput->value());
-
-		if (!ui->densityInput->hasFocus()) {
-			ui->densityInput->setValue(atmo->getDensity());
-		}
-		atmo->setDensity(ui->densityInput->value());
-	}
-
-	for (const auto &moon: this->moonControls) {
-		moon->update();
-	}
-
-
-}
-
-
-void MainWindow::setupRenderer(const QSurfaceFormat &format) {
-	renderer = new QRenderer(inputHandler, format);
-	//renderer->setVerticalSync(Galax::Renderer::QRenderer::Disabled);
-	auto widget = QWidget::createWindowContainer(renderer);
-	widget->setAutoFillBackground(false); // Important for overdraw, not occluding the scee.
-	widget->setFocusPolicy(Qt::TabFocus);
-	widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
-	auto layout = this->findChild<QGridLayout *>("layout");
-	layout->addWidget(widget);
-	show();
-	renderOptionsWindow = new RenderOptions(this);
-	renderOptionsWindow->show();
-
-	this->ui->splitter->setSizes({60, 200});
-}
-
-void MainWindow::setupPhysics() {
-	physicsEngine = new PhysicsEngine(inputHandler, 1 / 30.f, this);
-}
-
-
-void MainWindow::loadScene(const std::string &path) {
-
-	auto sceneData = this->sceneLoader->loadScene(path);
-	if (!sceneData) {
-		return;
-	}
-	auto scene = sceneData->scene;
-	auto effects = sceneData->postProcessEffects;
-
-	renderer->setScene(scene);
-	renderer->setLightingModel(scene->getLightingModel());
-	for (auto &effect: sceneData->postProcessEffects) {
-		renderer->addPostProcess(effect);
-	}
-	renderOptionsWindow->setScene(scene, scene->getLightingModel(), effects);
-
-	inputHandler->registerMouseClickOnCallback([&](auto body, auto button) {
-		//Check if it is a planet
-		std::shared_ptr<IRenderNode> node;
-		try {
-			node = std::any_cast<std::shared_ptr<IRenderNode>>(body);
-		} catch (...) {
-			return;
-		}
-		auto planet = std::dynamic_pointer_cast<Planet>(node);
-		this->selectedPlanet = planet;
-		for (auto control: moonControls) {
-			ui->moonList->removeWidget(control);
-			control->deleteLater();
-		}
-		moonControls.clear();
-		if (this->selectedPlanet) {
-			int i = 0;
-			for (const auto& moon: planet->getMoons()) {
-				auto c = new MoonControl(moon, i,nullptr);
-				moonControls.push_back(c);
-				ui->moonList->addWidget(c);
-				i++;
-			}
-		}
-
-	});
-
-	//FIX - unsafe
-	physicsEngine->setCamera(scene->getModels()[0]->getCamera());
-
-	auto physics = getPhysical(scene);
-	for (auto &item: physics) {
-		physicsEngine->addRigidBody(item);
-	}
-}
-
-std::vector<std::shared_ptr<IRigidBody>> MainWindow::getPhysical(std::shared_ptr<Scene> scene) {
-	auto physical = std::vector<std::shared_ptr<IRigidBody>>();
-	for (auto &node: scene->getModels()) {
-		auto p = getPhysical(node);
-		if (auto planet = std::dynamic_pointer_cast<Planet>(node)) {
-			p.push_back(planet);
-		}
-		physical.insert(physical.end(), p.begin(), p.end());
-	}
-	return physical;
-}
-
-std::vector<std::shared_ptr<IRigidBody>> MainWindow::getPhysical(const std::shared_ptr<IRenderNode> &node) {
-	std::vector<std::shared_ptr<IRigidBody>> physical;
-	for (const auto &child: node->getChildren()) {
-		if (auto planet = std::dynamic_pointer_cast<IRigidBody>(child)) {
-			physical.push_back(planet);
-		}
-		auto children = getPhysical(child);
-		physical.insert(physical.end(), children.begin(), children.end());
-	}
-	return physical;
+	dataView = this->findChild<QTabWidget *>("dataView");
+	dataView->setTabsClosable(true);
+	dataView->setMovable(true);
+	connect(dataView, &QTabWidget::tabCloseRequested, this, &MainWindow::onTabCloseRequest);
+	auto defaultText = new QLabel("No item selected");
+	defaultText->setAlignment(Qt::AlignCenter);
+	defaultText->setFixedWidth(500);
+	dataView->addTab(defaultText, "Welcome");
+	tabs.emplace_back(nullptr, defaultText);
 }
 
 
@@ -231,4 +52,202 @@ MainWindow::~MainWindow() {
 	delete ui;
 }
 
+
+void MainWindow::addTab(QWidget *widget, std::shared_ptr<SceneObject> object){
+	for(auto& [o, w] : tabs){
+		if(o == object){
+			dataView->setCurrentWidget(w);
+			return;
+		}
+	}
+	dataView->addTab(widget, object->getName().c_str());
+	tabs.emplace_back(object, widget);
+	dataView->setCurrentWidget(widget);
+}
+
+void MainWindow::onItemClicked() {
+
+	auto shader = dynamic_cast<QDataTreeItem<IShader> *>(nodeView->currentItem());
+	if (shader) {
+		auto editor = new CodeEditor(shader->getData(), this);
+		addTab(editor, shader->getData());
+		return;
+	}
+	auto camera = dynamic_cast<QDataTreeItem<ICamera> *>(nodeView->currentItem());
+	if (camera) {
+		auto cam = new CameraControl(camera->getData(), this);
+		addTab(cam, camera->getData());
+
+		return;
+	}
+	auto node = dynamic_cast<QDataTreeItem<IRenderNode> *>(nodeView->currentItem());
+	if (node) {
+		auto nodeControl = new NodeControl(node->getData(), this);
+		addTab(nodeControl, node->getData());
+		return;
+	}
+
+	auto texture = dynamic_cast<QDataTreeItem<ITexture> *>(nodeView->currentItem());
+	if (texture) {
+		auto tex = new TextureControl(texture->getData(), this);
+		addTab(tex, texture->getData());
+		return;
+	}
+}
+
+void MainWindow::addNode(std::shared_ptr<IRenderNode> node, QTreeWidgetItem *parent) {
+	// TODO: Add more options to the debug window
+
+	// Builds the base of the node
+	auto root = parent ? new QDataTreeItem<IRenderNode>(parent) : new QDataTreeItem<IRenderNode>(nodeView);
+	root->setText(0, type(*node).c_str());
+	root->setText(1, node->getName().data());
+	root->setData(node);
+	// Adds program information
+	for (auto program: node->getPrograms()) {
+		if (program) {
+			auto programNode = new QTreeWidgetItem(root);
+			programNode->setText(0, type(*program).c_str());
+			programNode->setText(1, program->getName().data());
+			for (auto shader: program->getShaders()) {
+				auto shaderNode = new QDataTreeItem<IShader>(programNode);
+				shaderNode->setData(shader);
+				shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
+				shaderNode->setText(1, shader->getName().data());
+			}
+		}
+	}
+
+	//Adds the mesh
+	auto mesh = node->getMesh();
+	if (mesh) {
+		auto meshNode = new QTreeWidgetItem(root);
+		meshNode->setText(0, type(*mesh).c_str());
+		meshNode->setText(1, mesh->getName().data());
+	}
+
+
+	//Add the camera
+	auto camera = node->getCamera();
+	if (camera) {
+		auto cameraNode = new QDataTreeItem<ICamera>(root);
+		cameraNode->setData(camera);
+		cameraNode->setText(0, type(*camera).c_str());
+		cameraNode->setText(1, camera->getName().data());
+	}
+
+	auto textures = node->getTextures();
+	auto textureNode = new QTreeWidgetItem(root);
+	textureNode->setText(0, "Textures");
+	for (const auto &texture: textures) {
+		auto textureItem = new QDataTreeItem<ITexture>(textureNode);
+		textureItem->setData(texture);
+		textureItem->setText(0, type(*texture).c_str());
+		textureItem->setText(1, texture->getName().data());
+	}
+
+	// Adds the children of the node
+	auto childrenNode = new QTreeWidgetItem(root);
+	childrenNode->setText(0, "Children");
+
+	for (auto n: node->getChildren()) {
+		addNode(n, childrenNode);
+	}
+}
+
+void MainWindow::setScene(std::shared_ptr<Galax::Renderer::Scene> scene,
+							 std::shared_ptr<Galax::Renderer::LightingModel> lighting,
+							 const std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>> &effects) {
+	this->scene = scene;
+	this->lighting = lighting;
+	this->effects = effects;
+	for(auto& model : scene->getModels()){
+		addNode(model, nullptr);
+	}
+	addLighting(lighting);
+	addEffects(effects);
+
+
+}
+
+void MainWindow::addLighting(std::shared_ptr<Galax::Renderer::LightingModel> model) {
+	auto root = new QTreeWidgetItem(nodeView);
+	root->setText(0, "Lighting");
+	root->setText(1, model->getName().data());
+
+
+	auto textures = model->getTextures();
+	auto textureNode = new QTreeWidgetItem(root);
+	textureNode->setText(0, "Textures");
+	for (const auto &texture: textures) {
+		auto textureItem = new QDataTreeItem<ITexture>(textureNode);
+		textureItem->setData(texture);
+		textureItem->setText(0, type(*texture).c_str());
+		textureItem->setText(1, texture->getName().data());
+	}
+
+	auto shader = model->getLightingShader();
+	auto shaderNode = new QDataTreeItem<IShader>(root);
+	shaderNode->setData(shader);
+	shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
+	shaderNode->setText(1, shader->getName().data());
+};
+
+void MainWindow::addEffects(const std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>> &effects) {
+	auto root = new QTreeWidgetItem(nodeView);
+	root->setText(0, "Effects");
+	root->setText(1, "Effects");
+
+	for (const auto &effect: effects) {
+		auto effectNode = new QTreeWidgetItem(root);
+		effectNode->setText(0, type(*effect).c_str());
+		effectNode->setText(1, effect->getName().data());
+
+		auto inTextures = effect->getInputTextures();
+		auto inTextureNode = new QTreeWidgetItem(effectNode);
+		inTextureNode->setText(0, "Input textures");
+		for (const auto &texture: inTextures) {
+			auto textureItem = new QDataTreeItem<ITexture>(inTextureNode);
+			textureItem->setData(texture);
+			textureItem->setText(0, type(*texture).c_str());
+			textureItem->setText(1, texture->getName().data());
+		}
+
+
+		auto outTextures = effect->getOutputTextures();
+		auto outTextureNode = new QTreeWidgetItem(effectNode);
+		outTextureNode->setText(0, "Output textures");
+		for (const auto &texture: outTextures) {
+			auto textureItem = new QDataTreeItem<ITexture>(outTextureNode);
+			textureItem->setData(texture);
+			textureItem->setText(0, type(*texture).c_str());
+			textureItem->setText(1, texture->getName().data());
+		}
+
+		auto shader = effect->getShader();
+		auto shaderNode = new QDataTreeItem<IShader>(effectNode);
+		shaderNode->setData(shader);
+		shaderNode->setText(0, ("Shader (" + shader->getTypeString() + ")").data());
+		shaderNode->setText(1, shader->getName().data());
+	}
+}
+
+
+std::string MainWindow::demangle(const char *name) {
+	int status = -4; // some arbitrary value to eliminate the compiler warning
+	std::unique_ptr<char, void (*)(void *)> res{abi::__cxa_demangle(name, NULL, NULL, &status), std::free};
+	std::string result = (status == 0) ? res.get() : name;
+	std::size_t found = result.find_last_of("::");
+	if (found != std::string::npos) {
+		result = result.substr(found + 1);
+	}
+	return result;
+}
+
+void MainWindow::onTabCloseRequest(int index) {
+	ui->dataView->removeTab(index);
+	auto [_, widget] = tabs.at(index);
+	widget->deleteLater();
+	tabs.erase(tabs.begin() + index);
+}
 

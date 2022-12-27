@@ -7,7 +7,16 @@
 using namespace Galax::Renderer;
 using namespace gl;
 
-std::unordered_set<unsigned int> SceneObject::usedNames;
+uint SceneObject::selectedContext = 0;
+std::unordered_map<std::string, uint> SceneObject::contexts;
+std::unordered_map<uint, unsigned int> SceneObject::lastBoundFrameBuffer;
+std::unordered_map<uint, float> SceneObject::frameTime;
+std::unordered_map<uint, float> SceneObject::currentTime;
+
+std::unordered_map<uint, glm::vec2> SceneObject::screenSize;
+std::unordered_map<uint,unsigned long> SceneObject::startTime;
+std::unordered_map<uint,std::unordered_set<unsigned int>> SceneObject::usedNames;
+std::mutex SceneObject::mutex;
 
 SceneObject::SceneObject() {
     this->name = getNextDefaultName();
@@ -24,23 +33,15 @@ SceneObject::SceneObject(const std::string &name, bool enableUnsafeNaming) {
 void SceneObject::checkName() {
     auto hash = getNameHash();
 
-    std::vector<uint> allowedDuplicates = {};
-
-
-    for (auto allowedDuplicate: allowedDuplicates) {
-        if (hash == allowedDuplicate) {
-            return;
-        }
-    }
-
-    if (usedNames.find(hash) != usedNames.end()) {
+    if (usedNames[selectedContext].find(hash) != usedNames[selectedContext].end()) {
         throw std::runtime_error("Name " + name + " already in bind");
     }
-    usedNames.insert(this->getNameHash());
+
+    usedNames[selectedContext].insert(this->getNameHash());
 }
 
 SceneObject::~SceneObject() {
-    usedNames.erase(this->getNameHash());
+    usedNames[SceneObject::selectedContext].erase(this->getNameHash());
 }
 
 std::string SceneObject::getName() {
@@ -52,11 +53,10 @@ void SceneObject::setName(std::string name) {
 }
 
 void SceneObject::setFrameTime(float frameTime) {
-    SceneObject::frameTime = frameTime;
+    SceneObject::frameTime[selectedContext] = frameTime;
 	auto current = std::chrono::duration_cast<std::chrono::microseconds>(
 			std::chrono::system_clock::now().time_since_epoch()).count();
-	currentTime = (current - startTime) / 1000000.0f;
-
+	SceneObject::currentTime[selectedContext] = (current - startTime[selectedContext]) / 1000000.0f;
 
 }
 
@@ -120,12 +120,12 @@ void SceneObject::init() {
         return;
     }
     initialized = true;
-    startTime = std::chrono::duration_cast<std::chrono::microseconds>(
+    startTime[selectedContext] = std::chrono::duration_cast<std::chrono::microseconds>(
             std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 unsigned int SceneObject::getLastFrameBuffer() {
-    return lastBoundFrameBuffer;
+    return lastBoundFrameBuffer[selectedContext];
 }
 
 void SceneObject::setDrawSize(int width, int height) {
@@ -136,5 +136,30 @@ void SceneObject::setDrawSize(int width, int height) {
 }
 
 float SceneObject::getFrameTime() {
-    return frameTime;
+    return frameTime[selectedContext];
+}
+
+void SceneObject::addUniqueContext(const std::string &name) {
+	if (contexts.find(name) != contexts.end()) {
+		return;
+	}
+	contexts[name] = std::hash<std::string>{}(name);
+}
+
+void SceneObject::selectAndLockContext(const std::string &name) {
+	mutex.lock();
+	auto contextId = contexts[name];
+	selectedContext = contextId;
+}
+
+void SceneObject::unlockContext() {
+	mutex.unlock();
+}
+
+float SceneObject::getCurrentTime() {
+	return SceneObject::currentTime[selectedContext];
+}
+
+void SceneObject::setLastBoundFBO(uint fbo) {
+	lastBoundFrameBuffer[selectedContext] = fbo;
 }

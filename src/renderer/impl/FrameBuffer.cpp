@@ -52,7 +52,7 @@ void FrameBuffer::bind(bool clear) {
     if(clear){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
-    lastBoundFrameBuffer = id;
+	setLastBoundFBO(id);
 }
 
 void FrameBuffer::unbind() {

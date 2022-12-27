@@ -31,7 +31,7 @@ void OrbitAnimation::updateTime() {
 
     animationLength = (animationSpeed / 1000.0) / speed;
 
-    this->animationTime += this->frameTime;
+    this->animationTime += Galax::Orbital::OrbitAnimation::getFrameTime();
     if(animationTime > this->animationLength){
         animationTime = 0;
     }
@@ -44,7 +44,7 @@ void OrbitAnimation::update() {
 		return;
 	}
 
-    if(Galax::Renderer::SceneObject::currentTime == this->previousTime){
+    if(Galax::Renderer::SceneObject::getCurrentTime() == this->previousTime){
         return; //Already calculated at this time, should be ok, but might not be.
     }
     assert(this->sunPosition != nullptr);

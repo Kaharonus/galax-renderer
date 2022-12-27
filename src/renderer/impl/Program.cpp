@@ -315,6 +315,6 @@ void Program::createProgram() {
     //Create the program
     id = glCreateProgram();
     if (id == 0) {
-        throw std::runtime_error("Could not create program");
+       // throw std::runtime_error("Could not create program");
     }
 }

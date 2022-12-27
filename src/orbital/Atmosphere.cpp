@@ -9,11 +9,11 @@
 using namespace Galax::Orbital;
 using namespace gl;
 
-Atmosphere::Atmosphere(const std::string &name) : Galax::Renderer::Node(name) {
+Atmosphere::Atmosphere(const std::string &name) : Galax::Renderer::RenderNode(name) {
 	init();
 }
 
-Atmosphere::Atmosphere() : Galax::Renderer::Node() {
+Atmosphere::Atmosphere() : Galax::Renderer::RenderNode() {
 	init();
 }
 
@@ -57,11 +57,11 @@ void Atmosphere::draw(glm::mat4 parentModel) {
 	auto cameraDistance = glm::distance(cameraPosition, position);
 	if (cameraDistance > this->getScale().x * 2) {
 		gl::glFrontFace(gl::GL_CW);
-		Node::draw(model);
+		RenderNode::draw(model);
 		gl::glFrontFace(gl::GL_CCW);
 	} else {
 		GL_DISABLE(gl::GL_DEPTH_TEST, {
-			Node::draw(model);
+			RenderNode::draw(model);
 		});
 	}
 

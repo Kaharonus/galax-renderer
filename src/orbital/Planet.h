@@ -6,7 +6,6 @@
 
 #include <physics/impl/PhysicalNode.h>
 #include <orbital/FeedbackProgram.h>
-#include <physics/impl/Force.h>
 #include <orbital/Atmosphere.h>
 #include <orbital/SpaceCamera.h>
 #include <orbital/OrbitAnimation.h>

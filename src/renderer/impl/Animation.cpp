@@ -138,8 +138,8 @@ void Animation::updateTime(){
     if(this->startType == StartType::MANUAL && !shouldAnimate){
         return;
     }
-    animationTime += frameTime;
-    this->previousTime = currentTime;
+    animationTime += Galax::Renderer::SceneObjects::Animation::getFrameTime();
+    this->previousTime = Galax::Renderer::SceneObjects::Animation::getCurrentTime();
 
     //Add handling of delayed start time
 
@@ -161,7 +161,7 @@ void Animation::updateTime(){
 
 
 void Animation::update() {
-    if(Galax::Renderer::SceneObjects::Animation::currentTime == this->previousTime){
+    if(Galax::Renderer::SceneObjects::Animation::getCurrentTime() == this->previousTime){
         return; //Already calculated at this time.
     }
     updateTime();

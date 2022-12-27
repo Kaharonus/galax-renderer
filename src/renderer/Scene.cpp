@@ -1,7 +1,7 @@
 #include <glbinding/gl/gl.h>
 
 #include <renderer/Scene.h>
-#include <Extensions.h>
+#include <stack>
 
 using namespace gl;
 using namespace Galax::Renderer;
@@ -136,3 +136,15 @@ void Scene::setLightingModel(std::shared_ptr<LightingModel> model) {
 std::shared_ptr<FrameBuffer> Scene::getTransparencyBuffer() const {
 	return transparencyBuffer;
 }
+
+
+
+fpgen::generator<std::shared_ptr<IRenderNode>> Scene::getAllNodes() {
+	for(auto model: this->getModels()){
+		co_yield model;
+		for(auto child: model->getAllChildren(model)){
+			co_yield child;
+		}
+	}
+}
+

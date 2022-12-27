@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include <renderer/impl/Node.h>
+#include <renderer/impl/RenderNode.h>
 #include <renderer/impl/Uniform.h>
 
 namespace Galax::Orbital {
 	using namespace Galax::Renderer;
 
-	class Atmosphere : public Galax::Renderer::Node {
+	class Atmosphere : public Galax::Renderer::RenderNode {
 	public:
 		Atmosphere();
 		Atmosphere(const std::string& name);

@@ -9,7 +9,6 @@
 #include <physics/interfaces/IRigidBody.h>
 
 #include <renderer/interfaces/IRenderNode.h>
-#include <physics/interfaces/IForce.h>
 
 namespace Galax::Physics {
     using namespace Galax::Renderer;
@@ -24,12 +23,6 @@ namespace Galax::Physics {
 
         void setBodyRotation(const glm::vec3 &rotation) override;
 
-        void addForce(std::shared_ptr<IForce> force) override;
-
-        void setBodyAngularVelocity(const glm::vec3 &velocity) override;
-
-        void setBodyMass(float mass) override;
-
         void addBodyCollider(std::shared_ptr<ICollider> collider) override;
 
         void update() override;
@@ -40,13 +33,10 @@ namespace Galax::Physics {
 
         [[nodiscard]] glm::vec3 getBodyRotation() const override;
 
-        [[nodiscard]] std::vector<std::shared_ptr<IForce>> getForces() const override;
 
-        [[nodiscard]] glm::vec3 getBodyAngularVelocity() const override;
 
         [[nodiscard]] float getBodyMass() const override;
 
-        [[nodiscard]] glm::vec3 getResultingForce() const override;
 
         void clearColliders() override;
 
@@ -54,7 +44,7 @@ namespace Galax::Physics {
 
         bool isMouseOver() const override;
 
-        std::vector<std::shared_ptr<ICollider>> getColliders() const override;
+        [[nodiscard]] std::vector<std::shared_ptr<ICollider>> getColliders() const override;
 
     protected:
         void createCollider(std::shared_ptr<ICollider> collider);
@@ -65,10 +55,7 @@ namespace Galax::Physics {
         rp3d::Transform transform;
         glm::vec3 position;
         glm::vec3 rotation;
-        std::vector<std::shared_ptr<IForce>> forces;
         glm::vec3 velocity;
-        glm::vec3 angularVelocity;
-        glm::vec3 resultingForce = {};
         float mass;
         std::vector<std::shared_ptr<ICollider>> colliders;
 

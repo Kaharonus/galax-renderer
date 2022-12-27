@@ -84,8 +84,6 @@ void Planet::generatePlanet() {
 	prims = getSizeQueryResult();
 	glFlush();
 
-	std::cout << prims << std::endl;
-
 	glBindVertexArray(0);
 
 }
@@ -173,7 +171,7 @@ int Planet::getSizeQueryResult() {
 }
 
 void Planet::setScale(const glm::vec3 &scale) {
-	Node::setScale(scale);
+	RenderNode::setScale(scale);
 	auto radius = scale.x;
 	auto collider = std::make_shared<Physics::SphereCollider>(radius);
 	Physics::RigidBody::clearColliders();

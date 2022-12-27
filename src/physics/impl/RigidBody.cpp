@@ -33,20 +33,6 @@ void RigidBody::setBodyRotation(const glm::vec3 &rotation) {
 }
 
 
-void RigidBody::setBodyAngularVelocity(const glm::vec3 &velocity) {
-    this->angularVelocity = velocity;
-    if (this->getRP3DBody() != nullptr) {
-        this->getRP3DBody()->setAngularVelocity(rp3d::Vector3(velocity.x, velocity.y, velocity.z));
-    }
-}
-
-void RigidBody::setBodyMass(float mass) {
-    this->mass = mass;
-    if (this->getRP3DBody() != nullptr) {
-        this->getRP3DBody()->setMass(mass);
-    }
-}
-
 void RigidBody::createCollider(std::shared_ptr<ICollider> collider) {
     auto body = this->getRP3DBody();
     auto shape = collider->getRP3DCollisionShape();
@@ -63,7 +49,7 @@ void RigidBody::addBodyCollider(std::shared_ptr<ICollider> collider) {
 }
 
 std::shared_ptr<IRenderNode> RigidBody::getDebugNode() {
-    return std::shared_ptr<IRenderNode>();
+    return {}; //TODO
 }
 
 glm::vec3 RigidBody::getBodyPosition() const {
@@ -72,11 +58,6 @@ glm::vec3 RigidBody::getBodyPosition() const {
 
 glm::vec3 RigidBody::getBodyRotation() const {
     return rotation;
-}
-
-
-glm::vec3 RigidBody::getBodyAngularVelocity() const {
-    return angularVelocity;
 }
 
 float RigidBody::getBodyMass() const {
@@ -89,36 +70,13 @@ void RigidBody::update() {
     }
 
     for(const auto& collider : colliders) {
-        if(collider->getRP3DCollider() == nullptr) {
+        if(!collider->getRP3DCollider()) {
             createCollider(collider);
         }
     }
-
-    auto resultingForce = rp3d::Vector3(0, 0, 0);
-    for (const auto &force: forces) {
-        resultingForce += force->getDirection();
-    }
-    this->resultingForce = glm::vec3(resultingForce.x, resultingForce.y, resultingForce.z);
-    this->getRP3DBody()->resetForce();
-    this->getRP3DBody()->applyWorldForceAtCenterOfMass(resultingForce);
-
-    auto transform = this->getRP3DBody()->getTransform();
-    this->position = toGlmVec3(transform.getPosition());
-    this->rotation = toGlmVec3(transform.getOrientation().getVectorV());
-
 }
 
-void RigidBody::addForce(std::shared_ptr<IForce> force) {
-    this->forces.emplace_back(force);
-}
 
-std::vector<std::shared_ptr<IForce>> RigidBody::getForces() const {
-    return forces;
-}
-
-glm::vec3 RigidBody::getResultingForce() const {
-    return resultingForce;
-}
 
 void RigidBody::clearColliders() {
     if(this->getRP3DBody() == nullptr) {

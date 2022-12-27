@@ -8,7 +8,7 @@
 using namespace Galax::Orbital;
 using namespace gl;
 
-Sun::Sun(const std::string &name) : Node(name) {
+Sun::Sun(const std::string &name) : RenderNode(name) {
 	auto mesh = std::make_shared<Mesh>("Sun Quad (" + this->name + ")");
 	mesh->addVertex({-1.0f, -1.0f, 0.0f});
 	mesh->addVertex({1.0f, -1.0f, 0.0f});
@@ -34,6 +34,6 @@ void Sun::draw(glm::mat4 parentModel) {
 
 	program->setUniform(scaleUniform);
 
-	Node::draw(parentModel);
+	RenderNode::draw(parentModel);
 	glDisable(GL_BLEND);
 }

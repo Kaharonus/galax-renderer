@@ -2,6 +2,7 @@
 #include "InputHandler.h"
 #include <tuple>
 
+
 using namespace Galax::Renderer;
 using namespace std::chrono;
 
@@ -24,13 +25,13 @@ void InputHandler::mouseMove(float x, float y) {
 	if (absoluteX == 0 && absoluteY == 0) {
 		absoluteX = x;
 		absoluteY = y;
-		return;
+		 return;
 	}
+
 	deltaX = x - absoluteX;
 	deltaY = y - absoluteY;
 	absoluteX = x;
 	absoluteY = y;
-
 }
 
 void InputHandler::mousePress(MouseButton button, float x, float y) {
@@ -41,6 +42,7 @@ void InputHandler::mousePress(MouseButton button, float x, float y) {
 }
 
 void InputHandler::mouseRelease(MouseButton button, float x, float y) {
+
 	mouseButtons[button] = false;
 	this->absoluteX = x;
 	this->absoluteY = y;
@@ -155,4 +157,26 @@ void InputHandler::setClickOnDetection(std::function<std::any(MouseButton, float
 void InputHandler::registerMouseClickOnCallback( std::function<void(std::any, MouseButton)> fn) {
 	mouseClickedOnCallbacks.push_back(fn);
 
+}
+
+InputHandler::Key InputHandler::fromSDLKey(int key) {
+	if(sdlToQt.contains(key)){
+		auto qt = sdlToQt.at((SDL_Keycode)key);
+		return fromQtKey(qt);
+	}
+
+	switch (key) {
+		case SDLK_ESCAPE:
+			return KEY_ESCAPE;
+		case SDLK_RETURN:
+		case SDLK_KP_ENTER:
+			return KEY_ENTER;
+		case SDLK_LSHIFT:
+		case SDLK_RSHIFT:
+			return KEY_SHIFT;
+		case SDLK_LCTRL:
+		case SDLK_RCTRL:
+            return KEY_CONTROL;
+	}
+	return KEY_UNKNOWN;
 }

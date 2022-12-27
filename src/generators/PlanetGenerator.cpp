@@ -76,7 +76,6 @@ std::shared_ptr<Planet> PlanetGenerator::createFromType(Galax::Orbital::Planet::
     planet->setProgram(programs[type]);
     planet->setGeneratorProgram(createPlanetGenerator(isMoon));
     planet->setMesh(planetMesh);
-    planet->setBodyMass(5);
 	planet->setClampUnder(config->clampUnder);
 
 	for(auto noiseLevel: config->noiseSettings){
@@ -89,7 +88,7 @@ std::shared_ptr<Planet> PlanetGenerator::createFromType(Galax::Orbital::Planet::
 	if(isMoon){ // This shit doesnt need more configuration.
 		return planet;
 	}
-	glm::vec3 position = glm::vec3(0);
+	auto position = glm::vec3(0);
 	while(glm::length(position) < 10){
 		auto xy = rndFloat(-250,250);
 		position = glm::vec3(xy,rndFloat(-2,2), xy);

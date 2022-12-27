@@ -54,7 +54,7 @@ namespace Galax::Generators{
 		std::shared_ptr<SpaceCamera> camera;
 
 		void addSun();
-		std::shared_ptr<Node> sun;
+		std::shared_ptr<RenderNode> sun;
 
 		void addSkyBox();
 

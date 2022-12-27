@@ -4,7 +4,7 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 # Source files
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS *.h *.cpp *.ui)
-set(SOURCES ${SOURCES} generators/SolarSystemGenerator.cpp generators/SolarSystemGenerator.h views/controls/MoonControl.cpp views/controls/MoonControl.h views/controls/MoonControl.ui)
+set(SOURCES ${SOURCES})
 add_compile_options("$<$<CONFIG:DEBUG>:-DDEBUG>")
 
 # --------------------------------------------------------------------------------
@@ -12,6 +12,12 @@ add_compile_options("$<$<CONFIG:DEBUG>:-DDEBUG>")
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets OpenGLWidgets)
 qt_standard_project_setup()
+
+
+# --------------------------------------------------------------------------------
+# SDL
+find_package(SDL2 REQUIRED)
+
 
 # --------------------------------------------------------------------------------
 # CONAN
@@ -78,4 +84,4 @@ add_executable(${BINARY} ${SOURCES})
 add_dependencies(${BINARY} ${ASSET_TARGET})
 target_include_directories(${BINARY} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(${BINARY}  Qt6::Widgets Qt6::OpenGLWidgets ${CONAN_LIBS} ${CPM_LIBS})
+target_link_libraries(${BINARY}  Qt6::Widgets Qt6::OpenGLWidgets ${CONAN_LIBS} ${CPM_LIBS} ${SDL2_LIBRARIES})

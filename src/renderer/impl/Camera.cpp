@@ -87,7 +87,7 @@ void Camera::update() {
 	if(input->isKeyPressed(InputHandler::KEY_CONTROL)){
 		moveSpeed *= 0.2;
 	}
-
+	auto frameTime = SceneObject::getFrameTime();
     if (input->isKeyPressed(InputHandler::KEY_W)) {
         position += front * moveSpeed * frameTime;
     }

@@ -5,15 +5,15 @@
 
 #pragma once
 
-#include <renderer/impl/Node.h>
+#include <renderer/impl/RenderNode.h>
 #include <physics/impl/RigidBody.h>
 
 namespace Galax::Physics{
     using namespace Galax::Renderer::SceneObjects;
 
-    class PhysicalNode : public Node, public RigidBody {
+    class PhysicalNode : public RenderNode, public RigidBody {
     public:
-        explicit PhysicalNode(const std::string name);
+        explicit PhysicalNode(const std::string& name);
 
         void setBodyPosition(const glm::vec3 &position) override;
 
@@ -29,6 +29,7 @@ namespace Galax::Physics{
 
     protected:
         std::shared_ptr<IUniform> mouseOverUniform;
+		std::mutex mut;
 
     };
 

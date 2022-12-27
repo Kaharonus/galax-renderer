@@ -13,6 +13,7 @@
 #include "ITexture.h"
 #include "IProgram.h"
 #include <renderer/LightingModel.h>
+#include <generator.hpp>
 
 namespace Galax::Renderer {
 	class IRenderNode : public Galax::Renderer::SceneObject {
@@ -30,17 +31,16 @@ namespace Galax::Renderer {
 
 		virtual void draw(glm::mat4 parentModelMatrix) = 0;
 
-		virtual const glm::vec3 &getRelativePosition() = 0;
 
 		virtual glm::vec3 getPosition() = 0;
+		virtual glm::vec3 getRotation() = 0;
+		virtual glm::vec3 getScale() = 0;
 
 		virtual const glm::vec3 &getRelativeRotation() = 0;
-
-		virtual glm::vec3 getRotation() = 0;
-
+		virtual const glm::vec3 &getRelativePosition() = 0;
 		virtual const glm::vec3 &getRelativeScale() = 0;
 
-		virtual glm::vec3 getScale() = 0;
+		virtual fpgen::generator<std::shared_ptr<IRenderNode>> getAllChildren(std::shared_ptr<IRenderNode> node) = 0;
 
 		virtual const glm::mat4 &getModelMatrix() = 0;
 

@@ -5,14 +5,14 @@
 
 #pragma once
 
-#include <renderer/impl/Node.h>
+#include <renderer/impl/RenderNode.h>
 
 #include <renderer/impl/Uniform.h>
 #include <renderer/impl/Mesh.h>
 
 namespace Galax::Orbital{
 	using namespace Galax::Renderer::SceneObjects;
-	class Sun : public Node {
+	class Sun : public RenderNode {
 	public:
 		Sun(const std::string& name);
 

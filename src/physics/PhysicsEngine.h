@@ -6,35 +6,37 @@
 #pragma once
 
 #include <reactphysics3d/reactphysics3d.h>
+#include <renderer/Scene.h>
 #include <physics/interfaces/IRigidBody.h>
 #include <QObject>
 #include <QTimer>
+#include <physics/Timer.h>
 
 namespace Galax::Physics {
     using namespace reactphysics3d;
+	using namespace Galax::Renderer;
 
-    class PhysicsEngine : public QObject, public PhysicsObject {
-        Q_OBJECT
+    class PhysicsEngine : public PhysicsObject {
 
     public:
-        PhysicsEngine(std::shared_ptr<InputHandler> inputHandler, float step = 1.0f / 60.0f, QObject *parent = nullptr);
+        PhysicsEngine(std::shared_ptr<InputHandler> inputHandler, long step = 16);
+		void setScene(std::shared_ptr<Scene> scene);
+		void update();
 
-        void addRigidBody(std::shared_ptr<IRigidBody> rigidBody);
-
-        void setCamera(std::shared_ptr<ICamera> camera);
-
-    private:
-
-        void update();
-
+    protected:
         Ray createRayFromMousePosition();
 
-        float step;
+		void setCamera(std::shared_ptr<ICamera> camera);
+
+        long step;
         std::shared_ptr<InputHandler> inputHandler;
-        std::shared_ptr<QTimer> timer;
-        std::vector<std::shared_ptr<IRigidBody>> bodies;
+        std::shared_ptr<Timer> timer;
+
+		std::shared_ptr<Scene> scene;
+
         std::shared_ptr<ICamera> camera;
         PhysicsWorld *world;
 
-    };
+		void createRigidBody(std::shared_ptr<IRigidBody> rigidBody);
+	};
 }

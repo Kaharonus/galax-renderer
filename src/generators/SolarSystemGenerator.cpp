@@ -70,7 +70,7 @@ void SolarSystemGenerator::addSun() {
 }
 
 void SolarSystemGenerator::addSkyBox() {
-	auto sky = std::make_shared<Node>("Skybox");
+	auto sky = std::make_shared<RenderNode>("Skybox");
 	sky->setMesh(assets->getMesh("models/skybox.obj", "skybox mesh"));
 
 	auto skyTexture = assets->getCubemap("textures/skybox", "skybox");

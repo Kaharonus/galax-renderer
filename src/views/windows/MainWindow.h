@@ -1,60 +1,70 @@
 
 #pragma once
-#include <renderer/QRenderer.h>
-#include <views/windows/RenderOptions.h>
-#include <QMainWindow>
-#include <QSurfaceFormat>
-#include <physics/PhysicsEngine.h>
-#include <orbital/Planet.h>
-#include <physics/interfaces/IRigidBody.h>
 
-#include <assets/SceneLoader.h>
-#include <QTimer>
-#include <views/controls/MoonControl.h>
+#include "../../renderer/Scene.h"
+#include "../../renderer/LightingModel.h"
+#include "../../renderer/impl/PostProcessEffect.h"
+
+#include <QCodeEditor>
+#include <QMainWindow>
+#include <QOpenGLContext>
+#include <memory>
+#include <QGridLayout>
+#include <QTreeWidget>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class MainWindow;
 }
 QT_END_NAMESPACE
-
-using namespace Galax::Physics;
-
+using namespace Galax::Renderer;
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(const QSurfaceFormat &format, QWidget* parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit MainWindow(QWidget* parent = nullptr);
+
+    void setScene(std::shared_ptr<Galax::Renderer::Scene> scene,
+                  std::shared_ptr<Galax::Renderer::LightingModel> lighting,
+                  const std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>>& effects
+                  );
 
     ~MainWindow() override;
 
+protected slots:
+
+    void onItemClicked();
+
+	void onTabCloseRequest(int index);
+
 private:
-	bool pause = true;
-    void setupRenderer(const QSurfaceFormat &format);
-    void loadScene(const std::string& path);
-
-	std::shared_ptr<Galax::Assets::SceneLoader> sceneLoader;
-
-    RenderOptions* renderOptionsWindow;
-    Galax::Renderer::QRenderer* renderer;
-    Galax::Physics::PhysicsEngine* physicsEngine;
-    std::shared_ptr<InputHandler> inputHandler;
-
-
-	QTimer* refreshTimer;
-	std::shared_ptr<Galax::Orbital::Planet> selectedPlanet;
-	std::vector<MoonControl*> moonControls;
-
     Ui::MainWindow* ui;
 
-    void setupPhysics();
+    std::shared_ptr<Galax::Renderer::Scene> scene;
+    std::shared_ptr<Galax::Renderer::LightingModel> lighting;
+    std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>> effects;
 
-	std::vector<std::shared_ptr<IRigidBody>> getPhysical(const std::shared_ptr<IRenderNode> &node);
-	std::vector<std::shared_ptr<IRigidBody>> getPhysical(std::shared_ptr<Scene> scene);
+    // Renderer* renderer;
+    QLayout* baseGridLayout;
+    QTreeWidget* nodeView;
+	QTabWidget* dataView;
+    std::shared_ptr<IShader> currentShader;
 
-	void uiRefresh();
+    void addLighting(std::shared_ptr<Galax::Renderer::LightingModel> sharedPtr);
 
-	void pauseAnimations(std::shared_ptr<Scene> scene);
+    void addEffects(const std::vector<std::shared_ptr<Galax::Renderer::IPostProcessEffect>> &effects);
+    void addNode(std::shared_ptr<IRenderNode> node, QTreeWidgetItem* parent);
 
-	void pauseNode(std::shared_ptr<IRenderNode> node);
+    std::string demangle(const char* name);
+
+
+    template <class T> std::string type(const T& t) {
+        return demangle(typeid(t).name());
+    }
+
+
+	std::vector<std::tuple<std::shared_ptr<SceneObject>, QWidget*>> tabs;
+
+	void addTab(QWidget *widget, std::shared_ptr<SceneObject> object);
 };
