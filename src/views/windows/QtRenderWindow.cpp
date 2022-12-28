@@ -43,7 +43,7 @@ QtRenderWindow::QtRenderWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWi
 	refreshTimer->start();
 
 	this->renderOptionsWindow = new MainWindow(this);
-
+	this->renderOptionsWindow->show();
 
 	loadScene("scenes/solar-system.json");
 }
