@@ -42,6 +42,9 @@ QtRenderWindow::QtRenderWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWi
 	refreshTimer->setInterval(33);
 	refreshTimer->start();
 
+	this->renderOptionsWindow = new MainWindow(this);
+
+
 	loadScene("scenes/solar-system.json");
 }
 
@@ -87,7 +90,7 @@ void QtRenderWindow::loadScene(const std::string &path) {
 	for (auto &effect: sceneData->postProcessEffects) {
 		renderer->addPostProcess(effect);
 	}
-	//renderOptionsWindow->setScene(scene, scene->getLightingModel(), effects);
+	renderOptionsWindow->setScene(scene, scene->getLightingModel(), effects);
 	physicsEngine->setScene(scene);
 	SceneObject::unlockContext();
 }
