@@ -4,7 +4,7 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 # Source files
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS *.h *.cpp *.ui)
-set(SOURCES ${SOURCES})
+set(SOURCES ${SOURCES} views/windows/IWindow.h)
 add_compile_options("$<$<CONFIG:DEBUG>:-DDEBUG>")
 
 # --------------------------------------------------------------------------------

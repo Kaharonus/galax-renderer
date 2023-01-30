@@ -11,10 +11,12 @@
 #include <SDL_events.h>
 
 #include "SDLWindow.h"
-#include "MainWindow.h"
+#include "DebugWindow.h"
+
+using namespace Galax::Windowing;
 
 
-SDLWindow::SDLWindow(int width, int height, const char *title) {
+SDLWindow::SDLWindow(int width, int height, const char *title) : IWindow() {
 	this->width = width;
 	this->height = height;
 	this->title = title;
@@ -48,7 +50,7 @@ void SDLWindow::handleMouseEvents(SDL_Event event){
 	switch (event.type){
 		case SDL_MOUSEMOTION:
 			if(this->inputHandler->isMouseButtonPressed(InputHandler::MOUSE_LEFT)){
-				delta -= (glm::vec2(initialMouse.x - event.motion.x, initialMouse.y - event.motion.y) * 0.5f);
+				delta -= (glm::vec2(initialMouse.x - event.motion.x, initialMouse.y - event.motion.y) * 0.1f);
 				SDL_WarpMouseInWindow(window, initialMouse.x,initialMouse.y);
 				this->inputHandler->mouseMove(initialMouse.x + delta.x, initialMouse.y + delta.y);
 				break;
@@ -82,7 +84,10 @@ void SDLWindow::handleWindowEvents(SDL_Event event){
 			this->width = event.window.data1;
 			this->height = event.window.data2;
 			renderer->resize(width, height);
+
+            break;
 	}
+
 }
 
 void SDLWindow::handleEvents() {
@@ -104,6 +109,7 @@ void SDLWindow::handleEvents() {
 				handleWindowEvents(event);
 				break;
 			case SDL_QUIT:
+                renderOptionsWindow->close();
 				isShowing = false;
 				break;
 			default:
@@ -111,12 +117,15 @@ void SDLWindow::handleEvents() {
 		}
 	}
 	if (isFullscreen != fullScreen) {
-		if (isFullscreen) {
-			SDL_SetWindowFullscreen(window, flags | SDL_WINDOW_FULLSCREEN_DESKTOP);
-		} else {
-			SDL_SetWindowFullscreen(window, flags);
-		}
-	}
+        SDL_SetWindowFullscreen(window, flags |(SDL_WINDOW_FULLSCREEN_DESKTOP & isFullscreen));
+        if(isFullscreen){
+            //If I dont do this under x11 on manjaro with the current update its fucked.. with NV drivers..
+            auto index = SDL_GetWindowDisplayIndex(window);
+            SDL_DisplayMode mode;
+            SDL_GetDesktopDisplayMode(index, &mode);
+            SDL_SetWindowDisplayMode(window, &mode);
+        }
+    }
 
 }
 
@@ -149,7 +158,7 @@ bool SDLWindow::init() {
 
 	SDL_GL_MakeCurrent(window, context);
 	SceneObject::selectAndLockContext("SDLWindow");
-	this->renderer = std::make_shared<Renderer>();
+	this->renderer = std::make_shared<Galax::Renderer::Renderer>();
 	this->renderer->init();
 
 	this->inputHandler = std::make_shared<InputHandler>();
@@ -189,7 +198,7 @@ void SDLWindow::show(bool blocking) {
 	if (isShowing) {
 		return;
 	}
-	this->renderOptionsWindow = new MainWindow(nullptr);
+	this->renderOptionsWindow = new DebugWindow(nullptr);
 	this->renderOptionsWindow->resize(1280, 720);
 	this->renderOptionsWindow->show();
 	isShowing = true;

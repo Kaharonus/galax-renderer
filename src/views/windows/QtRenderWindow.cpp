@@ -20,7 +20,7 @@ using namespace Galax::Generators;
 using namespace Galax::Physics;
 
 
-QtRenderWindow::QtRenderWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent, flags), ui(new Ui::QtRenderWindow) {
+QtRenderWindow::QtRenderWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent, flags), ui(new Ui::QtRenderWindow), IWindow() {
 
 	QSurfaceFormat format;
 	format.setProfile(QSurfaceFormat::CoreProfile);
@@ -42,7 +42,7 @@ QtRenderWindow::QtRenderWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWi
 	refreshTimer->setInterval(33);
 	refreshTimer->start();
 
-	this->renderOptionsWindow = new MainWindow(this);
+	this->renderOptionsWindow = new DebugWindow(this);
 	this->renderOptionsWindow->show();
 
 	loadScene("scenes/solar-system.json");
@@ -61,7 +61,7 @@ void QtRenderWindow::setupRenderer(const QSurfaceFormat &format) {
 	widget->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 	auto layout = this->findChild<QGridLayout *>("baseGridLayout");
 	layout->addWidget(widget);
-	show();
+	//QMainWindow::show();
 }
 
 void QtRenderWindow::setupPhysics() {
@@ -100,6 +100,10 @@ void QtRenderWindow::loadScene(const std::string &path) {
 
 QtRenderWindow::~QtRenderWindow() {
 	delete ui;
+}
+
+void QtRenderWindow::show(bool blocking) {
+    QMainWindow::show();
 }
 
 

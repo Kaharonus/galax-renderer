@@ -1,7 +1,8 @@
 
 #pragma once
 #include "views/controls/generic/QRenderer.h"
-#include <views/windows/MainWindow.h>
+#include "IWindow.h"
+#include <views/windows/DebugWindow.h>
 #include <QMainWindow>
 #include <QSurfaceFormat>
 #include <physics/PhysicsEngine.h>
@@ -19,11 +20,14 @@ QT_END_NAMESPACE
 
 using namespace Galax::Physics;
 
-class QtRenderWindow : public QMainWindow {
+
+class QtRenderWindow : public QMainWindow, public Galax::Windowing::IWindow {
     Q_OBJECT
 
 public:
     explicit QtRenderWindow(QWidget* parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+
+    void show(bool blocking) override;
 
     ~QtRenderWindow() override;
 
@@ -34,7 +38,7 @@ private:
 
 	std::shared_ptr<Galax::Assets::SceneLoader> sceneLoader;
 
-    MainWindow* renderOptionsWindow;
+    DebugWindow* renderOptionsWindow;
     Galax::Renderer::QRenderer* renderer;
     Galax::Physics::PhysicsEngine* physicsEngine;
     std::shared_ptr<InputHandler> inputHandler;
