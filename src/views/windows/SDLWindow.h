@@ -54,7 +54,8 @@ namespace Galax::Windowing{
         void handleMouseEvents(SDL_Event event);
         void handleWindowEvents(SDL_Event event);
         void show();
-        DebugWindow* renderOptionsWindow;
+
+        void pauseAnimations();
     };
 
 }

@@ -12,20 +12,18 @@
 int main(int argc, char *argv[]) {
 	std::srand(std::time(nullptr));
 	QApplication a(argc, argv);
-
     auto debug = a.arguments().contains("--with-debug");
-    Galax::Windowing::IWindow* win;
+
     if(debug){
-        auto renderWindow = new QtRenderWindow();
-        renderWindow->resize(1600, 900);
-        renderWindow->setWindowTitle("Galax Qt Renderer");
-        win = renderWindow;
-
-    }else{
-        win = new Galax::Windowing::SDLWindow(1600, 900, "SDL_Renderer");
+        auto qt = new QtRenderWindow();
+        qt->resize(1600, 900);
+        qt->setWindowTitle("Galax Qt Renderer");
+        qt->show(false);
+        return QApplication::exec();
+    }else {
+        auto sdl = new Galax::Windowing::SDLWindow(1600, 900, "SDL_Renderer");
+        sdl->show(true);
+        return 0;
     }
-    win->show(!debug);
-
-
-	return QApplication::exec();
+    return 420; //Should be impossible
 }

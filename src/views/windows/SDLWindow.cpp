@@ -11,7 +11,7 @@
 #include <SDL_events.h>
 
 #include "SDLWindow.h"
-#include "DebugWindow.h"
+
 
 using namespace Galax::Windowing;
 
@@ -30,12 +30,33 @@ SDLWindow::~SDLWindow() {
 	this->renderThread.join();
 }
 
+
+void SDLWindow::pauseAnimations(){
+    static bool paused = false;
+    for(auto node: this->renderer->getScene()->getAllNodes()){
+        for(const auto& animation: node->getAnimations()){
+            if(paused){
+                animation->start();
+            }else{
+                animation->stop();
+            }
+        }
+    }
+    paused = !paused;
+
+}
+
 void SDLWindow::handleInputEvents(SDL_Event event){
 	switch(event.type){
 		case SDL_KEYDOWN:
-			if (event.key.keysym.sym == SDLK_F11) {
-				isFullscreen = !isFullscreen;
-			}
+            switch(event.key.keysym.sym){
+                case SDLK_F11:
+                    isFullscreen = !isFullscreen;
+                    break;
+                case SDLK_p:
+                    pauseAnimations();
+                    break;
+            }
 			this->inputHandler->keyPress(this->inputHandler->fromSDLKey(event.key.keysym.sym));
 			break;
 		case SDL_KEYUP:
@@ -109,17 +130,17 @@ void SDLWindow::handleEvents() {
 				handleWindowEvents(event);
 				break;
 			case SDL_QUIT:
-                renderOptionsWindow->close();
 				isShowing = false;
 				break;
 			default:
 				break;
 		}
 	}
-	if (isFullscreen != fullScreen) {
+	if (isFullscreen != fullScreen && isShowing) {
         SDL_SetWindowFullscreen(window, flags |(SDL_WINDOW_FULLSCREEN_DESKTOP & isFullscreen));
         if(isFullscreen){
-            //If I dont do this under x11 on manjaro with the current update its fucked.. with NV drivers..
+            std::cout << "Switching to fullscreen" << std::endl;
+            //If I don't do this under x11 on manjaro with the current update its fucked.. with NV drivers..
             auto index = SDL_GetWindowDisplayIndex(window);
             SDL_DisplayMode mode;
             SDL_GetDesktopDisplayMode(index, &mode);
@@ -198,9 +219,6 @@ void SDLWindow::show(bool blocking) {
 	if (isShowing) {
 		return;
 	}
-	this->renderOptionsWindow = new DebugWindow(nullptr);
-	this->renderOptionsWindow->resize(1280, 720);
-	this->renderOptionsWindow->show();
 	isShowing = true;
 	if (blocking) {
 		this->show();
@@ -243,7 +261,6 @@ void SDLWindow::loadScene(const std::string &filename) {
 	for (auto &effect: sceneData->postProcessEffects) {
 		renderer->addPostProcess(effect);
 	}
-	renderOptionsWindow->setScene(scene, scene->getLightingModel(), effects);
 	physicsEngine->setScene(scene);
 
 	SceneObject::unlockContext();
