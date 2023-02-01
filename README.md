@@ -8,6 +8,8 @@ This repo also contains a "showcase" application which renders a proceduraly gen
 - Extensibility
 - Runtime debug options
 - Detailed RenderDoc output when build in Debug mode (see screenshots below)
+- Demo simluates atmosphere using both Reyleigh and Mie scattering
+- Demo is also using performance tricks such as feedback buffers (should be changed to compute shaders) to improve performance even further
 
 ## Building
 Build was only tested on Manjaro Linux (other distros *should* be fine). You will need to have `conan` setup to have a successful build.
@@ -34,5 +36,24 @@ p - pause/resume orbit
 Shift (hold) - faster movement
 Ctrl (hold) - slower movement
 ```
+
+### Screenshots
+Couple more are available in the `screenshots` directory
+
+![Screenshot 01](screenshots/01.png)
+
+![Screenshot 02](screenshots/05.png)
+
+![Screenshot 03](screenshots/07.png)
+
+![Screenshot 04](screenshots/02.png)
+
+![Screenshot 05](screenshots/04.png)
+
+![Screenshot 06](screenshots/08.png)
+
+![Screenshot 07](screenshots/09.png)
+
+
 
 
