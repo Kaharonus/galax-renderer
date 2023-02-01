@@ -35,6 +35,7 @@ Clicking on a planet - shows a detailed view of the planet (clicking away stops 
 p - pause/resume orbit
 Shift (hold) - faster movement
 Ctrl (hold) - slower movement
+F11 (when running without debug) - go fullscreen
 ```
 
 ### Screenshots
