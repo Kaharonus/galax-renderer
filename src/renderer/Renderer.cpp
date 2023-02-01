@@ -66,7 +66,7 @@ void Renderer::drawTransparentGeometry() {
 			if (scene) {
 				scene->drawTransparent();
 			}
-	})
+	});
 }
 
 void Renderer::drawLighting() {
@@ -74,7 +74,7 @@ void Renderer::drawLighting() {
 			if (lightingModel) {
 				lightingModel->draw();
 			}
-	})
+	});
 }
 
 void Renderer::drawPostProcess() {
@@ -84,7 +84,7 @@ void Renderer::drawPostProcess() {
 						effect->draw();
 				})
 			}
-	})
+	});
 }
 
 void Renderer::finishRender() {
